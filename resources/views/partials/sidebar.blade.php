@@ -83,6 +83,33 @@
             </ul>
         </li>
 
+        <li class="treeview"><a class="app-menu__item {{ request()->is('vehicle*') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-car"></i><span class="app-menu__label">Vehice Entry</span><i class="treeview-indicator fa fa-angle-right"></i></a>
+            <ul class="treeview-menu">
+                <li><a class="treeview-item" href="{{route('vehicle.create')}}"><i class="icon fa fa-circle-o"></i> Add Vehicle</a></li>
+                <li><a class="treeview-item" href="{{route('vehicle.index')}}"><i class="icon fa fa-circle-o"></i> Manage Vehicle Entries</a></li>
+            </ul>
+        </li>
+
+        <li class="treeview"><a class="app-menu__item {{ request()->is('route*') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-road"></i><span class="app-menu__label">Route Entry</span><i class="treeview-indicator fa fa-angle-right"></i></a>
+            <ul class="treeview-menu">
+                <li><a class="treeview-item" href="{{route('route.create')}}"><i class="icon fa fa-circle-o"></i> Add Route</a></li>
+                <li><a class="treeview-item" href="{{route('route.index')}}"><i class="icon fa fa-circle-o"></i> Manage Route Details</a></li>
+            </ul>
+        </li>
+
+        <li class="treeview"><a class="app-menu__item {{ request()->is('price*') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-money"></i><span class="app-menu__label">Price Entry</span><i class="treeview-indicator fa fa-angle-right"></i></a>
+            <ul class="treeview-menu">
+                <li><a class="treeview-item" href="{{route('price.create')}}"><i class="icon fa fa-circle-o"></i> Add Price</a></li>
+                <li><a class="treeview-item" href="{{route('price.index')}}"><i class="icon fa fa-circle-o"></i> Manage Price Details</a></li>
+            </ul>
+        </li>
+
+        <li class="treeview"><a class="app-menu__item {{ request()->is('company*') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-building"></i><span class="app-menu__label">Company Entry</span><i class="treeview-indicator fa fa-angle-right"></i></a>
+            <ul class="treeview-menu">
+                <li><a class="treeview-item" href="{{route('company.create')}}"><i class="icon fa fa-circle-o"></i> Add Company</a></li>
+                <li><a class="treeview-item" href="{{route('company.index')}}"><i class="icon fa fa-circle-o"></i> Manage Company Details</a></li>
+            </ul>
+        </li>
 
 
     </ul>

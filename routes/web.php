@@ -28,6 +28,12 @@ Route::resource('tax', 'TaxController');
 Route::resource('unit', 'UnitController');
 Route::resource('supplier', 'SupplierController');
 Route::resource('customer', 'CustomerController');
+
+Route::resource('vehicle', 'VehicleController');
+Route::resource('route','RouteController');
+Route::resource('price','PriceController');
+Route::resource('company','CompanyController');
+
 Route::resource('product', 'ProductController');
 Route::resource('invoice', 'InvoiceController');
 Route::resource('rate', 'RateController');

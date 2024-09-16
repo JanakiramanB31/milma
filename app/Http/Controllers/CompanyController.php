@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
+  public function __construct()
+    {
+      $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -25,7 +29,10 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        //
+      $company = new Company();
+      $editPage = false;
+      $submitURL = route('company.store');
+      return view('company.create',compact('company','editPage','submitURL'));
     }
 
     /**
@@ -36,7 +43,23 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $request->validate([
+        'company_name'=>'required|min:5',
+        'address_1' => 'required|min:5',
+        'address_2' => 'required|min:5',
+        'city' => 'required|min:3',
+        'post_code' => 'required|min:3|max:6'
+      ]);
+
+      $company = new Company();
+      $company->company_name = $request->company_name;
+      $company->address_1 = $request->address_1;
+      $company->address_2 = $request->address_2;
+      $company->city = $request->city;
+      $company->post_code = $request->post_code;
+      $company->save();
+
+      return redirect()->back()->with('message', 'Company Details Added Successfully');
     }
 
     /**
@@ -58,7 +81,10 @@ class CompanyController extends Controller
      */
     public function edit($id)
     {
-        //
+      $company = Company::findOrFail($id);
+      $editPage = true;
+      $submitURL = route('company.update',$company->id);
+        return view('company.edit',compact('company','editPage','submitURL'));
     }
 
     /**
@@ -70,9 +96,24 @@ class CompanyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
-    }
+      $request->validate([
+        'company_name'=>'required|min:5',
+        'address_1' => 'required|min:5',
+        'address_2' => 'required|min:5',
+        'city' => 'required|min:3',
+        'post_code' => 'required|min:3|max:6'
+      ]);
 
+      $company =  Company::findOrFail($id);
+      $company->company_name = $request->company_name;
+      $company->address_1 = $request->address_1;
+      $company->address_2 = $request->address_2;
+      $company->city = $request->city;
+      $company->post_code = $request->post_code;
+      $company->save();
+
+      return redirect()->back()->with('message', 'Company Details Updated Successfully');
+    }
     /**
      * Remove the specified resource from storage.
      *
@@ -81,6 +122,8 @@ class CompanyController extends Controller
      */
     public function destroy($id)
     {
-        //
+      $company =  Company::findOrFail($id);
+      $company->delete();
+      return redirect()->back();
     }
 }

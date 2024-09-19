@@ -9,6 +9,7 @@ use App\Supplier;
 use App\Tax;
 use App\Unit;
 use App\Rate;
+use App\ProductPrice;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -23,7 +24,11 @@ class ProductController extends Controller
     {
         $products = Product::all();
         $additional = ProductSupplier::all();
-        return view('product.index', compact('products','additional'));
+        //$this->pr($additional->toArray());
+        //$this->pr($additional->products->toArray());
+        // exit;
+        $rates = Rate::all();
+        return view('product.index', compact('products','additional', 'rates'));
     }
 
     /**
@@ -41,8 +46,14 @@ class ProductController extends Controller
         $units = Unit::all();
         $rates = Rate::all();
         $stockTypes = config('constants.STOCK_TYPES');
+
+        $product = new Product();
+        $editPage = false;
+        $submitURL = route('product.store');
+        
+        $rate_id[] = array();
         //  echo '<pre>'; print_r($stockTypes); echo '</pre>'; exit;
-        return view('product.create', compact('categories','taxes','units','suppliers', 'rates', 'stockTypes'));
+        return view('product.create', compact('product','categories','taxes','units','suppliers', 'rates', 'stockTypes','editPage','submitURL', 'rate_id'));
     }
 
     /**
@@ -54,23 +65,49 @@ class ProductController extends Controller
     public function store(Request $request)
     {
 
-        $request->validate([
+      // $this->pr($request->all());
+      // exit;
+         $request->validate([
             'name' => 'required|min:3|unique:products|regex:/^[a-zA-Z ]+$/',
             'brand_name' => 'required',
             'sku_code' => 'required',
             'barcode' => 'required',
             'model' => 'required|min:3',
             'category_id' => 'required',
-            'sales_price' => 'required',
+            
             'unit_id' => 'required',
-            'rate_id' => 'required',
+            
             'stock_type' => 'required',
             'status' => 'required',
             'sit_status' => 'required',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'tax_id' => 'required',
             'moq_number' => 'required|numeric|min:1',
-        ]);
+            'rate_id' => 'required'
+         ]);
+
+         $supplierIds = [];
+
+         foreach($request->supplier_id as $key => $supplier_id){
+          // $this->pr($request->all());
+          // exit;
+          if (in_array($supplier_id, $supplierIds)) {
+            return redirect()->back()->withErrors(['supplier_id' => 'This supplier type has been added multiple times.'])->withInput();
+          }
+            $supplierIds[] = $supplier_id;
+
+        }
+
+         $rateIds = [];
+        foreach($request->rate_id as $key => $rate_id){
+          // $this->pr($request->all());
+          // exit;
+          if (in_array($rate_id, $rateIds)) {
+            return redirect()->back()->withErrors(['rate_id' => 'This rate type has been added multiple times.'])->withInput();
+          }
+            $rateIds[] = $rate_id;
+
+        }
 
 
         $product = new Product();
@@ -83,9 +120,7 @@ class ProductController extends Controller
         $product->sit_status = $request->sit_status;
         $product->model = $request->model;
         $product->category_id = $request->category_id;
-        $product->sales_price = $request->sales_price;
         $product->unit_id = $request->unit_id;
-        $product->rate_id = $request->rate_id;
         $product->tax_id = $request->tax_id;
         $product->moq_number = $request->moq_numberzswej7;
 
@@ -107,13 +142,25 @@ class ProductController extends Controller
 
         $product->save();
 
-        foreach($request->supplier_id as $key => $supplier_id){
+        foreach($supplierIds as $key => $supplier_id){
             $supplier = new ProductSupplier();
             $supplier->product_id = $product->id;
             $supplier->supplier_id = $request->supplier_id[$key];
             $supplier->price = $request->supplier_price[$key];
             $supplier->save();
         }
+
+        
+        foreach($rateIds as $key => $rate_id){
+
+          $product_price = new ProductPrice();
+          $product_price->product_id = $product->id;
+          $product_price->rate_id = $request->rate_id[$key];
+          $product_price->price = $request->product_price[$key];
+          $product_price->save();
+      }
+
+
         return redirect()->back()->with('message', 'New product has been added successfully');
     }
 
@@ -137,8 +184,8 @@ class ProductController extends Controller
     public function edit($id)
     {
         $productId = $id; // The specific product ID you want to retrieve associated ProductSupplier record for
-        $additional = ProductSupplier::where('product_id', $productId)->first();
-
+        echo $additional = ProductSupplier::where('product_id', $productId)->first();
+        
         $product =Product::findOrFail($id);
         // echo '<pre>'; print_r($product); echo '</pre>'; exit;
         $suppliers =Supplier::all();
@@ -146,8 +193,13 @@ class ProductController extends Controller
         $taxes = Tax::all();
         $units = Unit::all();
         $rates = Rate::all();
+        $rate_id = ProductPrice::where('product_id', $productId)->pluck('rate_id','price')->toArray();
+        $this->pr($rate_id);
+        // exit;
         $stockTypes = config('constants.STOCK_TYPES');
-        return view('product.edit', compact('additional','suppliers','categories','taxes','units','product', 'rates', 'stockTypes'));
+        $editPage = true;
+        $submitURL = route('product.update',$product->id);
+        return view('product.edit', compact('additional','suppliers','categories','taxes','units','product', 'rates', 'stockTypes','editPage','submitURL', 'rate_id' ));
     }
 
     /**

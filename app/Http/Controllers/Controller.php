@@ -11,4 +11,9 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
    
+    public function pr($arrayValues) {
+      echo '<pre>';
+      print_r($arrayValues);
+      echo'</pre>';
+    }
 }

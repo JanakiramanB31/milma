@@ -33,6 +33,7 @@ Route::resource('vehicle', 'VehicleController');
 Route::resource('route','RouteController');
 Route::resource('price','PriceController');
 Route::resource('company','CompanyController');
+Route::resource('stockintransit','StockInTransitController');
 
 Route::resource('product', 'ProductController');
 Route::resource('invoice', 'InvoiceController');

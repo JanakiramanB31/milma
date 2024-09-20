@@ -183,7 +183,7 @@
           </select>
         </div>
         <div class="form-group col-md-5">
-          <input name="supplier_price[]" value="{{ old('product_price.' . $index) }}" class="form-control @error('supplier_price') is-invalid @enderror" type="number" placeholder="Purchase Price">
+          <input name="supplier_price[]" value="{{ old('supplier_price.' . $index) }}" class="form-control @error('supplier_price') is-invalid @enderror" type="number" placeholder="Purchase Price">
           <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : '' }}</span>
         </div>
         @endforeach
@@ -200,20 +200,23 @@
   <div class="tile">
     <div id="example-3" class="content">
       <div class="group row">
-        <?php $old = session()->getOldInput();
- echo '<pre>';print_r($old); echo '</pre>'; ?>
-      @foreach(old('rate_id', $rate_id) as $index => $oldRateId)
-      <div></div>
+        <?php //$old = session()->getOldInput();
+ //echo '<pre>';print_r($old); echo '</pre>'; ?>
+      @foreach(old('rate_id', $productRateIds) as $index => $oldRateId)
+      @php
+        $curProductPrice = old('product_price', $productPrices)[$index];
+        $curProductPrice = ($curProductPrice)?$curProductPrice:'';
+      @endphp
         <div class="form-group col-md-5">
           <select name="rate_id[]" class="form-control">
             <option value = ''>Select Rate Type</option>
             @foreach($rates as $rate)
-            <option value="{{$rate->id}}" {{$rate->id == $oldRateId ? 'selected' : '' }}>{{$rate->price}}</option>
+            <option value="{{$rate->id}}" {{$rate->id == $oldRateId ? 'selected' : '' }}>{{$rate->type}}</option>
             @endforeach
           </select>
         </div>
         <div class="form-group col-md-5">
-          <input name="product_price[]" value="{{ old('product_price.' . $index) }}" class="form-control @error('product_price') is-invalid @enderror" type="number" placeholder="Product Price">
+          <input name="product_price[]" value="{{ $curProductPrice }}" class="form-control @error('product_price') is-invalid @enderror" type="number" placeholder="Product Price">
           <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : ''  }}</span>
         </div>
         @endforeach

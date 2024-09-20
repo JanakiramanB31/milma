@@ -51,9 +51,10 @@ class ProductController extends Controller
         $editPage = false;
         $submitURL = route('product.store');
         
-        $rate_id[] = array();
+        $productRateIds = array('0');
+        $productPrices =array('0');
         //  echo '<pre>'; print_r($stockTypes); echo '</pre>'; exit;
-        return view('product.create', compact('product','categories','taxes','units','suppliers', 'rates', 'stockTypes','editPage','submitURL', 'rate_id'));
+        return view('product.create', compact('product','categories','taxes','units','suppliers', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices'));
     }
 
     /**
@@ -65,8 +66,8 @@ class ProductController extends Controller
     public function store(Request $request)
     {
 
-      // $this->pr($request->all());
-      // exit;
+    //   $this->pr($request->all());
+    //   exit;
          $request->validate([
             'name' => 'required|min:3|unique:products|regex:/^[a-zA-Z ]+$/',
             'brand_name' => 'required',
@@ -184,7 +185,7 @@ class ProductController extends Controller
     public function edit($id)
     {
         $productId = $id; // The specific product ID you want to retrieve associated ProductSupplier record for
-        echo $additional = ProductSupplier::where('product_id', $productId)->first();
+        $additional = ProductSupplier::where('product_id', $productId)->first();
         
         $product =Product::findOrFail($id);
         // echo '<pre>'; print_r($product); echo '</pre>'; exit;
@@ -193,13 +194,17 @@ class ProductController extends Controller
         $taxes = Tax::all();
         $units = Unit::all();
         $rates = Rate::all();
-        $rate_id = ProductPrice::where('product_id', $productId)->pluck('rate_id','price')->toArray();
-        $this->pr($rate_id);
+        $comRateIdAndPrices = ProductPrice::where('product_id', $productId)->pluck('price','rate_id')->toArray();
+        $productRateIds = array_keys($comRateIdAndPrices);
+        $productPrices = array_values($comRateIdAndPrices);
+        // $this->pr($comRateIdAndPrices);
+        // $this->pr($productRateIds);
+        // $this->pr($productPrices);
         // exit;
         $stockTypes = config('constants.STOCK_TYPES');
         $editPage = true;
         $submitURL = route('product.update',$product->id);
-        return view('product.edit', compact('additional','suppliers','categories','taxes','units','product', 'rates', 'stockTypes','editPage','submitURL', 'rate_id' ));
+        return view('product.edit', compact('additional','suppliers','categories','taxes','units','product', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices' ));
     }
 
     /**

@@ -26,39 +26,53 @@
             <div class="col-md-12">
                 <div class="tile">
                     <div class="tile-body">
-                        <table class="table table-hover table-bordered" id="sampleTable">
-                            <thead>
+                      <table class="table table-hover table-bordered" id="sampleTable">
+                        <thead>
                             <tr>
-                                <th>Route Number </th>
-                                <th>Vehicle Number </th>
-                                <th>Product Name </th>
-                                <th>Quantity</th>
-                                <th>Action</th>
+                              <th>Serial No</th>
+                              <th>Route Number</th>
+                              <th>Vehicle Number</th>
+                              <th>Total Products</th>
+                              <th>Total Quantity</th>
+                              <th>Date</th>
+                              <th>Actions</th>
                             </tr>
-                            </thead>
-                            <tbody>
-                            @foreach( $stockintransits as $stockintransit)
-                            <tr>
-                                <td>{{ $stockintransit->route->route_number }} </td>
-                                <td>{{ $stockintransit->vehicle->vehicle_number }} </td>
-                                <td>{{ $stockintransit->product->name }} </td>
-                                <td>{{ $stockintransit->quantity }} </td>
-
-                                
-                                 <td>
-                                    <a class="btn btn-primary btn-sm" href="{{route('stockintransit.edit', $stockintransit->id)}}"><i class="fa fa-edit" ></i></a>
-                                    <button class="btn btn-danger btn-sm waves-effect" type="submit" onclick="deleteTag({{ $stockintransit->id }})">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                                    <form id="delete-form-{{ $stockintransit->id }}" action="{{ route('stockintransit.destroy',$stockintransit->id) }}" method="POST" style="display: none;">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
+                        </thead>
+                        <tbody>
+                          @php 
+                          $serialNo = 1; 
+                          @endphp
+                          @foreach ($groupedStockInTransits as $date => $routeGroups)
+                            @foreach ($routeGroups as $group => $items)
+                              @php
+                                $firstItem = $items->first();
+                                $totalProducts = $items->count();
+                                $totalQuantity = $items->sum('quantity');
+                              @endphp
+                              <tr>
+                                <td>{{ $serialNo++ }}</td>
+                                <td>{{ $firstItem->route->route_number }}</td>
+                                <td>{{ $firstItem->vehicle->vehicle_number }}</td>
+                                <td>{{ $totalProducts }}</td>
+                                <td>{{ $totalQuantity }}</td>
+                                <td>{{ $date }}</td>
+                                <td>
+                                  <a class="btn btn-primary btn-sm" href="{{ route('stockintransit.edit', $firstItem->id) }}">
+                                    <i class="fa fa-edit"></i>
+                                  </a>
+                                  <button class="btn btn-danger btn-sm waves-effect" type="submit" onclick="deleteTag({{ $firstItem->id }})">
+                                    <i class="fa fa-trash"></i>
+                                  </button>
+                                  <form id="delete-form-{{ $firstItem->id }}" action="{{ route('stockintransit.destroy', $firstItem->id) }}" method="POST" style="display: none;">
+                                    @csrf
+                                    @method('DELETE')
+                                  </form>
                                 </td>
-                            </tr>
+                              </tr>
                             @endforeach
-                            </tbody>
-                        </table>
+                          @endforeach
+                        </tbody>
+                      </table>
                     </div>
                 </div>
             </div>

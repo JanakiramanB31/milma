@@ -31,7 +31,7 @@ class TaxController extends Controller
       $tax = new Tax();
       $submitURL = route('tax.store');
       $editPage = false;
-      return view('tax.create',compact('tax','submitURL','editpage'));
+      return view('tax.create',compact('tax','submitURL','editPage'));
     }
 
     /**

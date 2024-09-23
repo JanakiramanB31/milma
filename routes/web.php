@@ -34,6 +34,7 @@ Route::resource('route','RouteController');
 Route::resource('price','PriceController');
 Route::resource('company','CompanyController');
 Route::resource('stockintransit','StockInTransitController');
+Route::post('stockintransit/check', 'StockInTransitController@checkExistence')->name('stockintransit.check');
 
 Route::resource('product', 'ProductController');
 Route::resource('invoice', 'InvoiceController');

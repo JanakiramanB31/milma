@@ -41,45 +41,36 @@
       </div>
       <span id="error-message" class="invalid-feedback col-md-12" role="alert"></span>
 
-
-      <div class="form-group d-flex col-md-12 justify-content-end">
-        <button type="button" id="nextButton" class="btn btn-success">Next</button>
+        <div class="form-group d-flex col-md-12 justify-content-st ">
+          <button type="button" id="nextButton" class="btn btn-success">Next</button>
+        </div>
       </div>
-    </div>
 
     <div id="product-section" style="display: {{$productDisplay}};">
-      <div id="product-section1" style="display: none;">
-        <div class="form-group col-md-6">
-          <label class="control-label">SKU Code</label>
-          <input id="sku_code" name="sku_code" class="form-control @error('sku_code') is-invalid @enderror" value="{{ old('sku_code') }}" readonly>
-          @error('sku_code')
-          <span class="invalid-feedback" role="alert">
-            <strong>{{ $message }}</strong>
-          </span>
-          @enderror
+      <div id="product-section1" style="display: flex;">
+        <div class="form-group col-md-6 ">
+          <pre class="control-label">SKU Code : </pre>
+          <b id="sku_code" name="sku_code" >{{ old('sku_code') }}</b>
         </div>
         <div class="form-group col-md-6">
-          <label class="control-label">Bar Code</label>
-          <input id="barcode" name="barcode" class="form-control @error('barcode') is-invalid @enderror" value="{{ old('barcode') }}" readonly>
-          @error('barcode')
-          <span class="invalid-feedback" role="alert">
-            <strong>{{ $message }}</strong>
-          </span>
-          @enderror
+          <pre class="control-label">Bar Code : </pre>
+          <b id="barcode" name="barcode" >{{ old('barcode') }}</b>
         </div>
       </div>
      
 
-      <div class="overflow-auto" style="max-height: 250px; overflow-y: auto;">
+      <div class="overflow-auto" style="max-height: 330px; overflow-y: auto;">
         @foreach($products as $product)
         @php
-        echo $prdQuantity = array_key_exists($product->id, $productIDsAndQuantities)?$productIDsAndQuantities[$product->id]:'';
+        $prdQuantity = array_key_exists($product->id, $productIDsAndQuantities)?$productIDsAndQuantities[$product->id]:'';
+        $stockTransitId = array_key_exists($product->id, $stockinTransitIds)?$stockinTransitIds[$product->id]:'';
         @endphp
         <div id="product-section2" style="display: flex;">
           <div class="form-group col-md-6">
             <label class="control-label">Product Name</label>
             <input name="product_name[]" class="form-control @error('product_name') is-invalid @enderror" value="{{ old('product_name', $product->name) }}" readonly>
             <input type="hidden" name="product_id[]" value="{{ $product->id }}">
+            <input type="hidden" name="stock_transit_id[]" value="{{ $product->id }}">
             @error('product_name')
             <span class="invalid-feedback" role="alert">
               <strong>{{ $message }}</strong>
@@ -88,7 +79,7 @@
           </div>
           <div class="form-group col-md-6">
             <label class="control-label">Quantity</label>
-            <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ $prdQuantity }}" type="number" placeholder="Enter Quantity" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
+            <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ old('quantity.' . $product->id, $prdQuantity) }}"  type="number" placeholder="Enter Quantity" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
             @error('quantity')
             <span class="invalid-feedback" role="alert">
               <strong>{{ $message }}</strong>
@@ -99,7 +90,7 @@
         @endforeach
       </div>
 
-      <div class="form-group col-md-4 align-self-end">
+      <div class="form-group mt-3 col-md-4 align-self-end">
         <button style="display: {{$productDisplay}};" id="add_button" class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i> Add Stock in Transit Details</button>
       </div>
     </div>
@@ -108,6 +99,7 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+  
   $(document).ready(function() {
     $('#nextButton').on('click', function() {
       var routeSelect = $('#route_id');
@@ -134,6 +126,8 @@
             setTimeout(function() {
               $('#error-message').show(); 
             }, 3000);
+            e.preventDefault(); 
+            window.location.href = '{{ route("stockintransit.index") }}'; 
           }
         });
       } 
@@ -152,10 +146,9 @@
       var quantityValue = $(this).val();
 
       if (quantityValue) {
-        $('#product-section1').css('display', 'flex');
         $('#product-section1').show();
-        $('#sku_code').val(sku);
-        $('#barcode').val(barcode);
+        $('#sku_code').text(sku);
+        $('#barcode').text(barcode);
       } else {
         $('#product-section1').hide();
       }

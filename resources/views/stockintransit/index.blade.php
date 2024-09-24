@@ -24,8 +24,8 @@
 
         <div class="row mt-2">
             <div class="col-md-12">
-                <div class="tile">
-                    <div class="tile-body">
+                <div class="tile " >
+                    <div class="tile-body" style="max-width: 100vw;overflow-x: auto;">
                       <table class="table table-hover table-bordered" id="sampleTable">
                         <thead>
                             <tr>

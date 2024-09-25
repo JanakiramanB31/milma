@@ -70,6 +70,19 @@
                           </div>
                           <span id="error-message" class="invalid-feedback col-md-12" role="alert"></span>
 
+                          <div class="form-group col-md-12">
+                            <label class="control-label">Role</label>
+                            <select name="user_id" id='user_id' class="form-control @error('user_id') is-invalid @enderror">
+                              <option value=''>Select User ID</option>
+                              @foreach($roles as $role)
+                              <option value="{{ $role['id'] }}" {{ old('user_id') == $role['id'] ? 'selected' : '' }}>
+                                {{ $role['f_name'] }}
+                              </option>
+                              @endforeach
+                            </select>
+                            <span id="user-error-message" class="invalid-feedback mt-3" role="alert"></span>
+                          </div>
+
                             <div class="form-group d-flex col-md-12 justify-content-start ">
                               <button type="button" id="nextButton" class="btn btn-success">Next</button>
                             </div>
@@ -133,41 +146,49 @@
     $('#nextButton').on('click', function() {
       var routeSelect = $('#route_id');
       var vehicleSelect = $('#vehicle_id');
+      var userIDSelect = $('#user_id');
 
       if (routeSelect.val() && vehicleSelect.val()) {
-        var route_id = routeSelect.val();
-        var vehicle_id = vehicleSelect.val();
-        console.log(route_id, vehicle_id);
-        $.ajax({
-          url: '{{ route("stockintransit.check") }}',
-          method: 'POST',
-          data: {
-            route_id: routeSelect.val(),
-            vehicle_id: vehicleSelect.val(),
-            _token: '{{ csrf_token() }}' 
-          },
-          success: function(response) {
-            $('#route-vehicle-section').hide();
-            $('#product-section').show();
-            $('#add_button').show();
-          },
-          error: function(xhr) {
-            var errorMessage =  xhr.responseJSON.error && xhr.responseJSON.error ? xhr.responseJSON.error : 'An error occurred. Please try again.';
-            var ID = xhr.responseJSON && xhr.responseJSON.ID ;
-            console.log(ID);
-            $('#error-message').html(errorMessage).show();
-            setTimeout(function() {
-              $('#error-message').show();
-              window.location.href =  '{{ route("stockintransit.edit", ":id") }}'.replace(':id', ID); 
-            }, 3000);
-             
-          }
-        });
+        if(userIDSelect.val()) {
+          var route_id = routeSelect.val();
+          var vehicle_id = vehicleSelect.val();
+          console.log(route_id, vehicle_id);
+          $.ajax({
+            url: '{{ route("stockintransit.check") }}',
+            method: 'POST',
+            data: {
+              route_id: routeSelect.val(),
+              vehicle_id: vehicleSelect.val(),
+              _token: '{{ csrf_token() }}' 
+            },
+            success: function(response) {
+                $('#route-vehicle-section').hide();
+                $('#product-section').show();
+                $('#add_button').show();
+            },
+            error: function(xhr) {
+              var errorMessage =  xhr.responseJSON.error && xhr.responseJSON.error ? xhr.responseJSON.error : 'An error occurred. Please try again.';
+              var ID = xhr.responseJSON && xhr.responseJSON.ID ;
+              console.log(ID);
+              $('#error-message').html(errorMessage).show();
+              setTimeout(function() {
+                $('#error-message').show();
+                window.location.href =  '{{ route("stockintransit.edit", ":id") }}'.replace(':id', ID); 
+              }, 3000);
+              
+            }
+          });
+        } else {
+          $('#user-error-message').text("Please Select User ID").show();
+          setTimeout(function() {
+            $('#user-error-message').hide();
+          }, 3000);
+        }
       } 
       else {
         $('#error-message').html('Please select both Route Number and Vehicle Number.').show();
         setTimeout(function() {
-          $('#error-message').show(); 
+          $('#error-message').hide(); 
         }, 3000);
       }
     });

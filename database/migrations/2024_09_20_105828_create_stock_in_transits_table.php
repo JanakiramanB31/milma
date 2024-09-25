@@ -15,6 +15,7 @@ class CreateStockInTransitEntriesTable extends Migration
     {
         Schema::create('stock_in_transits', function (Blueprint $table) {
           $table->bigIncrements('id');
+          $table->integer('user_id');
           $table->integer('route_id');
           $table->integer('vehicle_id');
           $table->integer('product_id');

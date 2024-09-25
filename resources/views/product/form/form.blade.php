@@ -126,11 +126,11 @@
       <label class="radio control-label">Stock in Transit Display</label>
       <div class="controls">
         <div class="custom-control custom-radio custom-control-inline">
-          <input type="radio" id="sit_status1" name="sit_status" class="custom-control-input" value="1" {{ (old('sit_status', $product->status)=="1")? "checked" : "" }}>
+          <input type="radio" id="sit_status1" name="sit_status" class="custom-control-input" value="1" {{ (old('sit_status', $product->sit_status)=="1")? "checked" : "" }}>
           <label class="custom-control-label" for="sit_status1">Visible</label>
         </div>
         <div class="custom-control custom-radio custom-control-inline">
-          <input type="radio" id="sit_status2" name="sit_status" class="custom-control-input" value="0" {{ (old('sit_status', $product->status)=="0")? "checked" : "" }}>
+          <input type="radio" id="sit_status2" name="sit_status" class="custom-control-input" value="0" {{ (old('sit_status', $product->sit_status)=="0")? "checked" : "" }}>
           <label class="custom-control-label" for="sit_status2">Invisible</label>
         </div>
       </div>
@@ -148,7 +148,7 @@
           <label class="custom-control-label" for="status1">Active</label>
         </div>
         <div class="custom-control custom-radio custom-control-inline">
-          <input type="radio" id="status2" name="status" class="custom-control-input" value="0" {{ (old('status', $product->status)=="1")? "checked" : "" }}>
+          <input type="radio" id="status2" name="status" class="custom-control-input" value="0" {{ (old('status', $product->status)=="0")? "checked" : "" }}>
           <label class="custom-control-label" for="status2">Inactive</label>
         </div>
       </div>
@@ -160,7 +160,7 @@
     </div>
     <div class="form-group col-md-4">
       <label class="control-label">MOQ Number</label>
-      <input name="moq_number" value="{{old('moq_number', $product->moq_number)}}" class="form-control @error('moq_number') is-invalid @enderror" type="number" placeholder="Enter MOQ">
+      <input name="moq_number" value="{{old('moq_number', $product->moq_number)}}"  class="form-control @error('moq_number') is-invalid @enderror" type="number" placeholder="Enter MOQ">
       @error('moq_number')
       <span class="invalid-feedback" role="alert">
         <strong>{{ $message }}</strong>
@@ -173,9 +173,13 @@
 
     <div id="example-2" class="content">
       <div class="group row">
-      @foreach(old('supplier_id', [[]]) as $index => $oldSupplierId)
+      @foreach(old('supplier_id', $productSupplierIds) as $index => $oldSupplierId)
+      @php
+        $SupplierPrice = old('supplier_price', $productSupplierPrices)[$index];
+        $SupplierPrice = ($SupplierPrice)?$SupplierPrice:'';
+      @endphp
         <div class="form-group col-md-5">
-          <select name="supplier_id[]" class="form-control">
+          <select name="supplier_id[]" class="form-control" >
             <option value=''>Select Supplier</option>
             @foreach($suppliers as $supplier)
             <option value="{{$supplier->id}}" {{ $supplier->id == $oldSupplierId ? 'selected' : '' }}>{{$supplier->name}} </option>
@@ -183,7 +187,7 @@
           </select>
         </div>
         <div class="form-group col-md-5">
-          <input name="supplier_price[]" value="{{ old('supplier_price.' . $index) }}" class="form-control @error('supplier_price') is-invalid @enderror" type="number" placeholder="Purchase Price">
+          <input name="supplier_price[]" value="{{ $SupplierPrice }}" class="form-control @error('supplier_price') is-invalid @enderror" type="number" placeholder="Purchase Price">
           <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : '' }}</span>
         </div>
         @endforeach

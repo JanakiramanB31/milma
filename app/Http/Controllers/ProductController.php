@@ -46,7 +46,8 @@ class ProductController extends Controller
         $units = Unit::all();
         $rates = Rate::all();
         $stockTypes = config('constants.STOCK_TYPES');
-
+        $productSupplierIds = array('0');
+        $productSupplierPrices = array('0');
         $product = new Product();
         $editPage = false;
         $submitURL = route('product.store');
@@ -54,7 +55,7 @@ class ProductController extends Controller
         $productRateIds = array('0');
         $productPrices =array('0');
         //  echo '<pre>'; print_r($stockTypes); echo '</pre>'; exit;
-        return view('product.create', compact('product','categories','taxes','units','suppliers', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices'));
+        return view('product.create', compact('product','productSupplierIds','productSupplierPrices','categories','taxes','units','suppliers', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices'));
     }
 
     /**
@@ -123,7 +124,7 @@ class ProductController extends Controller
         $product->category_id = $request->category_id;
         $product->unit_id = $request->unit_id;
         $product->tax_id = $request->tax_id;
-        $product->moq_number = $request->moq_numberzswej7;
+        $product->moq_number = $request->moq_number;
 
 
         // if ($request->hasFile('image')){
@@ -197,6 +198,9 @@ class ProductController extends Controller
         $comRateIdAndPrices = ProductPrice::where('product_id', $productId)->pluck('price','rate_id')->toArray();
         $productRateIds = array_keys($comRateIdAndPrices);
         $productPrices = array_values($comRateIdAndPrices);
+        $productSupplierIdAndPrices = ProductSupplier::where('product_id', $productId)->pluck('price','supplier_id')->toArray();
+        $productSupplierIds = array_keys($productSupplierIdAndPrices);
+        $productSupplierPrices = array_values($productSupplierIdAndPrices);
         // $this->pr($comRateIdAndPrices);
         // $this->pr($productRateIds);
         // $this->pr($productPrices);
@@ -204,7 +208,7 @@ class ProductController extends Controller
         $stockTypes = config('constants.STOCK_TYPES');
         $editPage = true;
         $submitURL = route('product.update',$product->id);
-        return view('product.edit', compact('additional','suppliers','categories','taxes','units','product', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices' ));
+        return view('product.edit', compact('additional','productSupplierIds','productSupplierPrices','suppliers','categories','taxes','units','product', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices' ));
     }
 
     /**
@@ -215,158 +219,65 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    // public function update(Request $request, $id)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|min:3|unique:products|regex:/^[a-zA-Z ]+$/',
-    //         'serial_number' => 'required',
-    //         'model' => 'required|min:3',
-    //         'category_id' => 'required',
-    //         'sales_price' => 'required',
-    //         'unit_id' => 'required',
-    //         'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-    //         'tax_id' => 'required',
-
-    //     ]);
-
-
-    //     $product = new Product();
-    //     $product->name = $request->name;
-    //     $product->serial_number = $request->serial_number;
-    //     $product->model = $request->model;
-    //     $product->category_id = $request->category_id;
-    //     $product->sales_price = $request->sales_price;
-    //     $product->unit_id = $request->unit_id;
-    //     $product->tax_id = $request->tax_id;
-
-
-    //     if ($request->hasFile('image')){
-    //         $image_path ="images/product/".$product->image;
-    //         if (file_exists($image_path)){
-    //             unlink($image_path);
-    //         }
-    //         $imageName =request()->image->getClientOriginalName();
-    //         request()->image->move(public_path('images/product/'), $imageName);
-    //         $product->image = $imageName;
-    //     }
-
-
-
-    //     $product->save();
-
-    //     foreach($request->supplier_id as $key => $supplier_id){
-    //         $supplier = new ProductSupplier();
-    //         $supplier->product_id = $product->id;
-    //         $supplier->supplier_id = $request->supplier_id[$key];
-    //         $supplier->price = $request->supplier_price[$key];
-    //         $supplier->save();
-    //     }
-    //     return redirect()->back()->with('message', 'Product Updated Successfully');
-    // }
 
     public function update(Request $request, $id)
     {
-    // $request->validate([
-    //     'name' => 'required|min:3|unique:products,name,' . $id . '|regex:/^[a-zA-Z ]+$/',
-    //     'serial_number' => 'required',
-    //     'model' => 'required|min:3',
-    //     'category_id' => 'required',
-    //     'sales_price' => 'required',
-    //     'unit_id' => 'required',
-    //     'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-    //     'tax_id' => 'required',
-    //     'supplier_id.*' => 'required|exists:suppliers,id',
-    //     'supplier_price.*' => 'required|numeric|min:0',
-    // ]);
-    // echo '<pre>'; print_r($request->all()); '</pre>'; exit;
-
-        $request->validate([
-            'name' => 'required|min:3|unique:products,name,' . $id . '|regex:/^[a-zA-Z ]+$/',
-            'brand_name' => 'required',
-            'sku_code' => 'required',
-            'barcode' => 'required',
-            'model' => 'required|min:3',
-            'category_id' => 'required',
-            'sales_price' => 'required',
-            'unit_id' => 'required',
-            'rate_id' => 'required',
-            'stock_type' => 'required',
-            'status' => 'required',
-            'sit_status' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'tax_id' => 'required',
-            'supplier_id.*' => 'required|exists:suppliers,id',
-            'supplier_price.*' => 'required|numeric|min:0',
-            'moq_number' => 'required|numeric|min:1',
-        ]);
-        
-        $product = Product::find($id);
-
-        if (!$product) {
-            return redirect()->back()->with('error', 'Product not found');
-        }
-
-        // $product->name = $request->name;
-        // $product->serial_number = $request->serial_number;
-        // $product->model = $request->model;
-        // $product->category_id = $request->category_id;
-        // $product->sales_price = $request->sales_price;
-        // $product->unit_id = $request->unit_id;
-        // $product->tax_id = $request->tax_id;
-
-        $product->name = $request->name;
-        $product->brand_name = $request->brand_name;
-        $product->sku_code = $request->sku_code;
-        $product->barcode = $request->barcode;
-        $product->stock_type = $request->stock_type;
-        $product->status = $request->status;
-        $product->sit_status = $request->sit_status;
-        $product->model = $request->model;
-        $product->category_id = $request->category_id;
-        $product->sales_price = $request->sales_price;
-        $product->unit_id = $request->unit_id;
-        $product->rate_id = $request->rate_id;
-        $product->tax_id = $request->tax_id;
-        $product->moq_number = $request->moq_number;
-
-    // if ($request->hasFile('image')) {
-    //     $existingImagePath = public_path("images/product/{$product->image}");
-    //     if (file_exists($existingImagePath) && is_file($existingImagePath)) {
-    //         unlink($existingImagePath); // Delete the existing image file
-    //     }
-
-    //     $imageName = $request->image->getClientOriginalName();
-    //     $request->image->move(public_path('images/product/'), $imageName);
-    //     $product->image = $imageName;
-    // }
-
-    if ($request->hasFile('image')) {
+      $request->validate([
+        'name' => 'required|min:3|unique:products,name,' . $id . '|regex:/^[a-zA-Z ]+$/',
+        'brand_name' => 'required',
+        'sku_code' => 'required',
+        'barcode' => 'required',
+        'model' => 'required|min:3',
+        'category_id' => 'required',
+        'unit_id' => 'required',
+        'rate_id' => 'required',
+        'stock_type' => 'required',
+        'status' => 'required',
+        'sit_status' => 'required',
+        'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'tax_id' => 'required',
+        'moq_number' => 'required|numeric|min:1',
+      ]);
+      // $this->pr($request->all());
+      // exit;
+      $product = Product::find($id);
+      // $this->pr($product);
+      // exit;
+      $product->name = $request->name;
+      $product->brand_name = $request->brand_name;
+      $product->sku_code = $request->sku_code;
+      $product->barcode = $request->barcode;
+      $product->stock_type = $request->stock_type;
+      $product->status = $request->status;
+      $product->sit_status = $request->sit_status;
+      $product->model = $request->model;
+      $product->category_id = $request->category_id;
+      $product->unit_id = $request->unit_id;
+      $product->tax_id = $request->tax_id;
+      $product->moq_number = $request->moq_number;
+      // $this->pr($product);
+      // exit;
+      if ($request->hasFile('image')) {
         // Delete the existing image file if it exists
         $existingImagePath = public_path("images/product/{$product->image}");
         if (file_exists($existingImagePath) && is_file($existingImagePath)) {
-            unlink($existingImagePath);
+          unlink($existingImagePath);
         }
     
         $imageName = time() . '_' . uniqid() . '.' . $request->image->getClientOriginalExtension();    
         $request->image->move(public_path('images/product/'), $imageName);
-    
         $product->image = $imageName;
-    }
-    
-    $product->save();
+      }
+      $product->save();
 
-            // Update or create product suppliers
-    foreach ($request->supplier_id as $key => $supplier_id) {
-        $supplier = ProductSupplier::where('product_id', $product->id)
-            ->where('supplier_id', $supplier_id)
+      $supplierIDs = $request->supplier_id;
+      $this->pr($supplierIDs);
+      //exit;
+
+    foreach ($supplierIDs as $key => $supplierID) {
+        $supplier = ProductSupplier::where('product_id', $id)
+            ->where('supplier_id', $supplierID)
             ->first();
-
-        if (!$supplier) {
-            $supplier = new ProductSupplier();
-            $supplier->product_id = $product->id;
-            $supplier->supplier_id = $supplier_id;
-        }
-
         $supplier->price = $request->supplier_price[$key];
         $supplier->save();
     }

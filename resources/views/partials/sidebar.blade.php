@@ -7,10 +7,11 @@
             <p class="app-sidebar__user-name">{{ Auth::user()->fullname }}</p>
         </div>
     </div>
+    
     <ul class="app-menu">
-        <li><a class="app-menu__item {{ request()->is('/') ? 'active' : ''}}" href="/"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Dashboard</span></a></li>
+    @if(Auth::user()->role_id == 1)
 
-        
+        <li><a class="app-menu__item {{ request()->is('/') ? 'active' : ''}}" href="/"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Dashboard</span></a></li>        
         <li class="treeview"><a class="app-menu__item {{ request()->is('tax*') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-percent"></i><span class="app-menu__label">Tax</span><i class="treeview-indicator fa fa-angle-right"></i></a>
             <ul class="treeview-menu">
                 <li><a class="treeview-item" href="{{route('tax.create')}}"><i class="icon fa fa-circle-o"></i> Add Tax</a></li>
@@ -24,6 +25,7 @@
                 <li><a class="treeview-item" href="{{route('category.index')}}"><i class="icon fa fa-edit"></i>Manage Category</a></li>
             </ul>
         </li>
+
         <li class="treeview "><a class="app-menu__item {{ request()->is('subcategory*') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-th"></i><span class="app-menu__label">Subcategory</span><i class="treeview-indicator fa fa-angle-right"></i></a>
             <ul class="treeview-menu">
                 <li><a class="treeview-item " href="{{route('subcategory.create')}}"><i class="icon fa fa-plus"></i>Create Subcategory</a></li>
@@ -38,7 +40,6 @@
             </ul>
         </li>
 
-
         <li class="treeview"><a class="app-menu__item {{ request()->is('unit*') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-bars"></i><span class="app-menu__label">Unit</span><i class="treeview-indicator fa fa-angle-right"></i></a>
             <ul class="treeview-menu">
                 <li><a class="treeview-item" href="{{route('unit.create')}}"><i class="icon fa fa-circle-o"></i> Add Unit</a></li>
@@ -50,13 +51,6 @@
             <ul class="treeview-menu">
                 <li><a class="treeview-item" href="{{route('rate.create')}}"><i class="icon fa fa-circle-o"></i> Add Rate</a></li>
                 <li><a class="treeview-item" href="{{route('rate.index')}}"><i class="icon fa fa-circle-o"></i> Manage Rates</a></li>
-            </ul>
-        </li>
-
-        <li class="treeview "><a class="app-menu__item {{ request()->is('invoice*') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-file"></i><span class="app-menu__label">Invoice</span><i class="treeview-indicator fa fa-angle-right"></i></a>
-            <ul class="treeview-menu">
-                <li><a class="treeview-item " href="{{route('invoice.create')}}"><i class="icon fa fa-plus"></i>Create Invoice </a></li>
-                <li><a class="treeview-item" href="{{route('invoice.index')}}"><i class="icon fa fa-edit"></i>Manage Invoice</a></li>
             </ul>
         </li>
 
@@ -110,6 +104,13 @@
                 <li><a class="treeview-item" href="{{route('company.index')}}"><i class="icon fa fa-circle-o"></i> Manage Company Details</a></li>
             </ul>
         </li>
+        @endif
+        <li class="treeview "><a class="app-menu__item {{ request()->is('invoice*') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-file"></i><span class="app-menu__label">Invoice</span><i class="treeview-indicator fa fa-angle-right"></i></a>
+            <ul class="treeview-menu">
+                <li><a class="treeview-item " href="{{route('invoice.create')}}"><i class="icon fa fa-plus"></i>Create Invoice </a></li>
+                <li><a class="treeview-item" href="{{route('invoice.index')}}"><i class="icon fa fa-edit"></i>Manage Invoice</a></li>
+            </ul>
+        </li>
 
         <li class="treeview"><a class="app-menu__item {{ request()->is('stockintransit*') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-archive"></i><span class="app-menu__label">Stock In Transit Entry</span><i class="treeview-indicator fa fa-angle-right"></i></a>
             <ul class="treeview-menu">
@@ -117,7 +118,6 @@
                 <li><a class="treeview-item" href="{{route('stockintransit.index')}}"><i class="icon fa fa-circle-o"></i> Manage Stock In Transit Details</a></li>
             </ul>
         </li>
-
 
     </ul>
 </aside>

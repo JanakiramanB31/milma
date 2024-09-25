@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Product;
 use App\Route;
 use App\StockInTransit;
+use App\User;
 use App\Vehicle;
 use Illuminate\Http\Request;
 
@@ -44,10 +45,11 @@ class StockInTransitController extends Controller
       $routes = Route::all();
       $vehicles = Vehicle::all();
       $products = Product::all();
+      $roles = User::all();
       $routeDisplay = 'block';
       $productDisplay = 'none';
       $submitURL = route('stockintransit.store');
-      return view('stockintransit.create',compact('routes','vehicles','products','submitURL','routeDisplay','productDisplay'));
+      return view('stockintransit.create',compact('routes','vehicles','products','roles','submitURL','routeDisplay','productDisplay'));
      }
 
      public function checkExistence(Request $request)
@@ -84,7 +86,8 @@ class StockInTransitController extends Controller
       //exit;
       foreach ($productIDs as $key => $productID) {
         if (isset($quantities[$key]) && !empty($quantities[$key])) {
-          $stockInTransit = new StockInTransit(); 
+          $stockInTransit = new StockInTransit();
+          $stockInTransit->user_id = $request->user_id;
           $stockInTransit->route_id = $request->route_id;
           $stockInTransit->vehicle_id = $request->vehicle_id;
           $stockInTransit->product_id = $productID;

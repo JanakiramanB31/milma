@@ -44,7 +44,7 @@
                                         <th>Product</th>
                                         <th>Qty</th>
                                         <th>Price</th>
-                                        <th>Discount</th>
+                                        <!-- <th>Discount</th> -->
                                         <th>Amount</th>
                                      </tr>
                                     </thead>
@@ -57,7 +57,7 @@
                                         <td>{{$sale->product->name}}</td>
                                         <td>{{$sale->qty}}</td>
                                         <td>{{$sale->price}}</td>
-                                        <td>{{$sale->dis}}%</td>
+                                       <!--  <td>{{$sale->dis}}%</td> -->
                                         <td>{{$sale->amount}}</td>
                                         <div style="display: none">
                                             {{$total +=$sale->amount}}

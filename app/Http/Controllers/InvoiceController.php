@@ -50,10 +50,20 @@ class InvoiceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function getProducts(Request $request, $id) {
+     // $this->pr($request->all());
+      //return response()->json(['message' => 'No Data'],200);
+      $products = Product::select('name')->whereIn('id', function($query) {
+        $query->select('product_id')->from('sales')->whereIn('invoice_id', function($subQuery) {
+          $subQuery->select('id')->from('invoices') ->where('customer_id', 1);
+        });
+      })->get();
+      $this->pr($products);
+      exit;
+    }
     public function store(Request $request)
     {
         $request->validate([
-
             'customer_id' => 'required',
             'product_id' => 'required',
             'qty' => 'required',

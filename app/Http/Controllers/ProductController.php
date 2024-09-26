@@ -54,8 +54,9 @@ class ProductController extends Controller
         
         $productRateIds = array('0');
         $productPrices =array('0');
+        $productSupplierQuantity = array('0');
         //  echo '<pre>'; print_r($stockTypes); echo '</pre>'; exit;
-        return view('product.create', compact('product','productSupplierIds','productSupplierPrices','categories','taxes','units','suppliers', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices'));
+        return view('product.create', compact('product','productSupplierQuantity','productSupplierIds','productSupplierPrices','categories','taxes','units','suppliers', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices'));
     }
 
     /**
@@ -85,7 +86,7 @@ class ProductController extends Controller
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'tax_id' => 'required',
             'moq_number' => 'required|numeric|min:1',
-            'rate_id' => 'required'
+            'rate_id' => 'required',
          ]);
 
          $supplierIds = [];
@@ -149,6 +150,7 @@ class ProductController extends Controller
             $supplier->product_id = $product->id;
             $supplier->supplier_id = $request->supplier_id[$key];
             $supplier->price = $request->supplier_price[$key];
+            $supplier->quantity = $request->quantity[$key];
             $supplier->save();
         }
 
@@ -199,8 +201,10 @@ class ProductController extends Controller
         $productRateIds = array_keys($comRateIdAndPrices);
         $productPrices = array_values($comRateIdAndPrices);
         $productSupplierIdAndPrices = ProductSupplier::where('product_id', $productId)->pluck('price','supplier_id')->toArray();
+        $productSupplierQuantities = ProductSupplier::where('product_id', $productId)->pluck('quantity','supplier_id')->toArray();
         $productSupplierIds = array_keys($productSupplierIdAndPrices);
         $productSupplierPrices = array_values($productSupplierIdAndPrices);
+        $productSupplierQuantity = array_values($productSupplierQuantities);
         // $this->pr($comRateIdAndPrices);
         // $this->pr($productRateIds);
         // $this->pr($productPrices);
@@ -208,7 +212,7 @@ class ProductController extends Controller
         $stockTypes = config('constants.STOCK_TYPES');
         $editPage = true;
         $submitURL = route('product.update',$product->id);
-        return view('product.edit', compact('additional','productSupplierIds','productSupplierPrices','suppliers','categories','taxes','units','product', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices' ));
+        return view('product.edit', compact('additional','productSupplierIds','productSupplierQuantity','productSupplierPrices','suppliers','categories','taxes','units','product', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices' ));
     }
 
     /**

@@ -30,6 +30,7 @@
             <div class="clearix"></div>
             <div class="col-md-12">
                 <div class="tile">
+                <div class="alert alert-danger" style="display: none;" id ="quantity-error"></div>
                     <h3 class="tile-title">Stock in Transit Entry</h3>
                     <div class="tile-body">
                       <form method="POST" action="{{$submitURL}}">
@@ -69,20 +70,6 @@
                             @enderror
                           </div>
                           <span id="error-message" class="invalid-feedback col-md-12" role="alert"></span>
-
-                          <div class="form-group col-md-12">
-                            <label class="control-label">Role</label>
-                            <select name="user_id" id='user_id' class="form-control @error('user_id') is-invalid @enderror">
-                              <option value=''>Select User ID</option>
-                              @foreach($roles as $role)
-                              <option value="{{ $role['id'] }}" {{ old('user_id') == $role['id'] ? 'selected' : '' }}>
-                                {{ $role['f_name'] }}
-                              </option>
-                              @endforeach
-                            </select>
-                            <span id="user-error-message" class="invalid-feedback mt-3" role="alert"></span>
-                          </div>
-
                             <div class="form-group d-flex col-md-12 justify-content-start ">
                               <button type="button" id="nextButton" class="btn btn-success">Next</button>
                             </div>
@@ -103,6 +90,10 @@
 
                           <div class="overflow-auto" style="max-height: 330px; overflow-y: auto;">
                             @foreach($products as $product)
+                            @php
+                            $prodMaxQuantity = array_key_exists($product->id, $supplierProdQuantities)?$supplierProdQuantities[$product->id]:0;
+        
+                            @endphp
                             <div id="product-section2" style="display: flex;">
                               <div class="form-group col-md-6">
                                 <label class="control-label">Product Name</label>
@@ -116,7 +107,7 @@
                               </div>
                               <div class="form-group col-md-6">
                                 <label class="control-label">Quantity</label>
-                                <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ old('quantity.' . $product->id) }}"  type="number" placeholder="Enter Quantity" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
+                                <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ old('quantity.' . $product->id) }}"  type="number" placeholder="Enter Quantity" data-available = "{{$prodMaxQuantity}}" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
                                 @error('quantity')
                                 <span class="invalid-feedback" role="alert">
                                   <strong>{{ $message }}</strong>
@@ -141,7 +132,6 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  
   $(document).ready(function() {
     $('#nextButton').on('click', function() {
       var routeSelect = $('#route_id');
@@ -149,41 +139,34 @@
       var userIDSelect = $('#user_id');
 
       if (routeSelect.val() && vehicleSelect.val()) {
-        if(userIDSelect.val()) {
-          var route_id = routeSelect.val();
-          var vehicle_id = vehicleSelect.val();
-          console.log(route_id, vehicle_id);
-          $.ajax({
-            url: '{{ route("stockintransit.check") }}',
-            method: 'POST',
-            data: {
-              route_id: routeSelect.val(),
-              vehicle_id: vehicleSelect.val(),
-              _token: '{{ csrf_token() }}' 
-            },
-            success: function(response) {
-                $('#route-vehicle-section').hide();
-                $('#product-section').show();
-                $('#add_button').show();
-            },
-            error: function(xhr) {
-              var errorMessage =  xhr.responseJSON.error && xhr.responseJSON.error ? xhr.responseJSON.error : 'An error occurred. Please try again.';
-              var ID = xhr.responseJSON && xhr.responseJSON.ID ;
-              console.log(ID);
-              $('#error-message').html(errorMessage).show();
-              setTimeout(function() {
-                $('#error-message').show();
-                window.location.href =  '{{ route("stockintransit.edit", ":id") }}'.replace(':id', ID); 
-              }, 3000);
-              
-            }
-          });
-        } else {
-          $('#user-error-message').text("Please Select User ID").show();
-          setTimeout(function() {
-            $('#user-error-message').hide();
-          }, 3000);
-        }
+        var route_id = routeSelect.val();
+        var vehicle_id = vehicleSelect.val();
+        console.log(route_id, vehicle_id);
+        $.ajax({
+          url: '{{ route("stockintransit.check") }}',
+          method: 'POST',
+          data: {
+            route_id: routeSelect.val(),
+            vehicle_id: vehicleSelect.val(),
+            _token: '{{ csrf_token() }}' 
+          },
+          success: function(response) {
+              $('#route-vehicle-section').hide();
+              $('#product-section').show();
+              $('#add_button').show();
+          },
+          error: function(xhr) {
+            var errorMessage =  xhr.responseJSON.error && xhr.responseJSON.error ? xhr.responseJSON.error : 'An error occurred. Please try again.';
+            var ID = xhr.responseJSON && xhr.responseJSON.ID ;
+            console.log(ID);
+            $('#error-message').html(errorMessage).show();
+            setTimeout(function() {
+              $('#error-message').show();
+              window.location.href =  '{{ route("stockintransit.edit", ":id") }}'.replace(':id', ID); 
+            }, 3000);
+            
+          }
+        });
       } 
       else {
         $('#error-message').html('Please select both Route Number and Vehicle Number.').show();
@@ -192,22 +175,32 @@
         }, 3000);
       }
     });
-
-
+    
     $('.quantity-input').on('input', function() {
       var sku = $(this).data('sku');
       var barcode = $(this).data('barcode');
       var quantityValue = $(this).val();
-
-      if (quantityValue) {
+      var availableQuantity = $(this).data('available');
+      if (quantityValue < 0) {
+        $('#quantity-error').css("display", "block");
+        $('#quantity-error').text('Please enter non-negative quantities.').show();
+        $('#add_button').prop('disabled', true);
+      } else if (quantityValue >= 0 && quantityValue <= availableQuantity) {
+        $('#quantity-error').css("display", "none");
+        $('#add_button').prop('disabled', false);
         $('#product-section1').show();
         $('#sku_code').text(sku);
         $('#barcode').text(barcode);
+      } else if (quantityValue > availableQuantity) {
+        $('#add_button').prop('disabled', true);
+        $('#quantity-error').text('Quantity exceeds available stock of Available Quantity').show();
       } else {
+        $('#add_button').prop('disabled', false);
         $('#product-section1').hide();
       }
     });
   });
+  
 </script>
 
 

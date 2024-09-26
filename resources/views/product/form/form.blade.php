@@ -177,8 +177,10 @@
       @php
         $SupplierPrice = old('supplier_price', $productSupplierPrices)[$index];
         $SupplierPrice = ($SupplierPrice)?$SupplierPrice:'';
+        $SupplierQuantity = old('quantity',$productSupplierQuantity)[$index];
+        $SupplierQuantity = ($SupplierQuantity)? $SupplierQuantity :'';
       @endphp
-        <div class="form-group col-md-5">
+        <div class="form-group col-md-4">
           <select name="supplier_id[]" class="form-control" >
             <option value=''>Select Supplier</option>
             @foreach($suppliers as $supplier)
@@ -186,15 +188,20 @@
             @endforeach
           </select>
         </div>
-        <div class="form-group col-md-5">
+        <div class="form-group col-md-4">
           <input name="supplier_price[]" value="{{ $SupplierPrice }}" class="form-control @error('supplier_price') is-invalid @enderror" type="number" placeholder="Purchase Price">
           <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : '' }}</span>
         </div>
+        <div class="form-group col-md-4">
+          <input name="quantity[]" id="quantity"  class="form-control @error('quantity')  is-invalid @enderror" value="{{$SupplierQuantity}}"  type="number" placeholder="Enter Quantity">
+          <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : '' }}</span>
+          <div class="invalid-feedback" role="alert" id="quantity-error" style="display: none;"></div>
+        </div>
         @endforeach
-        <div class="form-group col-md-2">
+        <!-- <div class="form-group col-md-2">
           <button type="button" id="btnAdd-2" class="btn btn-success btn-sm float-right"><i class="fa fa-plus"></i></button>
           <button type="button" class="btn btn-danger btn-sm btnRemove float-right"><i class="fa fa-trash"></i></button>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -237,3 +244,22 @@
   </div>
 
 </form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#quantity').on('input', function() {
+      var quantityValue = $(this).val();
+
+      if (quantityValue < 0) {
+        $('#quantity').addClass("is-invalid");
+        $('#quantity-error').css("display", "block");
+        $('#quantity-error').text('Please enter non-negative quantities.').show();
+      }
+      else {
+        $('#quantity').removeClass("is-invalid");
+        $('#quantity-error').css("display", "none");
+      }
+    });
+  });
+</script>

@@ -18,6 +18,7 @@ class CreateProductSuppliersTable extends Migration
             $table->integer('product_id');
             $table->integer('supplier_id');
             $table->integer('price');
+            $table->integer('quantity');
             $table->timestamps();
         });
     }

@@ -26,6 +26,7 @@
             <div class="clearix"></div>
             <div class="col-md-12">
                 <div class="tile">
+                  <div class="alert alert-danger" style="display: none;" id ="quantity-error"></div>
                     <h3 class="tile-title">Edit Stock in Transit Entry</h3>
                     <div class="tile-body">
                       <form method="POST" action="{{$submitURL}}">
@@ -67,6 +68,19 @@
                           </div>
                           <span id="error-message" class="invalid-feedback col-md-12" role="alert"></span>
 
+                          <div class="form-group col-md-12">
+                            <label class="control-label">Select User</label>
+                            <select name="user_id" id='user_id' class="form-control @error('user_id') is-invalid @enderror">
+                              <option value=''>Select User ID</option>
+                              @foreach($users as $user)
+                              <option value="{{ $user['id'] }}" {{ old('user_id', $stockInTransit->user_id) == $user['id'] ? 'selected' : '' }}>
+                                {{ $user['f_name'] }}
+                              </option>
+                              @endforeach
+                            </select>
+                            <span id="user-error-message" class="invalid-feedback mt-3" role="alert"></span>
+                          </div>
+
                             <div class="form-group d-flex col-md-12 justify-content-start ">
                               <button type="button" id="nextButton" class="btn btn-success">Next</button>
                             </div>
@@ -88,11 +102,12 @@
                           <div class="overflow-auto" style="max-height: 330px; overflow-y: auto;">
                             @foreach($products as $product)
                             @php
-                            $prdQuantity = array_key_exists($product->id, $productIDsAndQuantities)?$productIDsAndQuantities[$product->id]:'';
+                            $prdQuantity = array_key_exists($product->id, $productIDsAndQuantities)?$productIDsAndQuantities[$product->id]:0;
                             $stockInTransitID = array_key_exists($product->id, $stockInTransitIDs)?$stockInTransitIDs[$product->id]:'';
+                            $prodMaxQuantity = array_key_exists($product->id, $supplierProdQuantities)?$supplierProdQuantities[$product->id]:0;
                             @endphp
                             <div id="product-section2" style="display: flex;">
-                              <div class="form-group col-md-6">
+                              <div class="form-group col-md-4">
                                 <label class="control-label">Product Name</label>
                                 <input name="product_name[]" class="form-control @error('product_name') is-invalid @enderror" value="{{ old('product_name', $product->name) }}" readonly>
                                 <input type="hidden" name="product_id[]" value="{{ $product->id }}">
@@ -103,10 +118,20 @@
                                 </span>
                                 @enderror
                               </div>
-                              <div class="form-group col-md-6">
-                                <label class="control-label">Quantity</label>
-                                <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ $prdQuantity }}"  type="number" placeholder="Enter Quantity" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
+                              <div class="form-group col-md-4">
+                                <label class="control-label">Existing Quantity</label>
+                                <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ $prdQuantity }}"   type="number" readonly>
                                 @error('quantity')
+                                <span class="invalid-feedback" role="alert">
+                                  <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                              </div>
+
+                              <div class="form-group col-md-4">
+                                <label class="control-label">Add Quantity</label>
+                                <input name="new_quantity[]" id="new_quantity-{{ $product->id }}" class="form-control new-quantity-input @error('new_quantity') is-invalid @enderror" value="{{ old('new_quantity.' . $product->id) }}"    type="number" placeholder="Enter Quantity" data-existing="{{$prdQuantity}}" data-available = "{{$prodMaxQuantity}}" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
+                                @error('new_quantity')
                                 <span class="invalid-feedback" role="alert">
                                   <strong>{{ $message }}</strong>
                                 </span>
@@ -130,11 +155,18 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  
+  var userId = <?php echo json_encode($userID); ?>;
+  console.log(userId)
   $(document).ready(function() {
     $('#nextButton').on('click', function() {
       var routeSelect = $('#route_id');
       var vehicleSelect = $('#vehicle_id');
+
+      if(userId == 1) {
+        $('#route-vehicle-section').hide();
+        $('#product-section').show();
+        $('#add_button').show();
+      } else {
 
       if (routeSelect.val() && vehicleSelect.val()) {
         console.log(routeSelect.val(), vehicleSelect.val());
@@ -167,20 +199,35 @@
         setTimeout(function() {
           $('#error-message').show(); 
         }, 3000);
-      }
+      }}
     });
 
 
-    $('.quantity-input').on('input', function() {
+    $('.new-quantity-input').on('input', function() {
       var sku = $(this).data('sku');
       var barcode = $(this).data('barcode');
       var quantityValue = $(this).val();
+      var existingQuantity = $(this).data('existing');
+      var availableQuantity = $(this).data('available');
+      var new_quantity = parseInt(existingQuantity) + parseInt(quantityValue);
+      console.log(quantityValue,existingQuantity,availableQuantity,new_quantity)
 
-      if (quantityValue) {
+      if (quantityValue < 0) {
+        $('#quantity-error').css("display", "block");
+        $('#quantity-error').text('Please enter non-negative quantities.').show();
+        $('#add_button').prop('disabled', true);
+      }
+      else if (quantityValue >= 0 && new_quantity <= availableQuantity) {
+        $('#add_button').prop('disabled', false);
+        $('#quantity-error').css("display", "none");
         $('#product-section1').show();
         $('#sku_code').text(sku);
         $('#barcode').text(barcode);
+      } else if (new_quantity > availableQuantity) {
+        $('#add_button').prop('disabled', true);
+        $('#quantity-error').text('Quantity exceeds available stock of Available Quantity').show();
       } else {
+        $('#add_button').prop('disabled', true);
         $('#product-section1').hide();
       }
     });

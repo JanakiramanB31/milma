@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Product;
+use App\ProductSupplier;
 use App\Route;
 use App\StockInTransit;
 use App\User;
 use App\Vehicle;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StockInTransitController extends Controller
 {
@@ -44,12 +46,19 @@ class StockInTransitController extends Controller
     {
       $routes = Route::all();
       $vehicles = Vehicle::all();
-      $products = Product::all();
+      $products = Product::where('sit_status',1)->where('status',1)->get();
+      $supplierProdQuantities = [];
+      foreach ($products as $product) {
+        $quantity = ProductSupplier::where('product_id', $product->id)->value('quantity');
+        $supplierProdQuantities[$product->id] = $quantity;
+      }
+    //$this->pr($supplierProdQuantities);
+    //exit;
       $roles = User::all();
       $routeDisplay = 'block';
       $productDisplay = 'none';
       $submitURL = route('stockintransit.store');
-      return view('stockintransit.create',compact('routes','vehicles','products','roles','submitURL','routeDisplay','productDisplay'));
+      return view('stockintransit.create',compact('routes','supplierProdQuantities','vehicles','products','roles','submitURL','routeDisplay','productDisplay'));
      }
 
      public function checkExistence(Request $request)
@@ -80,14 +89,15 @@ class StockInTransitController extends Controller
         'vehicle_id'=>'required',
       ]);
       //$this->pr($request->all());
-      //exit;
+     // exit;
+      $userId = Auth::id(); 
       $productIDs = $request->product_id;
       $quantities= $request->quantity;
       //exit;
       foreach ($productIDs as $key => $productID) {
         if (isset($quantities[$key]) && !empty($quantities[$key])) {
           $stockInTransit = new StockInTransit();
-          $stockInTransit->user_id = $request->user_id;
+          $stockInTransit->user_id = $userId;
           $stockInTransit->route_id = $request->route_id;
           $stockInTransit->vehicle_id = $request->vehicle_id;
           $stockInTransit->product_id = $productID;
@@ -124,9 +134,13 @@ class StockInTransitController extends Controller
       $routes = Route::all();
       $vehicles = Vehicle::all();
       $products = Product::all();
+      $userID = Auth::id();
+      $existUserID = $stockInTransit->user_id;
+      $users = User::where('role_id', 2)->get(); 
+      $today = now()->format('Y-m-d');
       //echo $stockInTransit->route_id;
       //echo $stockInTransit->vehicle_id;
-      $productIDsAndQuantities = StockInTransit::select('id', 'quantity', 'product_id')->where('route_id', $stockInTransit->route_id)->where('vehicle_id', $stockInTransit->vehicle_id)->get();    
+      $productIDsAndQuantities = StockInTransit::select('id', 'quantity', 'product_id')->where('route_id', $stockInTransit->route_id)->where('vehicle_id', $stockInTransit->vehicle_id)->where('user_id', $existUserID)->whereDate('created_at', $today)->get();    
       $stockInTransitIDs = $productIDsAndQuantities->pluck('id','product_id')->toArray();
       $productIDsAndQuantities = $productIDsAndQuantities->pluck('quantity','product_id')->toArray();
       //  $Quantities = $productIDsAndQuantities->pluck('', 'quantity')->toArray();
@@ -134,16 +148,25 @@ class StockInTransitController extends Controller
       //  $this->pr($productIds);
       //  $this->pr($Quantities);
       //  $this->pr($productIds);
-      // exit;
+      //  exit;
       //  $productIds = array_keys($productIDsAndQuantities);
       //  $Quantities = array_values($productIDsAndQuantities);
        //$this->pr($productIDsAndQuantities);
-      
+       $supplierProdQuantities = [];
+       foreach ($products as $product) {
+         $quantity = ProductSupplier::where('product_id', $product->id)->value('quantity');
+         $supplierProdQuantities[$product->id] = $quantity;
+       }
       // exit;
-      $routeDisplay = 'none';
+      if ($userID == 1) {
+      $routeDisplay = 'block';
+      $productDisplay = 'none';
+      } else {
+        $routeDisplay = 'none';
       $productDisplay = 'block';
+      }
       $submitURL = route('stockintransit.update',$stockInTransit->id);
-      return view('stockintransit.edit',compact('stockInTransit','routes','vehicles','products','submitURL', 'productIDsAndQuantities','routeDisplay','productDisplay','stockInTransitIDs'));
+      return view('stockintransit.edit',compact('stockInTransit','supplierProdQuantities','userID','users','routes','vehicles','products','submitURL', 'productIDsAndQuantities','routeDisplay','productDisplay','stockInTransitIDs'));
     }
 
     /**
@@ -157,26 +180,34 @@ class StockInTransitController extends Controller
     {
       $stockIDs = $request->stock_in_transit_id;
       $productIDs = $request->product_id;
-      $quantities = $request->quantity;
+      $oldQuantities = $request->quantity;
+      $newQuantities = $request->new_quantity;
       //$this->pr($request->all());
-      //exit;      
+     // exit;      
+     $this->pr($oldQuantities);
+     $this->pr($newQuantities);
+     
       foreach ($productIDs as $key => $productID) {
         if ($stockIDs[$key]) {
           $stockInTransit = StockInTransit::find($stockIDs[$key]);
-          if ($stockInTransit && isset($quantities[$key]) && !empty($quantities[$key])) {
-            $stockInTransit->quantity = $quantities[$key];
-            $stockInTransit->save();
+          $stockInTransit->user_id = $request->user_id;
+          $quantity = $oldQuantities[$key] + $newQuantities[$key];
+          if ($stockInTransit && isset($newQuantities[$key]) && !empty($newQuantities[$key])) {
+            $stockInTransit->route_id = $request->route_id;
+            $stockInTransit->vehicle_id = $request->vehicle_id;
+            $stockInTransit->product_id = $productID;
+            $stockInTransit->quantity = $quantity;
           }
         } else {
-            if (isset($quantities[$key]) && !empty($quantities[$key])) {
+            if (isset($newQuantities[$key]) && !empty($newQuantities[$key])) {
               $stockInTransit = new StockInTransit(); 
               $stockInTransit->route_id = $request->route_id;
               $stockInTransit->vehicle_id = $request->vehicle_id;
               $stockInTransit->product_id = $productID;
-              $stockInTransit->quantity = $quantities[$key];
-              $stockInTransit->save();
+              $stockInTransit->quantity = $oldQuantities[$key] + $newQuantities[$key];
             }
         }
+        $stockInTransit->save();
       }
       return redirect()->back()->with('message', 'Stock In Transit Details Updated Successfully');
     }

@@ -53,6 +53,9 @@
                                         {{$total=0}}
                                     </div>
                                     @foreach($sales as $sale)
+                                    @php
+                                    $price = $sale->type == "sales" ? "+" : "-"; 
+                                    @endphp
                                     <tr>
                                         <td>{{$sale->product->name}}</td>
                                         <td>{{$sale->qty}}</td>

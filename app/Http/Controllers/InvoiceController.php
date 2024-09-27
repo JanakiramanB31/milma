@@ -8,6 +8,7 @@ use App\Sale;
 use App\Sales;
 use App\Supplier;
 use App\Invoice;
+use App\Returns;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -53,22 +54,33 @@ class InvoiceController extends Controller
     public function getProducts(Request $request, $id) {
      // $this->pr($request->all());
       //return response()->json(['message' => 'No Data'],200);
-      $products = Product::select('name')->whereIn('id', function($query) {
-        $query->select('product_id')->from('sales')->whereIn('invoice_id', function($subQuery) {
-          $subQuery->select('id')->from('invoices') ->where('customer_id', 1);
+      $products = Product::select('id','name')->whereIn('id', function($query) use ($id) {
+        $query->select('product_id')->from('sales')->whereIn('invoice_id', function($subQuery) use ($id) {
+          $subQuery->select('id')->from('invoices') ->where('customer_id', $id);
         });
       })->get();
-      $this->pr($products);
-      exit;
+      $productIDs = $products->pluck('id')->toArray();
+      $invoiceIDs = Invoice::where('customer_id', $id)->pluck('id')->toArray();
+      
+      $quantityAndPrices = Sales::select('product_id','qty','price')->whereIn('product_id',$productIDs)->whereIn('invoice_id',$invoiceIDs)->get()->toArray();
+      //$this->pr($productIDs);
+      //$this->pr($invoiceIDs);
+      //$this->pr($quantityAndPrices);
+      //exit;
+
+      return response()->json(['products' => $products,'quantityAndPrices' => $quantityAndPrices]);
+     
+     
     }
     public function store(Request $request)
     {
+      $this->pr($request->all());
+      //exit;
         $request->validate([
             'customer_id' => 'required',
             'product_id' => 'required',
             'qty' => 'required',
             'price' => 'required',
-            'dis' => 'required',
             'amount' => 'required',
         ]);
 
@@ -79,9 +91,9 @@ class InvoiceController extends Controller
 
         foreach ( $request->product_id as $key => $product_id){
             $sale = new Sale();
+            $sale->type = $request->type[$key];
             $sale->qty = $request->qty[$key];
             $sale->price = $request->price[$key];
-            $sale->dis = $request->dis[$key];
             $sale->amount = $request->amount[$key];
             $sale->product_id = $request->product_id[$key];
             $sale->invoice_id = $invoice->id;
@@ -95,6 +107,21 @@ class InvoiceController extends Controller
 
 
 
+    }
+
+    public function storeReturns(Request $request)
+    {
+      $this->pr($request->all());
+      exit;
+      foreach ( $request->product_id as $key => $product_id){
+        $return = new Returns();
+        $return->product_id = $request->return_product_id[$key];
+        $return->quantity = $request->return_qty[$key];
+        $return->price = $request->return_amount[$key];
+        $return->save();
+
+
+    }
     }
 
     public function findPrice(Request $request){
@@ -138,6 +165,8 @@ class InvoiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+    
     public function update(Request $request, $id)
     {
         $request->validate([

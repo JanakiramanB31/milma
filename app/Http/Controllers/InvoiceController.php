@@ -77,7 +77,8 @@ class InvoiceController extends Controller
       $this->pr($request->all());
       //exit;
         $request->validate([
-            'customer_id' => 'required',
+            'customer_id' => 'required|integer',
+            'total'=>'required',
             'product_id' => 'required',
             'qty' => 'required',
             'price' => 'required',
@@ -90,8 +91,10 @@ class InvoiceController extends Controller
         $invoice->save();
 
         foreach ( $request->product_id as $key => $product_id){
+          if(isset($product_id[$key]) && !empty($product_id[$key])){
             $sale = new Sale();
             $sale->type = $request->type[$key];
+            $sale->reason = $request->reason[$key];
             $sale->qty = $request->qty[$key];
             $sale->price = $request->price[$key];
             $sale->amount = $request->amount[$key];
@@ -99,7 +102,7 @@ class InvoiceController extends Controller
             $sale->invoice_id = $invoice->id;
             $sale->save();
 
-
+          }
          }
 
          return redirect('invoice/'.$invoice->id)->with('message','Invoice created Successfully');

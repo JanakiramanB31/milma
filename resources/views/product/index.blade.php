@@ -40,6 +40,7 @@
                             </tr>
                             </thead>
                              <tbody>
+                              
 
                              @foreach($additional as $add)
                                  <tr>

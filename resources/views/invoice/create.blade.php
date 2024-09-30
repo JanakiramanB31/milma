@@ -22,6 +22,15 @@
         <div class="tile">
           <div id="error-message"></div>
           <h3 class="tile-title">Invoice</h3>
+          @if ($errors->any())
+            <div class="alert alert-danger">
+              <ul>
+                @foreach ($errors->all() as $error)
+                  <li>{{ $error }}</li>
+                @endforeach
+              </ul>
+            </div>
+          @endif
           <div class="tile-body">
             <form  method="POST" action="{{route('invoice.store')}}">
                 @csrf
@@ -45,47 +54,51 @@
                     <i class="fa fa-plus"></i> Add Return Items
                   </button>
                 </div>
-
-
-            <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th scope="col">Product</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Price</th>
-                <!--<th scope="col">Discount %</th> -->
-                    <th scope="col">Amount</th>
-                    <th scope="col"><a class="addRow badge badge-success text-white"><i class="fa fa-plus"></i> Add Row</a></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <select name="product_id[]" class="form-control productname" >
-                        <option>Select Product</option>
-                        @foreach($products as $product)
-                        <option name="product_id[]" value="{{$product->id}}">{{$product->name}}</option>
-                        @endforeach
-                      </select>
-                    </td>
-                    <td><input type="text" name="qty[]" class="form-control qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>
-                    <td><input type="text" name="price[]" class="form-control price" ></td>
-                    <!-- <td><input type="text" name="dis[]" class="form-control dis" ></td> -->
-                    <td><input type="text" name="amount[]" class="form-control amount" ></td>
-                    <td><a   class="btn btn-danger remove"> <i class="fa fa-remove"></i></a></td>
-                  </tr>
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td></td>
-                    <td></td>
-                    <!-- <td></td> -->
-                    <td><b>Total</b></td>
-                    <td><b class="total"></b></td>
-                    <td></td>
-                  </tr>
-                </tfoot>
-            </table>
+            
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th scope="col">Product</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Price</th>
+                  <!--<th scope="col">Discount %</th> -->
+                      <th scope="col">Amount</th>
+                      <th scope="col">Reason</th>
+                      <th scope="col"><a class="addRow badge badge-success text-white"><i class="fa fa-plus"></i> Add Row</a></th>
+                    </tr>
+                  </thead>
+                  <tbody id="product-section">
+                    <tr>
+                      <td>
+                        <select name="product_id[]" class="form-control productname" >
+                          <option value = ''>Select Product</option>
+                          @foreach($products as $product)
+                          <option value="{{$product->id}}">{{$product->name}}</option>
+                          @endforeach
+                        </select>
+                      </td>
+                      <td><input type="text" name="qty[]" class="form-control qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>
+                      <td><input type="text" name="price[]" class="form-control price" ></td>
+                      <!-- <td><input type="text" name="dis[]" class="form-control dis" ></td> -->
+                      <td><input type="text" name="amount[]" class="form-control amount" ></td>
+                      <td><input type="hidden" name="reason[]"  class="form-control reason" /></td>
+                      <td><a   class="btn btn-danger remove"> <i class="fa fa-remove"></i></a></td>
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <!-- <td></td> -->
+                      <td><b>Total</b></td>
+                      <td><b class="total"></b></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
+              </table>
+            </div>
             <div class="modal fade" id="returnForm" tabindex="-1" aria-labelledby="returnFormLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered modal-lg">
                   <div class="modal-content ">
@@ -93,7 +106,7 @@
                         <h5 class="modal-title" id="returnFormLabel">Return Items</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
-                      <div class="modal-body  ">
+                      <div class="modal-body table-responsive">
                       <table  class="table table-bordered" >
                         <thead>
                           <tr>
@@ -101,23 +114,25 @@
                             <th scope="col">Quantity</th>
                             <th scope="col">Price</th>
                             <th scope="col">Amount</th>
+                            <th scope="col">Reason</th>
                             <th scope="col"><a id="add-return-row" class=" badge badge-success text-white"><i class="fa fa-plus"></i> Add Row</a></th>
                           </tr>
                         </thead>
                         <tbody id="return-product-body">
                           <tr>
-                            <td>
+                            <td class="d-flex align-items-center" style="gap: 10px;"><b style="color: red;">R</b>
                               <select id="return-product-id" name="product_id[]" class="form-control return-product-id" >
-                                <option>Select Product</option>
+                                <option value =''>Select Return Product</option>
                                 @foreach($products as $product)
                                 
-                                <option name="product_id[]" value="{{$product->id}}">{{$product->name}}</option>
+                                <option value="{{$product->id}}">{{$product->name}}</option>
                                 @endforeach
                               </select>
                             </td>
                             <td><input type="text" name="qty[]" class="form-control return-qty" ><input type="hidden" name="type[]" value="returns" class="form-control" ></td>
                             <td><input type="text" name="price[]" class="form-control return-price" readonly></td>
                             <td><input type="text" name="amount[]" class="form-control return-amount" ></td>
+                            <td><input type="text" name="reason[]"  class="form-control return-reason" /></td>
                             <td><a   class="btn btn-danger remove"> <i class="fa fa-remove"></i></a></td>
                           </tr>
                         </tbody>
@@ -127,6 +142,7 @@
                             <td></td>
                             <td><b>Total</b></td>
                             <td><b class="return-total"></b></td>
+                            <td></td>
                             <td></td>
                           </tr>
                         </tfoot>
@@ -140,22 +156,9 @@
               </div>
             </div>
             <div >
-              <button class="btn btn-primary" type="submit">Submit</button>
+              <button id="submit-data" class="btn btn-primary" type="submit">Submit</button>
             </div>
           </form>
-          <div class="return_items">
-            <table>
-              <tr>
-            <td>Product Name:</td><td><input type="number" id="return-product-name-entry" readonly/></td>
-            </tr>
-            <tr>
-            <td>Quantity:</td><td><input type="text" id="return-qty-entry" readonly></td>
-            </tr>
-            <tr>
-            <td>Price:</td><td><input type="text" id="return-price-entry" readonly></td>
-            </div>
-            </table>
-          </div>
         </div>
       </div>
     </div>
@@ -172,12 +175,12 @@
     console.log("Data",prodData)
     $(document).ready(function(){
       
-      $('tbody').delegate('.productname', 'change', function () {
+      $('#product-section').delegate('.productname', 'change', function () {
         var  tr = $(this).parent().parent();
         tr.find('.qty').focus();
       })
 
-      $('tbody').delegate('.productname', 'change', function () {
+      $('#product-section').delegate('.productname', 'change', function () {
         var tr =$(this).parent().parent();
         var id = tr.find('.productname').val();
         var dataId = {'id':id};
@@ -193,7 +196,7 @@
         });
       });
 
-      $('tbody').delegate('.qty,.price,.dis', 'keyup', function () {
+      $('#product-section').delegate('.qty,.price', 'keyup', function () {
         var tr = $(this).parent().parent();
         var qty = tr.find('.qty').val();
         var price = tr.find('.price').val();
@@ -202,12 +205,26 @@
         total();
       });
 
+      $('.amount').on('keyup', function () {
+        total();
+      })
+
       function total(){
-        var total = 0;
-        $('.amount').each(function (i,e) {
-          var amount =$(this).val()-0;
-          total += amount;
+        var salesTotal = 0;
+        var returnsTotal = 0;
+       
+        $('#product-section .amount').each(function () {
+          var salesAmount =$(this).val()-0;
+          salesTotal += salesAmount;
+          console.log(salesAmount)
         })
+        $('#product-section .return-amount').each(function () {
+          var returnsAmount =$(this).val()-0;
+          returnsTotal += returnsAmount;
+          console.log("Retuens Amount",returnsTotal)
+        })
+        var total = salesTotal - returnsTotal;
+
         $('.total').html(total);
       }
 
@@ -230,6 +247,7 @@
           '<td><input type="text" name="qty[]" class="form-control qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
           '<td><input type="text" name="price[]" class="form-control price" ></td>\n' +
           '<td><input type="text" name="amount[]" class="form-control amount" ></td>\n' +
+          '<td><input type="hidden" name="reason[]" class="form-control reason" ></td>\n' +
           '<td><a   class="btn btn-danger remove"> <i class="fa fa-remove"></i></a></td>\n' +
           '</tr>';
         $('tbody').append(addRow);
@@ -365,7 +383,14 @@
 
       
       $('#return-button-add').on("click", function() {
-        $('#return-table').css('display','block')
+        /* $('#return-table').css('display','block') */
+        var returnTableLength = $('#return-product-body').find('tr').length;
+        //console.log("Length",returnTableLength);
+        if (returnTableLength <= 0) {
+          addReturnRow();
+          $('.return-total').html('');
+        }
+       
       });
 
       function updateAmount(row) { 
@@ -375,11 +400,11 @@
         row.find('.return-amount').val(amount.toFixed(2));
       }
 
-      $('#add-return-row').on("click",function() {
+      function addReturnRow() {
         var newRow = `<tr>
-                        <td>
+                        <td class="d-flex align-items-center" style="gap: 10px;"><b style="color: red;">R</b>
                           <select name="product_id[]" id="return-product-id" class="form-control return-product-id return-product-name">
-                              <option valu="">Select Product</option>
+                              <option value="">Select Return Product</option>
                               @foreach($products as $product)
                               <option value="{{$product->id}}">{{ $product -> name}}</option>
                               @endforeach
@@ -388,14 +413,48 @@
                         <td><input type="number" name="qty[]" class="form-control return-qty" ><input type="hidden" name="type[]" value="returns" class="form-control" ></></td>
                         <td><input type="number" name="price[]" class="form-control return-price" readonly></></td>
                         <td><input type="text" name="amount[]" class="form-control return-amount" ></></td>
+                        <td><input type="text" name="reason[]"  class="form-control return-reason" /></td>
                         <td><a class="btn btn-danger remove"><i class="fa fa-remove"></i></a></td>
                       </tr>`;
         $('#return-product-body').append(newRow);
+      }
+
+      $('#add-return-row').on("click",function() {
+        addReturnRow();
       });
 
       $('#return-product-body').on('click', '.remove', function() {
         $(this).closest('tr').remove()
       });
+
+      $('#return-entry-button').on("click", function () {
+        var returnSection = $('#return-product-body').find('tr');
+        returnSection.each(function () {
+          $(this).find('input').attr('readonly', true);
+              $(this).find('select').attr('disabled', true);
+              var selectedValue = $(this).val();
+              $(this).val(selectedValue);
+          })
+          $('#product-section').append(returnSection);
+          total();
+          addReturnRow();
+          $('.return-total').html('');
+          $('#returnForm').modal('hide');
+      });
+
+      $('#submit-data').on('click', function () {
+        $('#product-section').find('tr').each(function (){
+          $(this).find('select').attr('disabled', false);
+          $(this).find('input').attr('readonly', false);
+        });
+        setTimeout(()=>{
+          $('#product-section').find('tr').each(function (){
+          $(this).find('select').attr('disabled', true);
+          $(this).find('input').attr('readonly', true);
+        });
+        }, 3000)
+      });
+
 
     });
   </script>

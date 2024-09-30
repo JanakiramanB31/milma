@@ -48,22 +48,44 @@
                                         <th>Amount</th>
                                      </tr>
                                     </thead>
+                                    @php
+                                        $salesTotal = 0;
+                                        $returnsTotal = 0;
+                                        
+                                        foreach ($sales as $sale) {
+                                          if ($sale->type == "sales") {
+                                            $salesTotal += $sale->amount; 
+                                          } else { 
+                                            $returnsTotal += $sale->amount;
+                                          }
+                                        }
+                                        $total = $salesTotal - $returnsTotal; 
+                                      @endphp
                                     <tbody>
                                     <div style="display: none">
-                                        {{$total=0}}
+                                        {{$total}}
                                     </div>
                                     @foreach($sales as $sale)
-                                    @php
-                                    $price = $sale->type == "sales" ? "+" : "-"; 
-                                    @endphp
                                     <tr>
-                                        <td>{{$sale->product->name}}</td>
+                                        <td>
+                                          @if($sale->type == "sales")
+                                          @else
+                                          <b style="color: red;">R</b>
+                                          @endif
+                                          {{$sale->product->name}}
+                                        </td>
                                         <td>{{$sale->qty}}</td>
                                         <td>{{$sale->price}}</td>
                                        <!--  <td>{{$sale->dis}}%</td> -->
-                                        <td>{{$sale->amount}}</td>
+                                       <td>
+                                        @if($sale->type == "sales")
+                                        <b>&nbsp;&nbsp;&nbsp;</b>
+                                        @else
+                                          <b>(-)</b>
+                                        @endif
+                                        {{$sale->amount}}</td>
                                         <div style="display: none">
-                                            {{$total +=$sale->amount}}
+                                            {{$total }}
                                         </div>
                                      </tr>
                                     @endforeach

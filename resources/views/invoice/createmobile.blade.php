@@ -34,78 +34,91 @@
           <div class="tile-body">
             <form  method="POST" action="{{route('invoice.store')}}">
                 @csrf
-                <div class="form-group col-md-3">
-                    <label class="control-label">Customer Name</label>
-                    <select name="customer_id" class="form-control" id="customer_name">
-                        <option>Select Customer</option>
-                        @foreach($customers as $customer)
-                            <option name="customer_id" value="{{$customer->id}}">{{$customer->name}} </option>
-                        @endforeach
-                    </select> 
+                <div class="row">
+                  <div class="form-group col-md-5 ">
+                      <label class="control-label">Customer Name</label>
+                      <select name="customer_id" class="form-control" id="customer_name">
+                          <option>Select Customer</option>
+                          @foreach($customers as $customer)
+                              <option name="customer_id" value="{{$customer->id}}">{{$customer->name}} </option>
+                          @endforeach
+                      </select> 
+                  </div>
+                  <div class="form-group col-md-5">
+                      <label class="control-label">Date</label>
+                      <input name="date"  class="form-control datepicker"  value="<?php echo date('Y-m-d')?>" type="date" placeholder="Enter your email">
+                  </div>
                 </div>
-                <div class="form-group col-md-3">
-                    <label class="control-label">Date</label>
-                    <input name="date"  class="form-control datepicker"  value="<?php echo date('Y-m-d')?>" type="date" placeholder="Enter your email">
-                </div>
-
 
                 <div class="d-flex justify-content-end mb-3">
                   <button id="return-button-add" type="button" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#returnForm">
                     <i class="fa fa-plus"></i> Add Return Items
                   </button>
                 </div>
-            
-            <div class="table-responsive">
-              <table class="table table-bordered">
-                  <thead>
-                    <tr>
-                      <th scope="col">Product</th>
-                      <th scope="col">Quantity</th>
-                      <th scope="col">Price</th>
-                  <!--<th scope="col">Discount %</th> -->
-                      <th scope="col">Amount</th>
-                      <th scope="col">Reason</th>
-                      <th scope="col"><a class="addRow badge badge-success text-white"><i class="fa fa-plus"></i> Add Row</a></th>
-                    </tr>
-                  </thead>
-                  <tbody id="product-section">
-                    <tr>
-                      <td>
-                        <select name="product_id[]" class="form-control productname" >
-                          <option value = ''>Select Product</option>
-                          @foreach($products as $product)
-                          <option value="{{$product->id}}">{{$product->name}}</option>
-                          @endforeach
-                        </select>
-                      </td>
-                      <td><input type="text" name="qty[]" class="form-control qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>
-                      <td><input type="text" name="price[]" class="form-control price" ></td>
-                      <!-- <td><input type="text" name="dis[]" class="form-control dis" ></td> -->
-                      <td><input type="text" name="amount[]" class="form-control amount" ></td>
-                      <td><input type="hidden" name="reason[]"  class="form-control reason" /></td>
-                      <td><a   class="btn btn-danger remove"> <i class="fa fa-remove"></i></a></td>
-                    </tr>
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <!-- <td></td> -->
-                      <td><input type="hidden" name="total" id="total" class="form-control total" /></td>
-                      <td><b>Total</b></td>
-                      <td><b class="total"></b></td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                  </tfoot>
-              </table>
-            </div>
+                <div class="row">
+                  <div class="col-md-5 mb-5">
+                    <div class="table-responsive">
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <!-- <th scope="col">Product</th> -->
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Reason</th>
+                            <th scope="col"><a class="addRow badge badge-success text-white"><i class="fa fa-plus"></i> Add Row</a></th>
+                          </tr>
+                        </thead>
+                        <tbody id="product-section">
+                          <tr>
+                            <!-- <td>
+                              <select name="product_id[]" class="form-control productname" >
+                                <option value = ''>Select Product</option>
+                                @foreach($products as $product)
+                                <option value="{{$product->id}}">{{$product->name}}</option>
+                                @endforeach
+                              </select>
+                            </td> -->
+                            <td><input type="text" name="qty[]" class="form-control qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>
+                            <td><input type="text" name="price[]" class="form-control price" ></td>
+                            <td><input type="text" name="amount[]" class="form-control amount" ></td>
+                            <td><input type="hidden" name="reason[]"  class="form-control reason" /></td>
+                            <td><a   class="btn btn-danger remove"> <i class="fa fa-remove"></i></a></td>
+                          </tr>
+                        </tbody>
+                        <tfoot>
+                          <tr>
+                            <!-- <td></td> -->
+                            <td></td>
+                            <td><b>Total</b></td>
+                            <td><b class="total"></b></td>
+                            <td></td>
+                            <td></td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="col-md-7 mb-5">
+                    <select name="product_id[]" class="form-control productname mb-5">
+                      <option value = ''>Select Product</option>
+                      @foreach($products as $product)
+                      <option value="{{$product->id}}">{{$product->name}}</option>
+                      @endforeach
+                    </select>
+                    <div class="d-flex justify-content-between">
+                    @foreach($products as $product)
+                    <image src={{asset('images/product/' . $product->image)}} width='100px' height='100px'/>
+                    @endforeach
+                    </div>
+                  </div>
+                </div>
             <div class="modal fade" id="returnForm" tabindex="-1" aria-labelledby="returnFormLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered modal-lg">
                   <div class="modal-content ">
                       <div class="modal-header">
                         <h5 class="modal-title" id="returnFormLabel">Return Items</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn btn-close btn-danger " data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-remove"></i></button>
                       </div>
                       <div class="modal-body table-responsive">
                       <table  class="table table-bordered" >
@@ -243,7 +256,7 @@
         var total = salesTotal - returnsTotal;
 
         $('.total').html(total);
-        $('#total').val(total);
+        
       }
 
       $('.addRow').on('click', function () {

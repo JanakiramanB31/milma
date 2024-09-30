@@ -44,7 +44,6 @@
                                         <th>Product</th>
                                         <th>Qty</th>
                                         <th>Price</th>
-                                        <!-- <th>Discount</th> -->
                                         <th>Amount</th>
                                      </tr>
                                     </thead>
@@ -67,7 +66,7 @@
                                     </div>
                                     @foreach($sales as $sale)
                                     <tr>
-                                        <td>
+                                        <td >
                                           @if($sale->type == "sales")
                                           @else
                                           <b style="color: red;">R</b>
@@ -77,9 +76,9 @@
                                         <td>{{$sale->qty}}</td>
                                         <td>{{$sale->price}}</td>
                                        <!--  <td>{{$sale->dis}}%</td> -->
-                                       <td>
+                                       <td  style="text-align: start;">
                                         @if($sale->type == "sales")
-                                        <b>&nbsp;&nbsp;&nbsp;</b>
+                                        <b></b>
                                         @else
                                           <b>(-)</b>
                                         @endif
@@ -94,9 +93,22 @@
                                     <tr>
                                         <td></td>
                                         <td></td>
+                                        <td style="text-align: end;"><b>Total Amount</b></td>
+                                        <td style="text-align: start;"><b class="total">{{$total}}</b></td>
+                                    </tr>
+                                    <tr >
                                         <td></td>
-                                        <td><b>Total</b></td>
-                                        <td><b class="total">{{$total}}</b></td>
+                                        <td></td>
+                                        
+                                        <td style="text-align: end;"><b>Amount Paid</b></td>
+                                        <td  style="text-align: start;"><b class="total">{{$Amount->received_amt}}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        
+                                        <td></td>
+                                        <td style="text-align: end;"><b>Balance Amount</b></td>
+                                        <td  style="text-align: start;"><b class="total">{{$Amount->balance_amt}}</b></td>
                                     </tr>
                                     </tfoot>
                                 </table>

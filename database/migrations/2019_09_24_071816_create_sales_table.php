@@ -20,9 +20,12 @@ class CreateSalesTable extends Migration
             $table->string('type');
             $table->string('reason');
             $table->integer('qty');
+            $table->integer('user_id');
             $table->integer('price');
             $table->integer('dis');
             $table->integer('amount');
+            $table->integer('received_amt');
+            $table->integer('balance_amt');
             $table->foreign('invoice_id')
                 ->references('id')->on('invoices')
                 ->onDelete('cascade');

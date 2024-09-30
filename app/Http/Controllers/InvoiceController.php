@@ -8,8 +8,11 @@ use App\Sale;
 use App\Sales;
 use App\Supplier;
 use App\Invoice;
+use App\ProductPrice;
 use App\Returns;
+use App\StockInTransit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class InvoiceController extends Controller
@@ -41,7 +44,9 @@ class InvoiceController extends Controller
     public function create()
     {
         $customers = Customer::all();
-        $products = Product::all();
+        $products = Product::whereIn('id', function ($query) {
+          $query->select('product_id')->from('stock_in_transits');
+        })->get();
         return view('invoice.create', compact('customers','products'));
     }
 
@@ -59,6 +64,13 @@ class InvoiceController extends Controller
           $subQuery->select('id')->from('invoices') ->where('customer_id', $id);
         });
       })->get();
+      $productPricesAndIDs = ProductPrice::select('product_id','price')->whereIn('rate_id', function($query) use($id) {
+        $query->select('rate_id')->from('customers')->where('id', $id);
+      })->get();
+      
+      $prodIDsAndPrices= $productPricesAndIDs->pluck('price', 'product_id')->toArray();
+      $this->pr($prodIDsAndPrices);
+      //exit;
       $productIDs = $products->pluck('id')->toArray();
       $invoiceIDs = Invoice::where('customer_id', $id)->pluck('id')->toArray();
       
@@ -68,7 +80,7 @@ class InvoiceController extends Controller
       //$this->pr($quantityAndPrices);
       //exit;
 
-      return response()->json(['products' => $products,'quantityAndPrices' => $quantityAndPrices]);
+      return response()->json(['products' => $products,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices'=>$prodIDsAndPrices]);
      
      
     }
@@ -78,15 +90,16 @@ class InvoiceController extends Controller
       //exit;
         $request->validate([
             'customer_id' => 'required|integer',
-            'total'=>'required',
             'product_id' => 'required',
             'qty' => 'required',
             'price' => 'required',
             'amount' => 'required',
         ]);
+        $userId = Auth::id();
 
         $invoice = new Invoice();
         $invoice->customer_id = $request->customer_id;
+        $invoice->user_id = $userId;
         $invoice->total = 1000;
         $invoice->save();
 
@@ -95,8 +108,11 @@ class InvoiceController extends Controller
             $sale = new Sale();
             $sale->type = $request->type[$key];
             $sale->reason = $request->reason[$key];
+            $sale->user_id = $userId;
             $sale->qty = $request->qty[$key];
             $sale->price = $request->price[$key];
+            $sale->received_amt = $request->received_amt;
+            $sale->balance_amt = ($request->total)- ($request->received_amt);
             $sale->amount = $request->amount[$key];
             $sale->product_id = $request->product_id[$key];
             $sale->invoice_id = $invoice->id;
@@ -142,7 +158,9 @@ class InvoiceController extends Controller
     {
         $invoice = Invoice::findOrFail($id);
         $sales = Sale::where('invoice_id', $id)->get();
-        return view('invoice.show', compact('invoice','sales'));
+        $Amount = Sale::select('received_amt','balance_amt')->where('invoice_id', $id)->first();
+        //$this->pr($Amount);
+        return view('invoice.show', compact('invoice','sales','Amount'));
 
     }
 

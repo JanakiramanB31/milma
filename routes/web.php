@@ -52,5 +52,7 @@ Route::group(['middleware' => 'App\Http\Middleware\SuperAdminMiddleware', 'prefi
 Route::get('/', 'StockInTransitController@index')->name('home');
 Route::get('/home', 'StockInTransitController@index');
 Route::resource('invoice', 'InvoiceController');
+Route::post('invoice/getProducts/{id}', 'InvoiceController@getProducts')->name('invoice.getProducts');
+Route::post('invoice/storeReturns', 'InvoiceController@storeReturns')->name('invoice.storeReturns');
 Route::resource('stockintransit','StockInTransitController');
 Route::post('stockintransit/check', 'StockInTransitController@checkExistence')->name('stockintransit.check');

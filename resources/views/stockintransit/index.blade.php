@@ -2,7 +2,7 @@
 
 @extends('layouts.master')
 
-@section('title', 'Stock in Transit Entry | ')
+@section('title', 'Stock in Transit  | ')
 @section('content')
     @include('partials.header')
     @include('partials.sidebar')
@@ -10,16 +10,16 @@
     <main class="app-content">
         <div class="app-title">
             <div>
-                <h1><i class="fa fa-th-list"></i> Manage Stock in Transit Entry</h1>
+                <h1><i class="fa fa-th-list"></i> Manage Stock in Transits </h1>
             </div>
             <ul class="app-breadcrumb breadcrumb side">
                 <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
-                <li class="breadcrumb-item">Stock in Transit Entry</li>
-                <li class="breadcrumb-item active"><a href="#">Manage Stock in Transit Entry</a></li>
+                <li class="breadcrumb-item">Stock in Transit </li>
+                <li class="breadcrumb-item active"><a href="#">Manage Stock in Transits </a></li>
             </ul>
         </div>
         <div class="">
-            <a class="btn btn-primary" href="{{route('stockintransit.create')}}"><i class="fa fa-plus"></i> Add New Stock in Transit Entry</a>
+            <a class="btn btn-primary" href="{{route('stockintransit.create')}}"><i class="fa fa-plus"></i> Add New Stock in Transit </a>
         </div>
 
         <div class="row mt-2">

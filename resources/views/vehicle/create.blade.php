@@ -23,7 +23,7 @@
         @endif
 
         <div class="">
-            <a class="btn btn-primary" href="{{route('vehicle.index')}}"><i class="fa fa-edit"> </i>Manage Vehicle</a>
+            <a class="btn btn-primary" href="{{route('vehicle.index')}}"><i class="fa fa-edit"> </i>Manage Vehicles</a>
         </div>
         <div class="row mt-2">
 

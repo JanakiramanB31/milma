@@ -28,38 +28,6 @@
                 <div class="tile">
                     <h3 class="tile-title">Subcategory</h3>
                     @include('subcategory.form.form')
-                    <!-- <div class="tile-body">
-                        <form class="row" method="POST" action="{{route('subcategory.update', $subcategory->id)}}">
-                            @csrf
-                            @method('PUT')
-                            <div class="form-group col-md-8">
-                                <label class="control-label">Category Name</label>
-                                <select name="parent_id" class="form-control categoryname" >
-                                    <option>Select Category</option>
-                                    @foreach($categories as $category)
-                                    <option name="parent_id" value="{{$category->id}}" {{ ( $category->id == $subcategory->parent_id) ? 'selected' : '' }} >{{$category->name}}</option>
-                                    @endforeach
-                                </select>
-                                @error('name')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-8">
-                                <label class="control-label">Subcategory Name</label>
-                                <input name="name" value="{{ $subcategory->name }}" class="form-control @error('name') is-invalid @enderror" type="text" placeholder="Enter your name">
-                                @error('name')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-4 align-self-end">
-                                <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Update</button>
-                            </div>
-                        </form>
-                    </div> -->
                 </div>
             </div>
         </div>

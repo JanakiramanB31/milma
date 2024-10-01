@@ -31,8 +31,8 @@
                             <tr>
                                 <th>Product </th>
                                 <th>Model </th>
-                                <th>Serial</th>
-                                <th>Sales Price</th>
+                                <!-- <th>Serial</th>
+                                <th>Sales Price</th> -->
                                 <th>Purchase Price</th>
                                 <th>Supplier</th>
                                 <th>Image</th>
@@ -46,8 +46,8 @@
                                  <tr>
                                      <td>{{$add->product->name}}</td>
                                      <td>{{$add->product->model}}</td>
-                                     <td>{{$add->product->serial_number}}</td>
-                                     <td>{{$add->product->sales_price}}</td>
+                                     <!-- <td>{{$add->product->serial_number}}</td>
+                                     <td>{{$add->product->sales_price}}</td> -->
                                      <td>{{$add->price}}</td>
                                      <td>{{$add->supplier->name}}</td>
                                      <td><img width="40px" src="{{ asset('images/product/'.$add->product->image) }}"></td>

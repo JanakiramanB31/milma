@@ -32,24 +32,6 @@
                 <div class="tile">
                     <h3 class="tile-title">New Tax Form</h3>
                     @include('tax.form.form')
-                    <!-- <div class="tile-body">
-                        <form method="POST" action="{{route('tax.store')}}">
-                            @csrf
-                            <div class="form-group col-md-12">
-                                <label class="control-label">Tax Amount</label>
-                                <input name="name" class="form-control @error('name') is-invalid @enderror" type="text" placeholder="Enter Tax Amount">
-                                @error('name')
-                                <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-
-                            <div class="form-group col-md-4 align-self-end">
-                                <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Add Now</button>
-                            </div>
-                        </form>
-                    </div> -->
                 </div>
             </div>
         </div>

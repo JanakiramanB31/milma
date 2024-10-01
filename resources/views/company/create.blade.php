@@ -23,7 +23,7 @@
         @endif
 
         <div class="">
-            <a class="btn btn-primary" href="{{route('company.index')}}"><i class="fa fa-edit"> </i>Manage Company</a>
+            <a class="btn btn-primary" href="{{route('company.index')}}"><i class="fa fa-edit"> </i>Manage Companies</a>
         </div>
         <div class="row mt-2">
 

@@ -15,7 +15,7 @@
             <ul class="app-breadcrumb breadcrumb side">
                 <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
                 <li class="breadcrumb-item">Subcategory</li>
-                <li class="breadcrumb-item active"><a href="#">Manage Subcategory</a></li>
+                <li class="breadcrumb-item active"><a href="#">Manage Subcategories</a></li>
             </ul>
         </div>
         <div class="">

@@ -142,7 +142,7 @@ class VehicleController extends Controller
     public function update(Request $request, $id)
     {
       $request->validate([
-        'vehicle_number'=>'required|min:5|unique:vehicles',
+        'vehicle_number'=>'required|min:5',
         'make' => 'required|min:3',
         'model' => 'required|min:3',
         'vehicle_type_parent_id' => 'required',

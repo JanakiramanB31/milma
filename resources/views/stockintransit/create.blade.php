@@ -7,12 +7,12 @@
     <main class="app-content" style="min-width: 100vw;">
         <div class="app-title">
             <div>
-                <h1><i class="fa fa-edit"></i>Add Stock in Transit Entry</h1>
+                <h1><i class="fa fa-edit"></i>Add Stock in Transit</h1>
             </div>
             <ul class="app-breadcrumb breadcrumb">
                 <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
                 <li class="breadcrumb-item">Stock in Transit</li>
-                <li class="breadcrumb-item"><a href="#">Add Stock in Transit Entry</a></li>
+                <li class="breadcrumb-item"><a href="#">Add Stock in Transit</a></li>
             </ul>
         </div>
 
@@ -23,7 +23,7 @@
         @endif
 
         <div class="">
-            <a class="btn btn-primary" href="{{route('stockintransit.index')}}"><i class="fa fa-edit"> </i>Manage Stock in Transit</a>
+            <a class="btn btn-primary" href="{{route('stockintransit.index')}}"><i class="fa fa-edit"> </i>Manage Stock in Transits</a>
         </div>
         <div class="row mt-2" style="margin:-30px">
 
@@ -31,7 +31,7 @@
             <div class="col-md-12">
                 <div class="tile">
                 <div class="alert alert-danger" style="display: none;" id ="quantity-error"></div>
-                    <h3 class="tile-title">Stock in Transit Entry</h3>
+                    <h3 class="tile-title">Stock in Transit</h3>
                     <div class="tile-body">
                       <form method="POST" action="{{$submitURL}}">
                         @csrf
@@ -176,7 +176,7 @@
       }
     });
     
-    $('.quantity-input').on('input', function() {
+    /*  $('.quantity-input').on('input', function() {
       var sku = $(this).data('sku');
       var barcode = $(this).data('barcode');
       var quantityValue = $(this).val();
@@ -196,6 +196,35 @@
         $('#quantity-error').text('Quantity exceeds available stock of Available Quantity').show();
       } else {
         $('#add_button').prop('disabled', false);
+        $('#product-section1').hide();
+      }
+    }); */
+
+    $('.quantity-input').on('focus', function() {
+      var sku = $(this).data('sku');
+      var barcode = $(this).data('barcode');
+      var quantityValue = $(this).val();
+      var availableQuantity = $(this).data('available');
+      $('#product-section1').show();
+      $('#sku_code').text(sku);
+      $('#barcode').text(barcode);
+      if (quantityValue >= 0 && quantityValue <= availableQuantity) {
+        $('#quantity-error').css("display", "none");
+        $('#add_button').prop('disabled', false);
+        $('#product-section1').show();
+        $('#sku_code').text(sku);
+        $('#barcode').text(barcode);
+      } else if (quantityValue > availableQuantity) {
+        $('#add_button').prop('disabled', true);
+        $('#quantity-error').text('Quantity exceeds available stock of Available Quantity').show();
+      } else {
+        $('#add_button').prop('disabled', false);
+        $('#product-section1').hide();
+      }
+    }).on('blur', function() {
+      var quantityValue = $(this).val();
+      if (!quantityValue) {
+        $('#add_button').prop('disabled', true);
         $('#product-section1').hide();
       }
     });

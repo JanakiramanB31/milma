@@ -24,17 +24,17 @@
                                 <h2 class="page-header"><i class="fa fa-file"></i> I M S</h2>
                             </div>
                             <div class="col-6">
-                                <h5 class="text-right">Date: {{$invoice->created_at->format('Y-m-d')}}</h5>
+                                <h5 class="text-right">Date: {{$invoice->created_at->format('d-m-Y')}}</h5>
                             </div>
                         </div>
                         <div class="row invoice-info">
                             <div class="col-4">From
-                                <address><strong>CodeAstro</strong><br>Demo,<br>Address<br>codeastro.com</address>
+                                <address><strong>Milma</strong><br>Address<br>codeastro.com</address>
                             </div>
                             <div class="col-4">To
                                  <address><strong>{{$invoice->customer->name}}</strong><br>{{$invoice->customer->address}}<br>Phone: {{$invoice->customer->mobile}}<br>Email: {{$invoice->customer->email}}</address>
                              </div>
-                            <div class="col-4"><b>Invoice #{{1000+$invoice->id}}</b><br><br><b>Order ID:</b> 4F3S8J<br><b>Payment Due:</b> {{$invoice->created_at->format('Y-m-d')}}<br><b>Account:</b> 000-12345</div>
+                            <div class="col-4"><b>Invoice #{{1000+$invoice->id}}</b><br><br><b>Order ID:</b> 4F3S8J<br><b>Payment Due:</b> {{$invoice->created_at->format('d-m-Y')}}<br><b>Account:</b> 000-12345</div>
                         </div>
                         <div class="row">
                             <div class="col-12 table-responsive">
@@ -44,7 +44,7 @@
                                         <th>Product</th>
                                         <th>Qty</th>
                                         <th>Price</th>
-                                        <th>Amount</th>
+                                        <th >Amount</th>
                                      </tr>
                                     </thead>
                                     @php
@@ -73,16 +73,17 @@
                                           @endif
                                           {{$sale->product->name}}
                                         </td>
-                                        <td>{{$sale->qty}}</td>
-                                        <td>{{$sale->price}}</td>
+                                        <td>{{$sale->qty }}</td>
+                                        <td>${{ number_format($sale->price, 2) }}</td>
                                        <!--  <td>{{$sale->dis}}%</td> -->
                                        <td  style="text-align: start;">
                                         @if($sale->type == "sales")
+                                        
                                         <b></b>
                                         @else
                                           <b>(-)</b>
                                         @endif
-                                        {{$sale->amount}}</td>
+                                        ${{ number_format($sale->qty * $sale->price, 2) }}</td>
                                         <div style="display: none">
                                             {{$total }}
                                         </div>
@@ -94,21 +95,21 @@
                                         <td></td>
                                         <td></td>
                                         <td style="text-align: end;"><b>Total Amount</b></td>
-                                        <td style="text-align: start;"><b class="total">{{$total}}</b></td>
+                                        <td style="text-align: start;"><b class="total">${{ number_format($amount->total_amount, 2) }}</b></td>
                                     </tr>
                                     <tr >
                                         <td></td>
                                         <td></td>
                                         
                                         <td style="text-align: end;"><b>Amount Paid</b></td>
-                                        <td  style="text-align: start;"><b class="total">{{$Amount->received_amt}}</b></td>
+                                        <td  style="text-align: start;"><b class="total">${{ number_format($amount->received_amt, 2) }}</b></td>
                                     </tr>
                                     <tr>
                                         <td></td>
                                         
                                         <td></td>
                                         <td style="text-align: end;"><b>Balance Amount</b></td>
-                                        <td  style="text-align: start;"><b class="total">{{$Amount->balance_amt}}</b></td>
+                                        <td  style="text-align: start;"><b class="total">${{ number_format($amount->balance_amt, 2) }}</b></td>
                                     </tr>
                                     </tfoot>
                                 </table>

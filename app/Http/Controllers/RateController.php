@@ -92,7 +92,7 @@ class RateController extends Controller
     {
         $request->validate([
             'name' => 'required|min:3',
-            'type' => 'required|min:2|unique:rates|regex:/^[a-zA-Z0-9]+$/',
+            'type' => 'required|min:2|unique:rates,type,' . $id . '|regex:/^[a-zA-Z0-9]+$/',
             'description' => 'required'
         ]);
 

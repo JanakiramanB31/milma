@@ -32,24 +32,6 @@
                 <div class="tile">
                     <h3 class="tile-title">Category</h3>
                     @include('category.form.form')
-                   <!--  <div class="tile-body">
-                        <form method="POST" action="{{route('category.store')}}">
-                            @csrf
-                            <div class="form-group col-md-12">
-                                <label class="control-label">Category Name</label>
-                                <input name="name" class="form-control @error('name') is-invalid @enderror" type="text" placeholder="Enter Category Name">
-                                @error('name')
-                                <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-
-                            <div class="form-group col-md-4 align-self-end">
-                                <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-plus"></i>Create</button>
-                            </div>
-                        </form>
-                    </div> -->
                 </div>
             </div>
         </div>

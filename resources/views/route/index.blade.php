@@ -10,12 +10,12 @@
     <main class="app-content">
         <div class="app-title">
             <div>
-                <h1><i class="fa fa-th-list"></i> Manage Route</h1>
+                <h1><i class="fa fa-th-list"></i> Manage Routes</h1>
             </div>
             <ul class="app-breadcrumb breadcrumb side">
                 <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
                 <li class="breadcrumb-item">Route</li>
-                <li class="breadcrumb-item active"><a href="#">Manage Route</a></li>
+                <li class="breadcrumb-item active"><a href="#">Manage Routes</a></li>
             </ul>
         </div>
         <div class="">

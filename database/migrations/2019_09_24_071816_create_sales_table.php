@@ -23,9 +23,7 @@ class CreateSalesTable extends Migration
             $table->integer('user_id');
             $table->integer('price');
             $table->integer('dis');
-            $table->integer('amount');
-            $table->integer('received_amt');
-            $table->integer('balance_amt');
+            $table->float('total_amount');
             $table->foreign('invoice_id')
                 ->references('id')->on('invoices')
                 ->onDelete('cascade');

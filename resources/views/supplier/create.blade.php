@@ -23,7 +23,7 @@
         @endif
 
         <div class="">
-            <a class="btn btn-primary" href="{{route('supplier.index')}}"><i class="fa fa-edit"></i> Manage Supplier</a>
+            <a class="btn btn-primary" href="{{route('supplier.index')}}"><i class="fa fa-edit"></i> Manage Suppliers</a>
         </div>
         <div class="row mt-2">
 
@@ -36,7 +36,7 @@
                             @csrf
                             <div class="form-group col-md-12">
                                 <label class="control-label">Supplier Name</label>
-                                <input name="name" class="form-control @error('name') is-invalid @enderror" type="text" placeholder="Enter Name of Supplier">
+                                <input name="name" class="form-control @error('name') is-invalid @enderror" type="text" value="{{old('name')}}" placeholder="Enter Name of Supplier">
                                 @error('name')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -45,7 +45,7 @@
                             </div>
                             <div class="form-group col-md-12">
                                 <label class="control-label">Contact</label>
-                                <input name="mobile" class="form-control @error('mobile') is-invalid @enderror" type="text" placeholder="Enter Contact Number of Supplier">
+                                <input name="mobile" class="form-control @error('mobile') is-invalid @enderror" type="text" value="{{old('mobile')}}" placeholder="Enter Contact Number of Supplier">
                                 @error('mobile')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -54,7 +54,7 @@
                             </div>
                             <div class="form-group col-md-12">
                                 <label class="control-label">Address</label>
-                                <textarea name="address" class="form-control @error('address') is-invalid @enderror"></textarea>
+                                <textarea name="address" class="form-control @error('address') is-invalid @enderror">{{old('address')}}</textarea>
                                 @error('address')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -63,7 +63,7 @@
                             </div>
                             <div class="form-group col-md-12">
                                 <label class="control-label">Details</label>
-                                <textarea name="details" class="form-control @error('details') is-invalid @enderror"></textarea>
+                                <textarea name="details" class="form-control @error('details') is-invalid @enderror">{{old('details')}}</textarea>
                                 @error('details')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -73,7 +73,7 @@
 
                             <div class="form-group col-md-12">
                                 <label class="control-label">Previous Credit Balance</label>
-                                <input name="previous_balance" class="form-control @error('previous_balance') is-invalid @enderror" type="text" placeholder="Enter Unit Name">
+                                <input name="previous_balance" class="form-control @error('previous_balance') is-invalid @enderror" value="{{old('previous_balance')}}" type="text" placeholder="Enter Unit Name">
                                 @error('previous_balance')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>

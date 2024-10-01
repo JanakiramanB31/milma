@@ -78,11 +78,11 @@
                           @endforeach
                         </select>
                       </td>
-                      <td><input type="text" name="qty[]" class="form-control qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>
-                      <td><input type="text" name="price[]" class="form-control price" ></td>
+                      <td><input type="number" name="qty[]"  class="form-control qty" step="0.01" min="0"><input type="hidden" name="type[]" value="sales" class="form-control" ></td>
+                      <td><input type="number" name="price[]"  class="form-control price" step="0.01" min="0"></td>
                       <!-- <td><input type="text" name="dis[]" class="form-control dis" ></td> -->
-                      <td><input type="text" name="amount[]" class="form-control amount" ></td>
-                      <td><input type="hidden" name="reason[]"  class="form-control reason" /></td>
+                      <td><input type="number" name="amount[]"  class="form-control amount" step="0.01" min="0"></td>
+                      <td><input type="hidden" name="reason[]" class="form-control reason" /></td>
                       <td><a   class="btn btn-danger remove"> <i class="fa fa-remove"></i></a></td>
                     </tr>
                   </tbody>
@@ -93,7 +93,7 @@
                       <!-- <td></td> -->
                       <td><input type="hidden" name="total" id="total" class="form-control total" /></td>
                       <td><b>Total</b></td>
-                      <td><b class="total"></b></td>
+                      <td><b class="currency"></b><b class="total"></b></td>
                       <td></td>
                       <td></td>
                     </tr>
@@ -130,9 +130,9 @@
                                 @endforeach
                               </select>
                             </td>
-                            <td><input type="text" name="qty[]" class="form-control return-qty" ><input type="hidden" name="type[]" value="returns" class="form-control" ></td>
-                            <td><input type="text" name="price[]" class="form-control return-price" readonly></td>
-                            <td><input type="text" name="amount[]" class="form-control return-amount" ></td>
+                            <td><input type="number" name="qty[]"  class="form-control return-qty" ><input type="hidden" name="type[]" value="returns" class="form-control" ></td>
+                            <td><input type="number" name="price[]"  class="form-control return-price" readonly></td>
+                            <td><input type="number" name="amount[]"  class="form-control return-amount" ></td>
                             <td><input type="text" name="reason[]"  class="form-control return-reason" /></td>
                             <td><a   class="btn btn-danger remove"> <i class="fa fa-remove"></i></a></td>
                           </tr>
@@ -142,7 +142,7 @@
                             <td></td>
                             <td></td>
                             <td><b>Total</b></td>
-                            <td><b class="return-total"></b></td>
+                            <td><b class="return-currency"></b><b class="return-total"></b></td>
                             <td></td>
                             <td></td>
                           </tr>
@@ -166,7 +166,7 @@
                         <h3 class="modal-title text-center" id="amountFormLabel">Enter Received Amount</h3>
                       </div>
                       <div class="modal-body d-flex justify-content-center">
-                        <input type="number" name="received_amt" class="form-control-md" style=" padding:20px;font-size:20px;"/>
+                        <input id="received_amt" type="number"  name="received_amt" class="form-control-md" style=" padding:20px;font-size:20px;" step="0.01" min="0"/>
                       </div>
                       <div class="modal-footer">
                           <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
@@ -204,7 +204,7 @@
         var prodPrices = prodData.productIdsAndPrices;
         console.log("DATA ID :", id);
         console.log("Price :", prodPrices[id]);
-        tr.find('.price').val(prodPrices[id]);
+        tr.find('.price').val(prodPrices[id].toFixed(2));
         /* $.ajax({
           type    : 'GET',
           url     :'{!! URL::route('findPrice') !!}',
@@ -222,7 +222,7 @@
         var qty = tr.find('.qty').val();
         var price = tr.find('.price').val();
         var amount = (qty * price);
-        tr.find('.amount').val(amount);
+        tr.find('.amount').val(amount.toFixed(2));
         total();
       });
 
@@ -245,9 +245,9 @@
           console.log("Retuens Amount",returnsTotal)
         })
         var total = salesTotal - returnsTotal;
-
-        $('.total').html(total);
-        $('#total').val(total);
+        $('.currency').html("$");
+        $('.total').html(total.toFixed(2));
+        $('#total').val(total.toFixed(2));
       }
 
       $('.addRow').on('click', function () {
@@ -266,9 +266,9 @@
           '<option value="{{$product->id}}">{{$product->name}}</option>\n' +
           '@endforeach\n' +
           '</select></td>\n' +
-          '<td><input type="text" name="qty[]" class="form-control qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
-          '<td><input type="text" name="price[]" class="form-control price" ></td>\n' +
-          '<td><input type="text" name="amount[]" class="form-control amount" ></td>\n' +
+          '<td><input type="number"  name="qty[]" class="form-control qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
+          '<td><input type="number"  name="price[]" class="form-control price" ></td>\n' +
+          '<td><input type="number"  name="amount[]" class="form-control amount" ></td>\n' +
           '<td><input type="hidden" name="reason[]" class="form-control reason" ></td>\n' +
           '<td><a   class="btn btn-danger remove"> <i class="fa fa-remove"></i></a></td>\n' +
           '</tr>';
@@ -386,12 +386,12 @@
         var qty = tr.find('.return-qty').val();
         var price = tr.find('.return-price').val();
         var amount = (qty * price);
-        tr.find('.return-amount').val(amount);
+        tr.find('.return-amount').val(amount.toFixed(2));
         returnTotal();
         $('#return-entry-button').on("click", function(){
           $('#return-product-name-entry').val();
-          $('#return-qty-entry').val(qty);
-          $('#return-price-entry').val(price);
+          $('#return-qty-entry').val(qty.toFixed(2));
+          $('#return-price-entry').val(price.toFixed(2));
         });
       });
 
@@ -401,7 +401,8 @@
           var amount =$(this).val()-0;
           total += amount;
         })
-        $('.return-total').html(total);
+        $('.return-currency').html("$");
+        $('.return-total').html(total.toFixed(2));
       }
 
       
@@ -411,7 +412,7 @@
         //console.log("Length",returnTableLength);
         if (returnTableLength <= 0) {
           addReturnRow();
-          $('.return-total').html('');
+          $('.return-total').html(''.toFixed(2));
         }
        
       });
@@ -433,9 +434,9 @@
                               @endforeach
                           </select>
                         </td>
-                        <td><input type="number" name="qty[]" class="form-control return-qty" ><input type="hidden" name="type[]" value="returns" class="form-control" ></></td>
-                        <td><input type="number" name="price[]" class="form-control return-price" readonly></></td>
-                        <td><input type="text" name="amount[]" class="form-control return-amount" ></></td>
+                        <td><input type="number"  name="qty[]" class="form-control return-qty" ><input type="hidden" name="type[]" value="returns" class="form-control" ></></td>
+                        <td><input type="number"  name="price[]" class="form-control return-price" readonly></></td>
+                        <td><input type="number"  name="amount[]" class="form-control return-amount" ></></td>
                         <td><input type="text" name="reason[]"  class="form-control return-reason" /></td>
                         <td><a class="btn btn-danger remove"><i class="fa fa-remove"></i></a></td>
                       </tr>`;
@@ -461,7 +462,7 @@
           $('#product-section').append(returnSection);
           total();
           addReturnRow();
-          $('.return-total').html('');
+          $('.return-total').html(''.toFixed(2));
           $('#returnForm').modal('hide');
       });
 
@@ -477,8 +478,7 @@
         });
         }, 3000)
       });
-
-
+      
     });
   </script>
 @endpush

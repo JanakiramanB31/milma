@@ -68,8 +68,8 @@ class ProductController extends Controller
     public function store(Request $request)
     {
 
-    //   $this->pr($request->all());
-    //   exit;
+      // $this->pr($request->all());
+      // exit;
          $request->validate([
             'name' => 'required|min:3|unique:products|regex:/^[a-zA-Z ]+$/',
             'brand_name' => 'required',
@@ -87,6 +87,8 @@ class ProductController extends Controller
             'tax_id' => 'required',
             'moq_number' => 'required|numeric|min:1',
             'rate_id' => 'required',
+            'sit_status'=> 'required',
+            'status' => 'required'
          ]);
 
          $supplierIds = [];
@@ -135,6 +137,8 @@ class ProductController extends Controller
         // }
 
         if ($request->hasFile('image')) {
+          echo "working";
+          exit;
             $image = $request->file('image');
             $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();        
             $image->move(public_path('images/product/'), $imageName);
@@ -226,6 +230,8 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
+      $this->pr($request->all());
+      //exit;
       $request->validate([
         'name' => 'required|min:3|unique:products,name,' . $id . '|regex:/^[a-zA-Z ]+$/',
         'brand_name' => 'required',
@@ -238,7 +244,7 @@ class ProductController extends Controller
         'stock_type' => 'required',
         'status' => 'required',
         'sit_status' => 'required',
-        'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'image' => 'file|mimes:jpeg,png,jpg,gif,svg|max:2048',
         'tax_id' => 'required',
         'moq_number' => 'required|numeric|min:1',
       ]);

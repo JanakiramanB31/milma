@@ -134,7 +134,7 @@ class StockInTransitController extends Controller
       //$this->pr($stockInTransit);
       $routes = Route::all();
       $vehicles = Vehicle::all();
-      $products = Product::all();
+      $products = Product::where('sit_status',1)->where('status',1)->get();
       $userID = Auth::id();
       $existUserID = $stockInTransit->user_id;
       $users = User::where('role', 'sales')->get(); 

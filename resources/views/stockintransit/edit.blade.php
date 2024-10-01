@@ -1,18 +1,18 @@
 @extends('layouts.master')
 
-@section('title', 'Stock in Transit Entry | ')
+@section('title', 'Stock in Transit  | ')
 @section('content')
     @include('partials.header')
     @include('partials.sidebar')
     <main class="app-content">
         <div class="app-title">
             <div>
-                <h1><i class="fa fa-edit"></i> Edit Stock in Transit Entry</h1>
+                <h1><i class="fa fa-edit"></i> Edit Stock in Transit </h1>
             </div>
             <ul class="app-breadcrumb breadcrumb">
                 <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
-                <li class="breadcrumb-item">Stock in Transit Entry</li>
-                <li class="breadcrumb-item"><a href="#">Edit Stock in Transit Entry</a></li>
+                <li class="breadcrumb-item">Stock in Transit </li>
+                <li class="breadcrumb-item"><a href="#">Edit Stock in Transit </a></li>
             </ul>
         </div>
 
@@ -27,7 +27,7 @@
             <div class="col-md-12">
                 <div class="tile">
                   <div class="alert alert-danger" style="display: none;" id ="quantity-error"></div>
-                    <h3 class="tile-title">Edit Stock in Transit Entry</h3>
+                    <h3 class="tile-title">Edit Stock in Transit </h3>
                     <div class="tile-body">
                       <form method="POST" action="{{$submitURL}}">
                         @csrf

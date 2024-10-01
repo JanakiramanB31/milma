@@ -152,7 +152,7 @@
           <label class="custom-control-label" for="status2">Inactive</label>
         </div>
       </div>
-      @error('tax_id')
+      @error('status')
       <span class="invalid-feedback" role="alert">
         <strong>{{ $message }}</strong>
       </span>

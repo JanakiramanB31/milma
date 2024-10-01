@@ -112,7 +112,9 @@ class InvoiceController extends Controller
         $invoice = new Invoice();
         $invoice->customer_id = $request->customer_id;
         $invoice->user_id = $userId;
-        $invoice->total = 1000;
+        $invoice->received_amt = $request->received_amt;
+        $invoice->balance_amt = ($request->total)- ($request->received_amt);
+        $invoice->total_amount = $request->total;
         $invoice->save();
 
         foreach ( $request->product_id as $key => $product_id){
@@ -123,9 +125,7 @@ class InvoiceController extends Controller
             $sale->user_id = $userId;
             $sale->qty = $request->qty[$key];
             $sale->price = $request->price[$key];
-            $sale->received_amt = $request->received_amt;
-            $sale->balance_amt = ($request->total)- ($request->received_amt);
-            $sale->amount = $request->amount[$key];
+            $sale->total_amount = $request->total;
             $sale->product_id = $request->product_id[$key];
             $sale->invoice_id = $invoice->id;
             $sale->save();
@@ -174,9 +174,9 @@ class InvoiceController extends Controller
     {
         $invoice = Invoice::findOrFail($id);
         $sales = Sale::where('invoice_id', $id)->get();
-        $Amount = Sale::select('received_amt','balance_amt')->where('invoice_id', $id)->first();
+        $amount = Invoice::select('total_amount','received_amt','balance_amt')->where('id', $id)->first();
         //$this->pr($Amount);
-        return view('invoice.show', compact('invoice','sales','Amount'));
+        return view('invoice.show', compact('invoice','sales','amount'));
 
     }
 

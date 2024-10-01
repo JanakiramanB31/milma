@@ -146,11 +146,11 @@
           <label class="radio control-label">Status</label>
               <div class="controls">
                   <div class="custom-control custom-radio custom-control-inline">
-                      <input type="radio" id="status1" name="status" class="custom-control-input" value="1" {{ ($customer->status=="1")? "checked" : "" }}>
+                      <input type="radio" id="status1" name="status" class="custom-control-input" value="1" {{ (old('status', $customer->status)=="1")? "checked" : "" }}>
                       <label class="custom-control-label" for="status1" >Active</label>
                   </div>
                   <div class="custom-control custom-radio custom-control-inline">
-                      <input type="radio" id="status2" name="status" class="custom-control-input" value="0" {{ ($customer->status=="0")? "checked" : "" }}>
+                      <input type="radio" id="status2" name="status" class="custom-control-input" value="0" {{ (old('status', $customer->status)=="0")? "checked" : "" }}>
                       <label class="custom-control-label" for="status2">Inactive</label>
                   </div>
               </div>

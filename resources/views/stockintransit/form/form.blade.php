@@ -140,7 +140,7 @@
     });
 
 
-    $('.quantity-input').on('input', function() {
+    $('.quantity-input').on('click', function() {
       var sku = $(this).data('sku');
       var barcode = $(this).data('barcode');
       var quantityValue = $(this).val();

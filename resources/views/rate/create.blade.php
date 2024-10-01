@@ -23,7 +23,7 @@
         @endif
 
         <div class="">
-            <a class="btn btn-primary" href="{{route('rate.index')}}"><i class="fa fa-edit"></i> Manage Rate</a>
+            <a class="btn btn-primary" href="{{route('rate.index')}}"><i class="fa fa-edit"></i> Manage Rates</a>
         </div>
         <div class="row mt-2">
 
@@ -36,7 +36,7 @@
                             @csrf
                             <div class="form-group col-md-12">
                                 <label class="control-label">Name</label>
-                                <input name="name" class="form-control @error('name') is-invalid @enderror" type="text" placeholder="Enter Name of Rate">
+                                <input name="name" class="form-control @error('name') is-invalid @enderror" value = "{{old('name')}}" type="text" placeholder="Enter Name of Rate">
                                 @error('name')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -45,7 +45,7 @@
                             </div>
                             <div class="form-group col-md-12">
                                 <label class="control-label">Description</label>
-                                <textarea name="description" class="form-control @error('description') is-invalid @enderror" placeholder="Rate Description"></textarea>
+                                <textarea name="description" class="form-control @error('description') is-invalid @enderror"  placeholder="Rate Description">{{old('description')}}</textarea>
                                 @error('description')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -54,7 +54,7 @@
                             </div>
                             <div class="form-group col-md-12">
                                 <label class="control-label">Type</label>
-                                <input name="type" class="form-control @error('type') is-invalid @enderror" type="text" placeholder="Enter Rate Type">
+                                <input name="type" class="form-control @error('type') is-invalid @enderror" value = "{{old('type')}}" type="text" placeholder="Enter Rate Type">
                                 @error('type')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>

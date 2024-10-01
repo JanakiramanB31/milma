@@ -10,16 +10,16 @@
     <main class="app-content">
         <div class="app-title">
             <div>
-                <h1><i class="fa fa-th-list"></i> Manage Rate</h1>
+                <h1><i class="fa fa-th-list"></i> Manage Rates</h1>
             </div>
             <ul class="app-breadcrumb breadcrumb side">
                 <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
                 <li class="breadcrumb-item">Rate</li>
-                <li class="breadcrumb-item active"><a href="#">Manage Rate</a></li>
+                <li class="breadcrumb-item active"><a href="#">Manage Rates</a></li>
             </ul>
         </div>
         <div class="">
-            <a class="btn btn-primary" href="{{route('rate.create')}}"><i class="fa fa-plus"></i> Add Rate</a>
+            <a class="btn btn-primary" href="{{route('rate.create')}}"><i class="fa fa-plus"></i> Add Rates</a>
         </div>
 
         <div class="row mt-2">

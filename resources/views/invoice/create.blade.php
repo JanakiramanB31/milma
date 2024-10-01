@@ -105,7 +105,7 @@
                   <div class="modal-content ">
                       <div class="modal-header">
                         <h5 class="modal-title" id="returnFormLabel">Return Items</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn btn-danger" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-remove"></i></button>
                       </div>
                       <div class="modal-body table-responsive">
                       <table  class="table table-bordered" >
@@ -189,6 +189,7 @@
  
   <script type="text/javascript">
     var prodData= '';
+    var cusID = '' ;
     console.log("Data",prodData)
     $(document).ready(function(){
       
@@ -200,8 +201,11 @@
       $('#product-section').delegate('.productname', 'change', function () {
         var tr =$(this).parent().parent();
         var id = tr.find('.productname').val();
-        var dataId = {'id':id};
-        $.ajax({
+        var prodPrices = prodData.productIdsAndPrices;
+        console.log("DATA ID :", id);
+        console.log("Price :", prodPrices[id]);
+        tr.find('.price').val(prodPrices[id]);
+        /* $.ajax({
           type    : 'GET',
           url     :'{!! URL::route('findPrice') !!}',
 
@@ -209,8 +213,8 @@
           data: {"_token": $('meta[name="csrf-token"]').attr('content'), 'id':id},
           success:function (data) {
               tr.find('.price').val(data.sales_price);
-          }
-        });
+          } */
+       /*  }); */
       });
 
       $('#product-section').delegate('.qty,.price', 'keyup', function () {
@@ -284,6 +288,7 @@
         
         var customerID = $(this).val();
         console.log(customerID);
+        cusID = customerID;
         if(customerID) {
           $.ajax({
             url: '{{ route("invoice.getProducts",":id") }}'.replace(':id', customerID),

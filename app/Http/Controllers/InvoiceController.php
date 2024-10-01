@@ -43,10 +43,28 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        $customers = Customer::all();
-        $products = Product::whereIn('id', function ($query) {
-          $query->select('product_id')->from('stock_in_transits');
-        })->get();
+      $userID = Auth::id();
+      $today = now()->toDateString();
+      
+      //$this->pr($routeID);
+      //$this->pr($VehicleID);
+      //exit;
+        $customers = Customer::where('status',1)->get();
+        if ($userID == 1) {
+
+          //echo "USERId : ", $userID;
+          $products = Product::where('status',1)->get();
+         
+        } else {
+          //echo "USERId : ", $userID;
+          $routeID = StockInTransit::select('route_id')->where('user_id',$userID)->whereDate('created_at', $today)->first();
+          $VehicleID = StockInTransit::select('vehicle_id')->where('user_id',$userID)->whereDate('created_at', $today)->first();
+          $products = Product::where('status',1)->whereIn('id', function ($query) use( $userID, $routeID, $VehicleID) {
+            $query->select('product_id')->where('user_id',$userID)->where('route_id',$routeID)->where('vehicle_id',$VehicleID)->from('stock_in_transits');
+          })->get();
+        }
+       // $this->pr($products);
+     // exit;
         return view('invoice.create', compact('customers','products'));
     }
 
@@ -59,7 +77,7 @@ class InvoiceController extends Controller
     public function getProducts(Request $request, $id) {
      // $this->pr($request->all());
       //return response()->json(['message' => 'No Data'],200);
-      $products = Product::select('id','name')->whereIn('id', function($query) use ($id) {
+      $products = Product::select('id','name')->where('status',1)->whereIn('id', function($query) use ($id) {
         $query->select('product_id')->from('sales')->whereIn('invoice_id', function($subQuery) use ($id) {
           $subQuery->select('id')->from('invoices') ->where('customer_id', $id);
         });
@@ -69,7 +87,7 @@ class InvoiceController extends Controller
       })->get();
       
       $prodIDsAndPrices= $productPricesAndIDs->pluck('price', 'product_id')->toArray();
-      $this->pr($prodIDsAndPrices);
+      //$this->pr($prodIDsAndPrices);
       //exit;
       $productIDs = $products->pluck('id')->toArray();
       $invoiceIDs = Invoice::where('customer_id', $id)->pluck('id')->toArray();
@@ -80,8 +98,8 @@ class InvoiceController extends Controller
       //$this->pr($quantityAndPrices);
       //exit;
 
-      return response()->json(['products' => $products,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices'=>$prodIDsAndPrices]);
-     
+      return response()->json(['products' => $products,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices' => $prodIDsAndPrices]);
+      
      
     }
     public function store(Request $request)
@@ -143,9 +161,13 @@ class InvoiceController extends Controller
     }
     }
 
-    public function findPrice(Request $request){
-        $data = DB::table('products')->select('sales_price')->where('id', $request->id)->first();
-        return response()->json($data);
+    public function findPrice(Request $request, $id){
+      $productPricesAndIDs = ProductPrice::select('product_id','price')->whereIn('rate_id', function($query) use($id) {
+        $query->select('rate_id')->from('customers')->where('id', $id);
+      })->get();
+      $prodIDsAndPrices= $productPricesAndIDs->pluck('price', 'product_id')->toArray();
+       // $data = DB::table('products')->select('sales_price')->where('id', $request->id)->first();
+        return response()->json($prodIDsAndPrices);
     }
 
     /**
@@ -172,7 +194,7 @@ class InvoiceController extends Controller
      */
     public function edit($id)
     {
-        $customers = Customer::all();
+        $customers = Customer::where('status',1)->get();
         $products = Product::orderBy('id', 'DESC')->get();
         $invoice = Invoice::findOrFail($id);
         $sales = Sale::where('invoice_id', $id)->get();

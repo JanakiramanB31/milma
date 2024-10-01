@@ -18,7 +18,7 @@ class CustomerController extends Controller
 
     public function index()
     {
-        $customers = Customer::all();
+        $customers = Customer::where('status',1)->get();
         $customerTypes = [
           ['id' => 1, 'name' => 'WholeSale'],
           ['id' => 2, 'name' => 'Retailer'],

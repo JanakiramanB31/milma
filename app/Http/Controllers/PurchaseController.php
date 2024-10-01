@@ -127,7 +127,7 @@ foreach ($request->product_id as $key => $productId) {
      */
     public function edit($id)
     {
-        $customers = Customer::all();
+        $customers = Customer::where('status',1)->get();
         $products = Product::orderBy('id', 'DESC')->get();
         $invoice = Invoice::findOrFail($id);
         $sales = Sale::where('invoice_id', $id)->get();

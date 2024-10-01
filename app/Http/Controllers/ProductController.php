@@ -22,7 +22,7 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products = Product::all();
+        $products = Product::where('status',1)->get();
         $additional = ProductSupplier::all();
         //$this->pr($additional->toArray());
         //$this->pr($additional->products->toArray());

@@ -67,8 +67,9 @@ class StockInTransitController extends Controller
           'route_id' => 'required|exists:routes,id', 
           'vehicle_id' => 'required|exists:vehicles,id'
         ]);
+        $userID = Auth::id(); 
         $today = now()->toDateString();
-        $exists = StockInTransit::where('route_id', $request->route_id)->where('vehicle_id', $request->vehicle_id)->whereDate('created_at', $today)->exists();
+        $exists = StockInTransit::where('route_id', $request->route_id)->where('vehicle_id', $request->vehicle_id)->where('user_id',$userID)->whereDate('created_at', $today)->exists();
         if ($exists) {
           $stockInTransitID = StockInTransit::where('route_id', $request->route_id)->where('vehicle_id', $request->vehicle_id)->whereDate('created_at', $today)->first();
           return response()->json(['error' => 'Record for today already exists.', "ID" => $stockInTransitID->id], 409);

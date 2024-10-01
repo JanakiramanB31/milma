@@ -43,28 +43,22 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-      $userID = Auth::id();
-      $today = now()->toDateString();
+        $userID = Auth::id();
+        $today = now()->toDateString();
       
-      //$this->pr($routeID);
-      //$this->pr($VehicleID);
-      //exit;
         $customers = Customer::where('status',1)->get();
         if ($userID == 1) {
-
           //echo "USERId : ", $userID;
           $products = Product::where('status',1)->get();
          
         } else {
-          //echo "USERId : ", $userID;
-          $routeID = StockInTransit::select('route_id')->where('user_id',$userID)->whereDate('created_at', $today)->first();
-          $VehicleID = StockInTransit::select('vehicle_id')->where('user_id',$userID)->whereDate('created_at', $today)->first();
-          $products = Product::where('status',1)->whereIn('id', function ($query) use( $userID, $routeID, $VehicleID) {
-            $query->select('product_id')->where('user_id',$userID)->where('route_id',$routeID)->where('vehicle_id',$VehicleID)->from('stock_in_transits');
+          
+          $routeData = StockInTransit::select('route_id', 'vehicle_id')->where('user_id',$userID)->whereDate('created_at', $today)->first();
+          // $VehicleID = StockInTransit::select('vehicle_id')->where('user_id',$userID)->whereDate('created_at', $today)->first();
+          $products = Product::where('status',1)->whereIn('id', function ($query) use( $userID, $routeData) {
+            $query->select('product_id')->where('user_id',$userID)->where('route_id',$routeData->route_id)->where('vehicle_id',$routeData->vehicle_id)->from('stock_in_transits');
           })->get();
         }
-       // $this->pr($products);
-     // exit;
         return view('invoice.create', compact('customers','products'));
     }
 
@@ -105,7 +99,7 @@ class InvoiceController extends Controller
     public function store(Request $request)
     {
       $this->pr($request->all());
-      //exit;
+      // exit;
         $request->validate([
             'customer_id' => 'required|integer',
             'product_id' => 'required',
@@ -122,7 +116,7 @@ class InvoiceController extends Controller
         $invoice->save();
 
         foreach ( $request->product_id as $key => $product_id){
-          if(isset($product_id[$key]) && !empty($product_id[$key])){
+          if ($product_id) {
             $sale = new Sale();
             $sale->type = $request->type[$key];
             $sale->reason = $request->reason[$key];

@@ -137,7 +137,7 @@ class StockInTransitController extends Controller
       $products = Product::all();
       $userID = Auth::id();
       $existUserID = $stockInTransit->user_id;
-      $users = User::where('role_id', 2)->get(); 
+      $users = User::where('role', 'sales')->get(); 
       $today = now()->format('Y-m-d');
       //echo $stockInTransit->route_id;
       //echo $stockInTransit->vehicle_id;

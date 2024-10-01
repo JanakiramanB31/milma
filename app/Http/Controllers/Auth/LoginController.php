@@ -42,7 +42,7 @@ class LoginController extends Controller
     {
       //echo $user;
      // exit;
-      if ($user->role_id == 1) {
+      if ($user->role == 'admin') {
         return redirect()->route('adminhome');
       } else {
         return redirect()->route('home'); 

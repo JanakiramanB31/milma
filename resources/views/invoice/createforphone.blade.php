@@ -34,18 +34,21 @@
           <div class="tile-body">
             <form  method="POST" action="{{route('invoice.store')}}">
                 @csrf
-                <div class="form-group col-md-3">
-                    <label class="control-label">Customer Name</label>
-                    <select name="customer_id" class="form-control" id="customer_name">
-                        <option>Select Customer</option>
-                        @foreach($customers as $customer)
-                            <option name="customer_id" value="{{$customer->id}}">{{$customer->name}} </option>
-                        @endforeach
-                    </select> 
-                </div>
-                <div class="form-group col-md-3">
-                    <label class="control-label">Date</label>
-                    <input name="date"  class="form-control datepicker"  value="<?php echo date('Y-m-d')?>" type="date" placeholder="Enter your email">
+                <div class="row">
+                  <div class="form-group col-6">
+                      <label class="control-label">Customer Name</label>
+                      <select name="customer_id" class="form-control" id="customer_name">
+                          <option value = '0'>Select Customer</option>
+                          @foreach($customers as $customer)
+                              <option name="customer_id" value="{{$customer->id}}">{{$customer->name}} </option>
+                          @endforeach
+                      </select>
+                      <div id="customer-name-error" class="text-danger"></div> 
+                  </div>
+                  <div class="form-group col-6">
+                      <label class="control-label">Date</label>
+                      <input name="date"  class="form-control datepicker"  value="<?php echo date('Y-m-d')?>" type="date" placeholder="Enter your email">
+                  </div>
                 </div>
 
 
@@ -55,58 +58,71 @@
                   </button>
                 </div>
             
-            <div class="table-responsive">
-              <table class="table table-bordered">
-                  <thead>
-                    <tr>
-                      <th scope="col">Product</th>
-                      <th scope="col">Quantity</th>
-                      <th scope="col">Price</th>
-                  <!--<th scope="col">Discount %</th> -->
-                      <th scope="col">Amount</th>
-                      <th scope="col">Reason</th>
-                      <th scope="col"><a class="addRow badge badge-success text-white"><i class="fa fa-plus"></i> Add Row</a></th>
-                    </tr>
-                  </thead>
-                  <tbody id="product-section">
-                    <tr>
-                      <td>
-                        <select name="product_id[]" class="form-control productname" >
-                          <option value = ''>Select Product</option>
-                          
-                          @if($routeEmptyError)
-                            <option value = ''>{{$routeEmptyError}}</option>
-                          @elseif(count($products) == 0)
-                            <option value = ''>No Products Found</option>
-                          @else
-                            @foreach($products as $product)
-                            <option value="{{$product->id}}">{{$product->name}}</option>
-                            @endforeach
-                          @endif
-                        </select>
-                      </td>
-                      <td><input type="number" name="qty[]"  class="form-control qty" step="0.01" min="0"><input type="hidden" name="type[]" value="sales" class="form-control" ></td>
-                      <td><input type="number" name="price[]"  class="form-control price" step="0.01" min="0"></td>
-                      <!-- <td><input type="text" name="dis[]" class="form-control dis" ></td> -->
-                      <td><input type="number" name="amount[]"  class="form-control amount" step="0.01" min="0"></td>
-                      <td><input type="hidden" name="reason[]" class="form-control reason" /></td>
-                      <td><a   class="btn btn-danger remove"> <i class="fa fa-remove"></i></a></td>
-                    </tr>
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <!-- <td></td> -->
-                      <td><input type="hidden" name="total" id="total" class="form-control total" /></td>
-                      <td><b>Total</b></td>
-                      <td><b class="currency"></b><b class="total"></b></td>
-                      <td></td>
-                     
-                    </tr>
-                  </tfoot>
-              </table>
-            </div>
+                <div class="row">
+                  <div class="col-md-5 mb-5">
+                    <div class="table-responsive">
+                      <table class="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th scope="col">Product</th>
+                              <th scope="col">Quantity</th>
+                              <th scope="col" hidden>Price</th>
+                              <th scope="col">Amount</th>
+                              <th scope="col">Action</th>
+                              <!-- <th scope="col"><a class="addProductRow badge badge-success text-white"><i class="fa fa-plus"></i> Add Row</a></th> -->
+                            </tr>
+                          </thead>
+                          <tbody id="product-section" style="max-height: 100px;overflow-y: auto;">
+                           <!--  <tr>
+                              <td>
+                                <select name="product_id[]" class="form-control productname" >
+                                  <option value = ''>Select Product</option>
+                                  @foreach($products as $product)
+                                  <option value="{{$product->id}}">{{$product->name}}</option>
+                                  @endforeach
+                                </select>
+                              </td>
+                              <td><input type="number" name="qty[]"  class="form-control qty" step="0.01" min="0"><input type="hidden" name="type[]" value="sales" class="form-control" ></td>
+                              <td hidden><input type="number" name="price[]"  class="form-control price" step="0.01" min="0"></td>
+                              <td><input type="number" name="amount[]"  class="form-control amount" step="0.01" min="0"></td>
+                              <td><input type="hidden" name="reason[]" class="form-control reason" /></td>
+                              <td><a   class="btn btn-danger remove"> <i class="fa fa-remove"></i></a></td>
+                            </tr> -->
+                          </tbody>
+                          <tfoot>
+                            <tr>
+                              <td></td>
+                              <td hidden></td>
+                              <td><input type="hidden" name="total" id="total" class="form-control total" /></td>
+                              <td><b>Total</b></td>
+                              <td><b class="currency"></b><b class="total"></b></td>
+                              <!-- <td></td> -->
+                            </tr>
+                          </tfoot>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="col-md-7 mb-5">
+                    <select name="product_id[]" class="form-control productname mb-5">
+                      <option value = ''>Select Product</option>
+                      @foreach($products as $product)
+                      <option value="{{$product->id}}">{{$product->name}}</option>
+                      @endforeach
+                    </select>
+
+                    <div class="overflow-y" style="max-height: 400px;overflow-y: auto;">
+                    <div class="d-flex justify-content-between">
+                    @foreach($products as $product)
+                    <figure >
+                      <image class="product-select" data-id="{{$product->id}}" data-name="{{$product->name}}" src={{asset('images/product/' . $product->image)}} width='100px' height='100px'/>
+                      <figcaption class="text-center">{{$product->name}}</figcaption>
+                      
+                    </figure>
+                    @endforeach
+                    </div>
+                    </div>
+                  </div>
+                </div>
             <div class="modal fade" id="returnForm" tabindex="-1" aria-labelledby="returnFormLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered modal-lg">
                   <div class="modal-content ">
@@ -120,10 +136,10 @@
                           <tr>
                             <th scope="col">Product</th>
                             <th scope="col">Quantity</th>
-                            <th scope="col">Price</th>
+                            <th scope="col" hidden>Price</th>
                             <th scope="col">Amount</th>
-                            <th scope="col">Reason</th>
-                            <th scope="col"><a id="add-return-row" class=" badge badge-success text-white"><i class="fa fa-plus"></i> Add Row</a></th>
+                            <th scope="col">Actions</th>
+                            <!-- <th scope="col"><a id="add-return-row" class=" badge badge-success text-white"><i class="fa fa-plus"></i> Add Row</a></th> -->
                           </tr>
                         </thead>
                         <tbody id="return-product-body">
@@ -131,16 +147,34 @@
                             <td class="d-flex align-items-center" style="gap: 10px;"><b style="color: red;">R</b>
                               <select id="return-product-id" name="product_id[]" class="form-control return-product-id" >
                                 <option value =''>Select Return Product</option>
-                                @foreach($products as $product)
-                                <option value="{{$product->id}}">{{$product->name}}</option>
-                                @endforeach
+                                @if(session('routeEmptyError'))
+                                  <option value = ''>{{session('routeEmptyError')}}</option>
+                                @elseif(count($products) == 0)
+                                  <option value = ''>No Products Found</option>
+                                @else
+                                  @foreach($products as $product)
+                                  <option value="{{$product->id}}">{{$product->name}}</option>
+                                  @endforeach
+                                @endif
                               </select>
                             </td>
                             <td><input type="number" name="qty[]"  class="form-control return-qty" ><input type="hidden" name="type[]" value="returns" class="form-control" ></td>
-                            <td><input type="number" name="price[]"  class="form-control p-2 return-price" readonly></td>
+                            <td hidden><input type="number" name="price[]"  class="form-control p-2 return-price" readonly></td>
                             <td><input type="number" name="amount[]"  class="form-control return-amount" ></td>
-                            <td><input type="text" name="reason[]"  class="form-control return-reason" /></td>
-                            <td><a   class="btn btn-danger remove"> <i class="fa fa-remove"></i></a></td>
+                            <td hidden><input type="text" name="reason[]"  class="form-control return-reason" /></td>
+                            <td style="gap:5px;" hidden> <i class="fa fa-remove btn btn-danger btn-sm remove"></i></td>
+                            <td>
+                              <button id="return-button-popup" type="button" class="btn btn-primary btn-sm text-white" data-bs-toggle="collapse" data-bs-target="#returnButtonPopup" aria-expanded="false" aria-controls="returnButtonPopup">
+                                  <i class="fa fa-plus"></i>
+                              </button>
+                              <div id="returnButtonPopup" class="collapse icon-group">
+                                <i class="fa fa-remove btn btn-danger btn-sm action-icon remove" title="Remove"></i>
+                                <i class="fa fa-edit btn btn-success btn-sm action-icon" title="Edit"></i>
+                                <i class="fa fa-eye btn btn-info btn-sm action-icon" title="View"></i>
+                                <i class="fa fa-plus btn btn-primary btn-sm action-icon add-return-row" title="Add"></i>
+                              </div>
+
+                            </td>
                           </tr>
                         </tbody>
                         <tfoot>
@@ -149,8 +183,8 @@
                             <td></td>
                             <td><b>Total</b></td>
                             <td><b class="return-currency"></b><b class="return-total"></b></td>
-                            <td></td>
-                            <td></td>
+                           <!--  <td></td> -->
+                            <td hidden></td>
                           </tr>
                         </tfoot> 
                       </table>
@@ -163,6 +197,26 @@
                   </div>
               </div>
             </div>
+           <!--  <div class="modal fade" id="returnButtonPopup" tabindex="-1" aria-labelledby="returnButtonPopupLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="returnButtonPopupLabel">Select an action</h5>
+                        <button type="button" class="btn-close btn btn-danger" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-remove"></i></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <i class="fa fa-remove btn btn-danger btn-sm action-icon" title="Remove"></i>
+                        <i class="fa fa-edit btn btn-success btn-sm action-icon" title="Edit"></i>
+                        <i class="fa fa-eye btn btn-info btn-sm action-icon" title="View"></i>
+                        <i class="fa fa-check btn btn-primary btn-sm action-icon" title="Confirm"></i>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button id="return-entry-button" type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+              </div>
+          </div> -->
             <div >
               <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#amountForm">Submit</button>
             </div>
@@ -212,16 +266,6 @@
         console.log("DATA ID :", id);
         console.log("Price :", prodPrices[id]);
         tr.find('.price').val(prodPrices[id].toFixed(2));
-        /* $.ajax({
-          type    : 'GET',
-          url     :'{!! URL::route('findPrice') !!}',
-
-          dataType: 'json',
-          data: {"_token": $('meta[name="csrf-token"]').attr('content'), 'id':id},
-          success:function (data) {
-              tr.find('.price').val(data.sales_price);
-          } */
-       /*  }); */
       });
 
       $('#product-section').delegate('.qty,.price', 'keyup', function () {
@@ -257,16 +301,13 @@
         $('#total').val(total.toFixed(2));
       }
 
-      $('.addRow').on('click', function () {
-        addRow();
+      $('.addProductRow').on('click', function () {
+        addProductRow();
       });
 
-      $('.add-Row').on('click', function () {
-        addRow();
-      });
 
-      function addRow() {
-        var addRow = '<tr>\n' +
+      /* function addProductRow() {
+        var addProductRow = '<tr>\n' +
           '<td><select name="product_id[]" class="form-control productname " >\n' +
           '<option value="0" selected="true" disabled="true">Select Product</option>\n' +
           '@foreach($products as $product)\n' +
@@ -279,8 +320,8 @@
           '<td><input type="hidden" name="reason[]" class="form-control reason" ></td>\n' +
           '<td><a   class="btn btn-danger remove"> <i class="fa fa-remove"></i></a></td>\n' +
           '</tr>';
-        $('tbody').append(addRow);
-      };
+        $('tbody').append(addProductRow);
+      }; */
 
       $('.remove').live('click', function () {
         var l =$('tbody tr').length;
@@ -397,7 +438,7 @@
         returnTotal();
         $('#return-entry-button').on("click", function(){
           $('#return-product-name-entry').val();
-          $('#return-qty-entry').val(qty.toFixed(2));
+          $('#return-qty-entry').val(qty);
           $('#return-price-entry').val(price.toFixed(2));
         });
       });
@@ -419,7 +460,7 @@
         //console.log("Length",returnTableLength);
         if (returnTableLength <= 0) {
           addReturnRow();
-          $('.return-total').html(''.toFixed(2));
+          $('.return-total').html('');
         }
        
       });
@@ -450,8 +491,38 @@
         $('#return-product-body').append(newRow);
       }
 
-      $('#add-return-row').on("click",function() {
-        addReturnRow();
+      function addReturnMobileRow() {
+        var newRow = `<tr>
+                        <td class="d-flex align-items-center" style="gap: 10px;"><b style="color: red;">R</b>
+                          <select name="product_id[]" id="return-product-id" class="form-control return-product-id return-product-name">
+                              <option value="">Select Return Product</option>
+                              @foreach($products as $product)
+                              <option value="{{$product->id}}">{{ $product -> name}}</option>
+                              @endforeach
+                          </select>
+                        </td>
+                        <td><input type="number"  name="qty[]" class="form-control return-qty" ><input type="hidden" name="type[]" value="returns" class="form-control" ></></td>
+                        <td hidden><input type="number"  name="price[]" class="form-control return-price" readonly></></td>
+                        <td><input type="number"  name="amount[]" class="form-control return-amount" ></></td>
+                        <td hidden><input type="text" name="reason[]"  class="form-control return-reason" /></td>
+                        <td style="gap:15px;" hidden> <i class="fa fa-remove btn btn-danger btn-sm remove"></i><i class="fa fa-edit btn btn-success btn-sm edit"></i><i class="fa fa-eye btn btn-info btn-sm edit"></i></td>
+                        <td>
+                          <button id="return-button-popup" type="button" class="btn btn-primary btn-sm text-white" data-bs-toggle="collapse" data-bs-target="#returnButtonPopup" aria-expanded="false" aria-controls="returnButtonPopup">
+                            <i class="fa fa-plus"></i>
+                          </button>
+                          <div id="returnButtonPopup" class="collapse icon-group">
+                            <i class="fa fa-remove btn btn-danger btn-sm action-icon remove" title="Remove"></i>
+                            <i class="fa fa-edit btn btn-success btn-sm action-icon" title="Edit"></i>
+                            <i class="fa fa-eye btn btn-info btn-sm action-icon" title="View"></i>
+                            <i class="fa fa-plus btn btn-primary btn-sm action-icon add-return-row" title="Add"></i>
+                          </div>
+                        </td>
+                      </tr>`;
+        $('#return-product-body').append(newRow);
+      }
+
+      $('.add-return-row').on("click",function() {
+        addReturnMobileRow();
       });
 
       $('#return-product-body').on('click', '.remove', function() {
@@ -501,6 +572,71 @@
         });
         }, 3000)
       });
+
+      function addProductMobileRow(productID, productName, productPrice) {
+        var addProductRow = '<tr>\n' +
+          
+          '<td><input type="text" name="product_id[]" value="' +productID+'" hidden/><input type="text" value="' +productName+'" data-id="'+productID+'" data-toggle="tooltip" data-placement="top" title="'+ productName+'"  class="form-control p-1 fs-6 productname" readonly></td>\n' +
+          '<td><input type="number" name="qty[]" class="form-control p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
+          '<td hidden><input type="number" value="'+productPrice+'"  name="price[]" class="form-control p-1 fs-6 price" ></td>\n' +
+          '<td><input type="number"  name="amount[]" class="form-control p-1 fs-6 amount" ></td>\n' +
+          '<td hidden><input type="hidden" name="reason[]" class="form-control p-1 fs-6 reason" ></td>\n' +
+          '<td style="gap:15px;"> <i class="fa fa-trash-o fa-sm btn btn-danger remove"></i><i class="fa fa-eye btn btn-info btn-sm view-prod-details"></i></td>\n'+
+          '</tr>';
+        $('#product-section').append(addProductRow);
+      };
+
+      $('.product-select').on("click", function() {
+        var productID = $(this).data('id');
+        var productName = $(this).data('name');
+        var customerID = $('#customer_name').val();
+        // console.log(productID, customer);
+        if (customerID <= 0) {
+          $('#customer-name-error').html("Please Select Customer Name");
+          setTimeout(()=> {
+            $('#customer-name-error').hide();
+          }, 3000)
+        } else {
+          var isProductExists = false;
+          $('#product-section').find('tr').each(function () {
+              var ExistingProdID =  $(this).find('.productname').data('id');
+              if (ExistingProdID == productID) {
+                isProductExists = true;
+                return false;
+              }
+            });
+          }
+
+          if (!isProductExists) {
+            var prodPrices = prodData.productIdsAndPrices;
+            var productPrice = prodPrices[productID].toFixed(2);
+            addProductMobileRow(productID, productName, productPrice);
+          } else {
+            alert ("Already added the Product")
+          }
+      });
+
+      /* $('.delete-prod').on('click', function () {
+        var length =$('#product-section tr').length;
+        console.log("Length", length)
+        // if(length == 1){
+        //   alert('you cant delete last one')
+        // }else{
+        var selectedID = $(this).data('id');
+        console.log("selectedID",selectedID);
+        $('#product-section').find('tr').each(function () {
+          var prodID =  $(this).find('.productname').data('id');
+          //console.log("prodID",prodID);
+          if (prodID == selectedID) {
+            if (confirm("Are you sure you want to delete this product?")) {
+              $(this).remove();
+            }
+            return false;
+          }
+        });
+        //}
+      }); */
+      
       
     });
   </script>

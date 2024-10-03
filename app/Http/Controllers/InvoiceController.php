@@ -43,23 +43,37 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        $userID = Auth::id();
-        $today = now()->toDateString();
-      
-        $customers = Customer::where('status',1)->get();
-        if ($userID == 1) {
-          //echo "USERId : ", $userID;
-          $products = Product::where('status',1)->get();
-         
-        } else {
-          
-          $routeData = StockInTransit::select('route_id', 'vehicle_id')->where('user_id',$userID)->whereDate('created_at', $today)->first();
-          // $VehicleID = StockInTransit::select('vehicle_id')->where('user_id',$userID)->whereDate('created_at', $today)->first();
+      $userID = Auth::id();
+      $today = now()->toDateString();
+      $routeEmptyError = null;
+    
+      $customers = Customer::where('status',1)->get();
+      if ($userID == 1) {
+        //echo "USERId : ", $userID;
+        $products = Product::where('status',1)->get();
+        
+      } else {
+        
+        $routeData = StockInTransit::select('route_id', 'vehicle_id')->where('user_id',$userID)->whereDate('created_at', $today)->first();
+        // $this->pr($routeData);
+        // exit;
+        // $VehicleID = StockInTransit::select('vehicle_id')->where('user_id',$userID)->whereDate('created_at', $today)->first();
+        if ($routeData) {
+        //   $this->pr("passing");
+        // exit;
           $products = Product::where('status',1)->whereIn('id', function ($query) use( $userID, $routeData) {
             $query->select('product_id')->where('user_id',$userID)->where('route_id',$routeData->route_id)->where('vehicle_id',$routeData->vehicle_id)->from('stock_in_transits');
-          })->get();
+          })->get();         
+        } else {
+          
+          $products =array();
+          // $this->pr($products);
+          // exit;
+          $routeEmptyError = "Route Number or Vehicle Number Not Found";
+          return view('invoice.create', compact('customers','routeEmptyError','products'));
         }
-        return view('invoice.create', compact('customers','products'));
+      }
+      return view('invoice.createforphone', compact('customers','products','routeEmptyError'));
     }
 
     /**
@@ -99,7 +113,7 @@ class InvoiceController extends Controller
     public function store(Request $request)
     {
       $this->pr($request->all());
-      // exit;
+    // exit;
         $request->validate([
             'customer_id' => 'required|integer',
             'product_id' => 'required',
@@ -118,7 +132,7 @@ class InvoiceController extends Controller
         $invoice->save();
 
         foreach ( $request->product_id as $key => $product_id){
-          if ($product_id) {
+          if ($product_id && isset($request->qty[$key]) && $request->qty[$key]) {
             $sale = new Sale();
             $sale->type = $request->type[$key];
             $sale->reason = $request->reason[$key];

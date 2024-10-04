@@ -42,7 +42,7 @@
                     <td>{{ $sale->product->name }}</td>
                     <td>{{ $sale->qty }}</td>
                     <td>{{ $sale->price }}</td>
-                    <td>{{ $sale->amount }}</td>
+                    <td>{{ $sale->total_amount }}</td>
                     <td>{{ $sale->created_at }}</td>
                     
                 </tr>

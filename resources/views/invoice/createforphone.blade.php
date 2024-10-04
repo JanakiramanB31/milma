@@ -34,7 +34,7 @@
           <div class="tile-body">
             <form  method="POST" action="{{route('invoice.store')}}">
                 @csrf
-                <div class="row">
+                <div class="row" >
                   <div class="form-group col-6">
                       <label class="control-label">Customer Name</label>
                       <select name="customer_id" class="form-control" id="customer_name">
@@ -123,8 +123,8 @@
                     </div>
                   </div>
                 </div>
-            <div class="modal fade" id="returnForm" tabindex="-1" aria-labelledby="returnFormLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal fade" id="returnForm" tabindex="-1" aria-labelledby="returnFormLabel" aria-hidden="true" role="dialog">
+              <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                   <div class="modal-content ">
                       <div class="modal-header">
                         <h5 class="modal-title" id="returnFormLabel">Return Items</h5>
@@ -153,27 +153,35 @@
                                   <option value = ''>No Products Found</option>
                                 @else
                                   @foreach($products as $product)
-                                  <option value="{{$product->id}}">{{$product->name}}</option>
+                                  <option value="{{$product->id}}" >{{$product->name}}</option>
                                   @endforeach
                                 @endif
                               </select>
                             </td>
-                            <td><input type="number" name="qty[]"  class="form-control return-qty" ><input type="hidden" name="type[]" value="returns" class="form-control" ></td>
+                            <td ><input type="number" name="qty[]"  class="form-control return-qty" ><input type="hidden" name="type[]" value="returns" class="form-control" ></td>
                             <td hidden><input type="number" name="price[]"  class="form-control p-2 return-price" readonly></td>
                             <td><input type="number" name="amount[]"  class="form-control return-amount" ></td>
-                            <td hidden><input type="text" name="reason[]"  class="form-control return-reason" /></td>
+                            <td hidden >Reason:<input type="text" name="reason[]"  class="form-control return-reason" /></td>
                             <td style="gap:5px;" hidden> <i class="fa fa-remove btn btn-danger btn-sm remove"></i></td>
-                            <td>
+                            <!-- <td>
                               <button id="return-button-popup" type="button" class="btn btn-primary btn-sm text-white" data-bs-toggle="collapse" data-bs-target="#returnButtonPopup" aria-expanded="false" aria-controls="returnButtonPopup">
                                   <i class="fa fa-plus"></i>
                               </button>
                               <div id="returnButtonPopup" class="collapse icon-group">
                                 <i class="fa fa-remove btn btn-danger btn-sm action-icon remove" title="Remove"></i>
-                                <i class="fa fa-edit btn btn-success btn-sm action-icon" title="Edit"></i>
-                                <i class="fa fa-eye btn btn-info btn-sm action-icon" title="View"></i>
+                                <button id="return-button-add-reason" type="button" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#returnReasonForm">
+                                  <i class="fa fa-edit btn btn-success btn-sm action-icon add-return-reason" title="Edit"></i>
+                                </button>
+                                <i class="fa fa-edit btn btn-success btn-sm action-icon add-return-reason" title="Edit"></i>
+                                <i class="fa fa-eye btn btn-info btn-sm action-icon " title="View"></i>
                                 <i class="fa fa-plus btn btn-primary btn-sm action-icon add-return-row" title="Add"></i>
                               </div>
 
+                            </td> -->
+                            <td>
+                            <button type="button" class="btn btn-secondary popoverButton"  data-toggle="popover" data-bs-placement="top" data-html="true">
+                              <i class="fa fa-ellipsis-h"></i>
+                            </button>
                             </td>
                           </tr>
                         </tbody>
@@ -197,6 +205,28 @@
                   </div>
               </div>
             </div>
+
+            <div class="modal fade" id="returnReasonForm" tabindex="-1" aria-labelledby="returnReasonFormLabel" aria-hidden="true" role="dialog">
+              <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+                  <div class="modal-content ">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="returnReasonFormLabel">Add Reason</h5>
+                        <button type="button" class="btn-close btn btn-danger" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-remove"></i></button>
+                      </div>
+                      <div class="modal-body ">
+                        <div>
+                          <label>Enter Reason</label>
+                          <textarea name="popup-reason" class="return-popup-reason form-control-lg col-12"></textarea>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          <button id="return-entry-button" type="button" class="btn btn-primary">Save</button>
+                      </div>
+                  </div>
+              </div>
+            </div>
+
            <!--  <div class="modal fade" id="returnButtonPopup" tabindex="-1" aria-labelledby="returnButtonPopupLabel" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
@@ -246,6 +276,8 @@
 @push('js')
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
   <script src="{{asset('/')}}js/multifield/jquery.multifield.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
  
   <script type="text/javascript">
@@ -253,6 +285,18 @@
     var cusID = '' ;
     console.log("Data",prodData)
     $(document).ready(function(){
+
+      //$('[data-toggle="popover"]').popover('show'); 
+      $('[data-toggle="popover"]').popover({
+        html: true,
+        content:`<i class="fa fa-remove btn btn-danger btn-sm action-icon remove" title="Remove"></i>
+                            <i class="fa fa-edit btn btn-success btn-sm add-return-reason" title="Edit"></i>
+                            <i class="fa fa-eye btn btn-info btn-sm action-icon" title="View"></i>
+                            <i class="fa fa-plus btn btn-primary btn-sm action-icon add-return-row" title="Add"></i>`
+                    
+      });
+
+      //$('[data-toggle="popover"]').popover('show');
       
       $('#product-section').delegate('.productname', 'change', function () {
         var  tr = $(this).parent().parent();
@@ -323,7 +367,7 @@
         $('tbody').append(addProductRow);
       }; */
 
-      $('.remove').live('click', function () {
+      $('.remove').on('click', function () {
         var l =$('tbody tr').length;
         if(l==1){
           alert('you cant delete last one')
@@ -505,17 +549,10 @@
                         <td hidden><input type="number"  name="price[]" class="form-control return-price" readonly></></td>
                         <td><input type="number"  name="amount[]" class="form-control return-amount" ></></td>
                         <td hidden><input type="text" name="reason[]"  class="form-control return-reason" /></td>
-                        <td style="gap:15px;" hidden> <i class="fa fa-remove btn btn-danger btn-sm remove"></i><i class="fa fa-edit btn btn-success btn-sm edit"></i><i class="fa fa-eye btn btn-info btn-sm edit"></i></td>
                         <td>
-                          <button id="return-button-popup" type="button" class="btn btn-primary btn-sm text-white" data-bs-toggle="collapse" data-bs-target="#returnButtonPopup" aria-expanded="false" aria-controls="returnButtonPopup">
-                            <i class="fa fa-plus"></i>
+                          <button type="button" class="btn btn-secondary popoverButton"  data-toggle="popover" data-bs-placement="top" data-html="true">
+                            <i class="fa fa-ellipsis-h"></i>
                           </button>
-                          <div id="returnButtonPopup" class="collapse icon-group">
-                            <i class="fa fa-remove btn btn-danger btn-sm action-icon remove" title="Remove"></i>
-                            <i class="fa fa-edit btn btn-success btn-sm action-icon" title="Edit"></i>
-                            <i class="fa fa-eye btn btn-info btn-sm action-icon" title="View"></i>
-                            <i class="fa fa-plus btn btn-primary btn-sm action-icon add-return-row" title="Add"></i>
-                          </div>
                         </td>
                       </tr>`;
         $('#return-product-body').append(newRow);
@@ -574,14 +611,14 @@
       });
 
       function addProductMobileRow(productID, productName, productPrice) {
+        var deletedRow = '<i class="fa fa-eye btn btn-info btn-sm view-prod-details" data-bs-toggle="modal" data-bs-target="#prodDetailsModel"></i>';
         var addProductRow = '<tr>\n' +
-          
           '<td><input type="text" name="product_id[]" value="' +productID+'" hidden/><input type="text" value="' +productName+'" data-id="'+productID+'" data-toggle="tooltip" data-placement="top" title="'+ productName+'"  class="form-control p-1 fs-6 productname" readonly></td>\n' +
           '<td><input type="number" name="qty[]" class="form-control p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
           '<td hidden><input type="number" value="'+productPrice+'"  name="price[]" class="form-control p-1 fs-6 price" ></td>\n' +
           '<td><input type="number"  name="amount[]" class="form-control p-1 fs-6 amount" ></td>\n' +
           '<td hidden><input type="hidden" name="reason[]" class="form-control p-1 fs-6 reason" ></td>\n' +
-          '<td style="gap:15px;"> <i class="fa fa-trash-o fa-sm btn btn-danger remove"></i><i class="fa fa-eye btn btn-info btn-sm view-prod-details"></i></td>\n'+
+          '<td align="center"> <i class="fa fa-trash-o fa-sm btn btn-danger remove"></i></td>\n'+
           '</tr>';
         $('#product-section').append(addProductRow);
       };
@@ -616,28 +653,125 @@
           }
       });
 
-      /* $('.delete-prod').on('click', function () {
-        var length =$('#product-section tr').length;
-        console.log("Length", length)
-        // if(length == 1){
-        //   alert('you cant delete last one')
-        // }else{
-        var selectedID = $(this).data('id');
-        console.log("selectedID",selectedID);
-        $('#product-section').find('tr').each(function () {
-          var prodID =  $(this).find('.productname').data('id');
-          //console.log("prodID",prodID);
-          if (prodID == selectedID) {
-            if (confirm("Are you sure you want to delete this product?")) {
-              $(this).remove();
-            }
-            return false;
+      /* $('.add-return-reason').on("click", function() {
+        var parentRow = $(this).closest('tr');
+        var value = parentRow.find('select').val();
+        console.log(value);
+      }); */
+
+      /* $('#returnForm').on('shown.bs.modal', function () {
+        $(this).css('z-index', 1051);
+      });
+
+      $('#returnReasonForm').on('show.bs.modal', function () {
+        $(this).css('z-index', 1060); 
+        $('#returnForm').css('z-index', 1050); 
+      });
+
+      $(document).on("click", ".add-return-reason", function() {
+        var parentRow = $(this).closest('tr');
+        
+        var selectValue = parentRow.find('select').val();
+        
+        console.log(selectValue);
+      });
+
+      $(document).on("click",'.view-prod-details', function() {
+        console.log("Working");
+        prodDetailsModel()
+      });
+       */
+
+      $(document).on('click', 'return-reason', function(){
+        var parentRow = $(this).closest('tr');
+        parentRow.find('td').first().attr("hidden", false);
+        parentRow.find('td').not(':first').attr("hidden", true);
+      });
+
+
+      $(document).on("change", '.return-product-id', function () {
+        var selectedValue = $(this).val();
+
+        // $('#return-product-body').find('tr').each(function (){
+        //   var existingProductID = $(this).find('select').val();
+        //   if (selectedValue == existingProductID) {
+        //     $('#return-table-error').html("Selected Product already Added");
+        //   } else {
+            var parentRow = $(this).closest('tr');
+            console.log(selectedValue);
+            var popoverContent = `
+            <i id="remove-prodID" class="fa fa-remove btn btn-danger btn-sm action-icon remove" title="Remove"></i>
+            <i id="edit-prodID" class="fa fa-edit btn btn-success btn-sm add-return-reason" title="Edit"></i>
+            <i id="view-prodID" class="fa fa-eye btn btn-info btn-sm action-icon" title="View"></i>
+            <i id="addrow-prodID" class="fa fa-plus btn btn-primary btn-sm action-icon add-return-row" title="Add"></i>
+            `.replace(/prodID/g, selectedValue);
+            var button = parentRow.find('.popoverButton');
+            button.popover('dispose'); 
+            button.popover({
+                html: true,
+                content: popoverContent,
+                trigger: 'click'
+            }).popover();
+        //   }
+        // });
+
+
+        
+
+        /* $(document).on('click', '[id^="remove-"], [id^="edit-"], [id^="view-"], [id^="addrow-"]', function() {
+          var actionType = $(this).attr('title');
+          var productId = $(this).attr('id').split('-')[1]; // Extract product ID from the clicked element's ID
+          console.log(`Action: ${actionType}, Product ID: ${productId}`);
+          
+          $(this).closest('.popover').prev('#popoverButton').popover('hide'); 
+        }); */
+      });
+
+      $(document).on('click', '[id^="view-"]', function() {
+        var productId = $(this).attr('id').split('-')[1];
+        var parentRow = $('#return-product-body').find('tr').each(function () {
+          var selectedValue = $(this).find('select').val();
+          if (selectedValue == productId) {
+            var prodName = $(this).find('select option:selected').text();
+            var qtyValue = $(this).find('.return-qty').val(); 
+            var prodPrice = $(this).find('.return-price').val();
+            var totalAmt = $(this).find('.return-amount').val();                    
+            var rtnReason = $(this).find('.return-reason').val();
+            console.log('Product Name:', prodName);
+            console.log('Quantity:', qtyValue);
+            console.log('Price:', prodPrice);
+            console.log('Total Amount:', totalAmt);
+            console.log('Return Reason:', rtnReason);
+            setTimeout(()=> {
+              $(this).find('.popoverButton').popover('hide'); 
+            }, 500);
           }
         });
-        //}
-      }); */
-      
-      
+       
+      });
+
+      $(document).on('click', '[id^="remove-"]', function() {
+        var productId = $(this).attr('id').split('-')[1];
+        var parentRow = $('#return-product-body').find('tr').each(function () {
+          var selectedValue = $(this).find('select').val();
+          if (selectedValue == productId) {
+            $(this).remove();
+            setTimeout(()=> {
+              $(this).find('.popoverButton').popover('hide'); 
+            }, 500);
+          }
+        });
+      });
+
+      $(document).on('click', '[id^="addrow-"]', function() {
+        addReturnMobileRow();
+        setTimeout(()=> {
+          $('#return-product-body').find('.popoverButton').popover('hide'); 
+        }, 500);
+      });
+
+        
+
     });
   </script>
 @endpush

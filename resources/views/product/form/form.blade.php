@@ -240,7 +240,7 @@
   </div>
 
   <div class="form-group col-md-4 align-self-end">
-    <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Add Product</button>
+    <button id="submit-data" class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Add Product</button>
   </div>
 
 </form>
@@ -255,10 +255,17 @@
         $('#quantity').addClass("is-invalid");
         $('#quantity-error').css("display", "block");
         $('#quantity-error').text('Please enter non-negative quantities.').show();
-      }
+        $('#submit-data').attr("disabled", true);
+      } /* else if (quantityValue == 0) {
+        $('#quantity').addClass("is-invalid");
+        $('#quantity-error').css("display", "block");
+        $('#quantity-error').text('Please enter quantities.').show();
+        $('#submit-data').attr("disabled", true);
+      } */
       else {
         $('#quantity').removeClass("is-invalid");
         $('#quantity-error').css("display", "none");
+        $('#submit-data').attr("disabled", false);
       }
     });
   });

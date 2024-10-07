@@ -69,8 +69,23 @@
                             </span>
                             @enderror
                           </div>
+                            
+                          @if($userID == 1)
+                          <div class="form-group col-md-12">
+                            <label class="control-label">Select User</label>
+                            <select name="user_id" id='user_id' class="form-control @error('user_id') is-invalid @enderror">
+                              <option value=''>Select User ID</option>
+                              @foreach($users as $user)
+                              <option value="{{ $user['id'] }}" {{ old('user_id') == $user['id'] ? 'selected' : '' }}>
+                                {{ $user['f_name'] }}
+                              </option>
+                              @endforeach
+                            </select>
+                          </div>
+                          @endif
                           <span id="error-message" class="invalid-feedback col-md-12" role="alert"></span>
-                            <div class="form-group d-flex col-md-12 justify-content-start ">
+
+                          <div class="form-group d-flex col-md-12 justify-content-start ">
                               <button type="button" id="nextButton" class="btn btn-success">Next</button>
                             </div>
                           </div>
@@ -97,7 +112,7 @@
                             <div id="product-section2" style="display: flex;">
                               <div class="form-group col-md-6">
                                 <label class="control-label">Product Name</label>
-                                <input name="product_name[]" class="form-control @error('product_name') is-invalid @enderror" value="{{ old('product_name', $product->name) }}" readonly>
+                                <input name="product_name[]" class="form-control prod-name @error('product_name') is-invalid @enderror" value="{{ old('product_name', $product->name) }}" readonly>
                                 <input type="hidden" name="product_id[]" value="{{ $product->id }}">
                                 @error('product_name')
                                 <span class="invalid-feedback" role="alert">
@@ -119,10 +134,42 @@
                           </div>
 
                           <div class="form-group mt-3 col-md-4 align-self-end">
-                            <button style="display: {{$productDisplay}};" id="add_button" class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i> Add Stock in Transit Details</button>
+                            <!-- <button style="display: {{$productDisplay}};" id="check-button" class="btn btn-success" ><i class="fa fa-fw fa-lg fa-check-circle"></i> Add Stock in Transit Details</button> -->
+                            <button id="check-button" type="button" class="btn btn-success" ><i class="fa fa-fw fa-lg fa-check-circle"></i> Add Stock in Transit Details</button>
+
                           </div>
                         </div>
                       </form>
+
+                      <div class="modal fade" id="sit-data" tabindex="-1" role="dialog" aria-labelledby="sitDataLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-sm" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="sitDataLabel">Stock In Transit Form Data</h5>
+                              <button type="button" class="btn-close btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="fa fa-remove"></i>
+                              </button>
+                            </div>
+                            <div class="modal-body table-responsive">
+                              <table class="table table-hover" id="products-list">
+                                <tr>
+                                  <td><strong>Route Number</strong></td>
+                                  <td><p id="route-number"></p></td>
+                                </tr>
+                                <tr>
+                                  <td><strong>Vehicle Number</strong></td>
+                                  <td><p id="vehicle-number"></p></td>
+                                </tr>
+                              </table>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              <button id="submit-sit-data" type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
                     </div>
                 </div>
             </div>
@@ -132,13 +179,15 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+  
   $(document).ready(function() {
+    var currentUserID = @if(Auth::check()) {{ Auth::id() }} @else null @endif;
     $('#nextButton').on('click', function() {
       var routeSelect = $('#route_id');
       var vehicleSelect = $('#vehicle_id');
       var userIDSelect = $('#user_id');
 
-      if (routeSelect.val() && vehicleSelect.val()) {
+      if (routeSelect.val() && vehicleSelect.val() && (currentUserID == 1 ? userIDSelect.val() : true)) {
         var route_id = routeSelect.val();
         var vehicle_id = vehicleSelect.val();
         console.log(route_id, vehicle_id);
@@ -169,42 +218,19 @@
         });
       } 
       else {
-        $('#error-message').html('Please select both Route Number and Vehicle Number.').show();
+        $('#error-message').html('Please select all fields.').show();
         setTimeout(function() {
           $('#error-message').hide(); 
         }, 3000);
       }
     });
     
-    /*  $('.quantity-input').on('input', function() {
+    $('.quantity-input').on('input', function() {
       var sku = $(this).data('sku');
       var barcode = $(this).data('barcode');
       var quantityValue = $(this).val();
       var availableQuantity = $(this).data('available');
-      if (quantityValue < 0) {
-        $('#quantity-error').css("display", "block");
-        $('#quantity-error').text('Please enter non-negative quantities.').show();
-        $('#add_button').prop('disabled', true);
-      } else if (quantityValue >= 0 && quantityValue <= availableQuantity) {
-        $('#quantity-error').css("display", "none");
-        $('#add_button').prop('disabled', false);
-        $('#product-section1').show();
-        $('#sku_code').text(sku);
-        $('#barcode').text(barcode);
-      } else if (quantityValue > availableQuantity) {
-        $('#add_button').prop('disabled', true);
-        $('#quantity-error').text('Quantity exceeds available stock of Available Quantity').show();
-      } else {
-        $('#add_button').prop('disabled', false);
-        $('#product-section1').hide();
-      }
-    }); */
-
-    $('.quantity-input').on('focus', function() {
-      var sku = $(this).data('sku');
-      var barcode = $(this).data('barcode');
-      var quantityValue = $(this).val();
-      var availableQuantity = $(this).data('available');
+      console.log(availableQuantity)
       $('#product-section1').show();
       $('#sku_code').text(sku);
       $('#barcode').text(barcode);
@@ -228,6 +254,45 @@
         $('#product-section1').hide();
       }
     });
+
+    $('#check-button').on('click', function () {
+      var routeNumber = $('#route_id').find('option:selected').text();
+      var vehicleNumber = $('#vehicle_id').find('option:selected').text();
+      var products = [];
+      $('.prod-name').each(function () {
+        var productName = $(this).val();
+        var quantity = $(this).closest('div').next().find('.quantity-input').val();
+
+        if(quantity > 0) {
+          products.push({
+            prodName:productName,
+            qty:quantity
+          });
+        }
+      });
+      console.log(routeNumber,vehicleNumber,products);
+      $('#route-number').text(routeNumber);
+      $('#vehicle-number').text(vehicleNumber);
+
+      var productListHtml = '';
+      products.forEach(function(product) {
+        productListHtml += `
+        <tr>
+          <td><strong>Product Name</strong></td>
+          <td><p>${product.prodName}</p></td>
+        </tr>
+        <tr>
+          <td><strong>Quantity</strong></td>
+          <td><p>${product.qty}</p></td>
+        </tr>`
+          //productListHtml += '<p>' + product.prodName + ': ' + product.qty + '</p>';
+      });
+
+      $('#products-list').append(productListHtml); 
+
+      $('#sit-data').modal('show');
+    });
+
   });
   
 </script>

@@ -100,15 +100,26 @@
                         
 
                           <div class="overflow-auto" style="max-height: 330px; overflow-y: auto;">
-                            @foreach($products as $product)
+                          <div  style="display: flex;">
+                          <div class="col-md-5">
+                          <label class="control-label">Product Name</label>
+                          </div>
+                          <div class="col-md-1">
+                          <label class="control-label">Existing Quantity</label>
+                          </div>
+                          <div class="col-md-6">
+                          <label class="control-label">Add Quantity</label>
+                          </div>
+                          </div>
+
+                          @foreach($products as $product)
                             @php
                             $prdQuantity = array_key_exists($product->id, $productIDsAndQuantities)?$productIDsAndQuantities[$product->id]:0;
                             $stockInTransitID = array_key_exists($product->id, $stockInTransitIDs)?$stockInTransitIDs[$product->id]:'';
                             $prodMaxQuantity = array_key_exists($product->id, $supplierProdQuantities)?$supplierProdQuantities[$product->id]:0;
                             @endphp
                             <div id="product-section2" style="display: flex;">
-                              <div class="form-group col-md-4">
-                                <label class="control-label">Product Name</label>
+                              <div class="form-group col-md-5">
                                 <input name="product_name[]" class="form-control @error('product_name') is-invalid @enderror" value="{{ old('product_name', $product->name) }}" readonly>
                                 <input type="hidden" name="product_id[]" value="{{ $product->id }}">
                                 <input type="hidden" name="stock_in_transit_id[]" value="{{$stockInTransitID }}">
@@ -118,9 +129,8 @@
                                 </span>
                                 @enderror
                               </div>
-                              <div class="form-group col-md-4">
-                                <label class="control-label">Existing Quantity</label>
-                                <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ $prdQuantity }}"   type="number" readonly>
+                              <div class="form-group col-md-1">
+                                <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ number_format($prdQuantity, 2) }}"   type="number" readonly>
                                 @error('quantity')
                                 <span class="invalid-feedback" role="alert">
                                   <strong>{{ $message }}</strong>
@@ -128,8 +138,7 @@
                                 @enderror
                               </div>
 
-                              <div class="form-group col-md-4">
-                                <label class="control-label">Add Quantity</label>
+                              <div class="form-group col-md-6">
                                 <input name="new_quantity[]" id="new_quantity-{{ $product->id }}" class="form-control new-quantity-input @error('new_quantity') is-invalid @enderror" value="{{ old('new_quantity.' . $product->id) }}"    type="number" placeholder="Enter Quantity" data-existing="{{$prdQuantity}}" data-available = "{{$prodMaxQuantity}}" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
                                 @error('new_quantity')
                                 <span class="invalid-feedback" role="alert">

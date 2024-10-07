@@ -68,7 +68,7 @@
         <div id="product-section2" style="display: flex;">
           <div class="form-group col-md-6">
             <label class="control-label">Product Name</label>
-            <input name="product_name[]" class="form-control @error('product_name') is-invalid @enderror" value="{{ old('product_name', $product->name) }}" readonly>
+            <input name="product_name[]" class="form-control prod-name @error('product_name') is-invalid @enderror" value="{{ old('product_name', $product->name) }}" readonly>
             <input type="hidden" name="product_id[]" value="{{ $product->id }}">
             <input type="hidden" name="stock_transit_id[]" value="{{ $product->id }}">
             @error('product_name')
@@ -91,10 +91,48 @@
       </div>
 
       <div class="form-group mt-3 col-md-4 align-self-end">
-        <button style="display: {{$productDisplay}};" id="add_button" class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i> Add Stock in Transit Details</button>
+        <button style="display: {{$productDisplay}};" id="check-button" class="btn btn-success" ><i class="fa fa-fw fa-lg fa-check-circle"></i> Add Stock in Transit Details</button>
       </div>
     </div>
   </form>
+
+  <div class="modal fade" id="sit-data" tabindex="-1" role="dialog" aria-labelledby="sitDataLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="sitDataLabel">Stock In Transit Form Data</h5>
+          <button type="button" class="btn-close btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
+            <i class="fa fa-remove"></i>
+          </button>
+        </div>
+        <div class="modal-body table-responsive">
+          <table class="table table-hover">
+            <tr>
+              <td><strong>Route Number</strong></td>
+              <td><p></p></td>
+            </tr>
+            <tr>
+              <td><strong>Route Number</strong></td>
+              <td><p></p></td>
+            </tr>
+            <tr>
+              <td><strong>Vehicle Number</strong></td>
+              <td><p></p></td>
+            </tr>
+            <tr>
+              <td><strong>Quantity</strong></td>
+              <td><p></p></td>
+            </tr>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button id="submit-sit-data" type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -118,7 +156,7 @@
           success: function(response) {
             $('#route-vehicle-section').hide();
             $('#product-section').show();
-            $('#add_button').show();
+            $('#check-button').show();
           },
           error: function(xhr) {
             var errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : 'An error occurred. Please try again.';
@@ -153,5 +191,24 @@
         $('#product-section1').hide();
       }
     });
+
+    $('#check-button').on('click', function () {
+      var routeNumber = $('#route_id').find('option:selected').text();
+      var vehicleNumber = $('#vehicle_id').find('option:selected').text();
+      var products = [];
+      $('.prod-name').each(function () {
+        var productName = $(this).val();
+        var quantity = $(this).closest('div').next().find('.quantity-input').val();
+
+        if(quantity != 0) {
+          products.push({
+            prodName:productName,
+            qty:quantity
+          });
+        }
+      });
+      console.log(routeNumber,vehicleNumber,products)
+    });
+
   });
 </script>

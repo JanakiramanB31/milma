@@ -70,7 +70,7 @@
                 <!-- Purchased Product Adding to Invoice Section --> 
                 <div class="col-md-5 mb-5">
                   <div class="table-responsive">
-                    <table class="table table-bordered">
+                    <table class="d-table table table-striped ">
                       <thead>
                         <tr>
                           <th scope="col">Product</th>
@@ -80,7 +80,7 @@
                           <th scope="col">Action</th>
                         </tr>
                       </thead>
-                      <tbody id="product-section" style="max-height: 100px;overflow-y: auto;">
+                      <tbody id="product-section" style="height: 270px;overflow-y: auto;">
                       </tbody>
                       <tfoot>
                         <tr>
@@ -99,22 +99,40 @@
                 <div class="col-md-7 mb-5">
 
                   <!-- Products Search -->
-                  <select name="product_id[]" class="form-control productname mb-5">
+<!--                   <input id="product-search" type="text" class="form-control mb-5" placeholder="Search Products..."/>
+ -->
+                  <div class="input-group mb-4" style="position: relative;">
+                    <div class="input-group-prepend ">
+                        <span class="input-group-text icon-container " style="border-right: none;background:transparent">
+                            <i style="color: #6c757d;" class="fa fa-search"></i>
+                        </span>
+                    </div>
+                    <input id="product-search" type="text" style="border-left: none;" class="form-control pl-0" placeholder="Search Products..."/>
+                </div>
+
+                  
+                  <!-- <select name="product_id[]" class="form-control productname mb-5">
                     <option value = ''>Select Product</option>
                     @foreach($products as $product)
                       <option value="{{$product->id}}">{{$product->name}}</option>
                     @endforeach
-                  </select>
+                  </select> -->
 
                   <!-- Products List with Image -->
-                  <div class="overflow-y" style="max-height: 400px;overflow-y: auto;">
-                    <div class="d-flex justify-content-between">
-                      @foreach($products as $product)
-                        <figure >
-                          <image class="product-select" data-id="{{$product->id}}" data-name="{{$product->name}}" src={{asset('images/product/' . $product->image)}} width='100px' height='100px'/>
-                          <figcaption class="text-center">{{$product->name}}</figcaption>
-                        </figure>
-                      @endforeach
+                  <div class="overflow-y p-1 border border-primary rounded" style="height: 300px;overflow-y: auto;">
+                    <div id="product-list" class="d-flex h-100 justify-content-between">
+                      @if(count($products) == 0)
+                        <div class="d-flex w-100 h-100 justify-content-center align-items-center">
+                          <p>No Products Found</p>
+                        </div>  
+                      @else
+                        @foreach($products as $product)
+                          <figure>
+                            <image class="product-select" data-id="{{$product->id}}" data-name="{{$product->name}}" src={{asset('images/product/' . $product->image)}} width='100px' height='100px'/>
+                            <figcaption class="text-center">{{$product->name}}</figcaption>
+                          </figure>
+                        @endforeach
+                      @endif
                     </div>
                   </div>
 
@@ -303,12 +321,12 @@
           </div>
 
           <!-- Toast Message -->
-          <div class="toast align-items-center text-bg-alert border-0" role="alert" aria-live="assertive" aria-atomic="true">
+         <!--  <div class="toast align-items-center text-bg-alert border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
               <div class="toast-body"></div>
               <button type="button" class="btn btn-danger btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"><i class="fa fa-remove"></i></button>
             </div>
-          </div>
+          </div> -->
 
         </div>
       </div>
@@ -643,8 +661,8 @@
           addProductMobileRow(productID, productName, productPrice);
         } else {
           alert('Already added the Product');
-          $('.toast-body').text("Already added the Product");
-          $('.toast').toast('show');
+          /* $('.toast-body').text("Already added the Product");
+          $('.toast').toast('show'); */
         }
       });
 
@@ -757,6 +775,31 @@
             }, 500);
           }
         });
+      });
+
+      //Searching Products
+      $('#product-search').on('keyup', function () {
+        var searchText = $(this).val().toLowerCase();
+        //console.log(searchText)
+
+        $('#product-list figure').each(function () {
+          var productName = $(this).find('figcaption').text().toLowerCase();
+          if(productName.includes(searchText)) {
+            $(this).show();
+          } else {
+            $(this).hide();
+          }
+        });
+      });
+
+      //Adding Border to Search Icon
+      $('#product-search').on('click', function () {
+        $('.input-group-text').addClass("border-2 border-primary");
+      });      
+
+      //Removing Border to Search Icon
+      $('#product-search').on('blur', function () {
+        $('.input-group-text').removeClass("border-2 border-primary");
       });
       
     });

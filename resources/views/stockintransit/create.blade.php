@@ -139,36 +139,38 @@
 
                           </div>
                         </div>
-                      </form>
 
-                      <div class="modal fade" id="sit-data" tabindex="-1" role="dialog" aria-labelledby="sitDataLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-sm" role="document">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="sitDataLabel">Stock In Transit Form Data</h5>
-                              <button type="button" class="btn-close btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
-                                <i class="fa fa-remove"></i>
-                              </button>
-                            </div>
-                            <div class="modal-body table-responsive">
-                              <table class="table table-hover" id="products-list">
-                                <tr>
-                                  <td><strong>Route Number</strong></td>
-                                  <td><p id="route-number"></p></td>
-                                </tr>
-                                <tr>
-                                  <td><strong>Vehicle Number</strong></td>
-                                  <td><p id="vehicle-number"></p></td>
-                                </tr>
-                              </table>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                              <button id="submit-sit-data" type="submit" class="btn btn-primary">Save</button>
+                        <!-- Showing All Form Data -->
+                        <div class="modal fade" id="sit-data" tabindex="-1" role="dialog" aria-labelledby="sitDataLabel" aria-hidden="true">
+                          <div class="modal-dialog modal-sm" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="sitDataLabel">Stock In Transit Form Data</h5>
+                                <button type="button" class="btn-close btn btn-danger" data-dismiss="modal" aria-label="Close">
+                                  <i class="fa fa-remove"></i>
+                                </button>
+                              </div>
+                              <div class="modal-body table-responsive">
+                                <table class="table table-hover" id="products-list">
+                                  <tr>
+                                    <td><strong>Route Number</strong></td>
+                                    <td><p id="route-number"></p></td>
+                                  </tr>
+                                  <tr>
+                                    <td><strong>Vehicle Number</strong></td>
+                                    <td><p id="vehicle-number"></p></td>
+                                  </tr>
+                                </table>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button id="submit-sit-data" type="submit" class="btn btn-primary">Submit</button>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
+
+                      </form>
 
                     </div>
                 </div>
@@ -259,6 +261,7 @@
       var routeNumber = $('#route_id').find('option:selected').text();
       var vehicleNumber = $('#vehicle_id').find('option:selected').text();
       var products = [];
+
       $('.prod-name').each(function () {
         var productName = $(this).val();
         var quantity = $(this).closest('div').next().find('.quantity-input').val();
@@ -270,25 +273,35 @@
           });
         }
       });
+
       console.log(routeNumber,vehicleNumber,products);
       $('#route-number').text(routeNumber);
       $('#vehicle-number').text(vehicleNumber);
+      var existingProducts = {};
 
+      $('#products-list').find('tr').each(function () {
+        var existingProductName = $(this).find('p').text().trim();
+        existingProducts[existingProductName] = true;
+      });
+      
       var productListHtml = '';
       products.forEach(function(product) {
-        productListHtml += `
-        <tr>
-          <td><strong>Product Name</strong></td>
-          <td><p>${product.prodName}</p></td>
-        </tr>
-        <tr>
-          <td><strong>Quantity</strong></td>
-          <td><p>${product.qty}</p></td>
-        </tr>`
-          //productListHtml += '<p>' + product.prodName + ': ' + product.qty + '</p>';
+        if (!existingProducts[product.prodName]) {
+          productListHtml += `
+          <tr>
+            <td><strong>Product Name</strong></td>
+            <td><p>${product.prodName}</p></td>
+          </tr>
+          <tr>
+            <td><strong>Quantity</strong></td>
+            <td><p>${product.qty}</p></td>
+          </tr>`
+        }
       });
 
-      $('#products-list').append(productListHtml); 
+      if(productListHtml) {
+        $('#products-list').append(productListHtml); 
+      }
 
       $('#sit-data').modal('show');
     });

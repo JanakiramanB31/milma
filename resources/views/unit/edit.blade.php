@@ -33,7 +33,7 @@
                             @method('PUT')
                             <div class="form-group col-md-8">
                                 <label class="control-label">Unit</label>
-                                <input name="name" value="{{old('name', $unit->name }}" class="form-control @error('name') is-invalid @enderror" type="text" placeholder="Enter your name">
+                                <input name="name" value="{{old('name', $unit->name) }}" class="form-control @error('name') is-invalid @enderror" type="text" placeholder="Enter your name"/>
                                 @error('name')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>

@@ -2,7 +2,7 @@
 
 @extends('layouts.master')
 
-@section('titel', 'Rate | ')
+@section('title', 'Rate | ')
 @section('content')
     @include('partials.header')
     @include('partials.sidebar')

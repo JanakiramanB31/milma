@@ -19,7 +19,7 @@
             </ul>
         </div>
         <div class="">
-            <a class="btn btn-primary" href="{{route('tax.create')}}"><i class="fa fa-plus"> </i> Add New Tax</a>
+            <a class="btn btn-primary" href="{{route('tax.create')}}"><i class="fa fa-plus"> </i>Add New Tax</a>
         </div>
 
         <div class="row mt-2">

@@ -45,7 +45,7 @@
                             </div>
 
                             <div class="form-group col-md-4 align-self-end">
-                                <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Create</button>
+                                <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Add Unit</button>
                             </div>
                         </form>
                     </div>

@@ -15,7 +15,7 @@
       </div>
 
       <div class="form-group col-md-4 align-self-end">
-          <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-plus"></i>Create</button>
+          <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-plus"></i>{{$editPage ? "Update" : "Add"}} Category</button>
       </div>
   </form>
 </div>

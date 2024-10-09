@@ -151,7 +151,7 @@
                           </div>
 
                           <div class="form-group mt-3 col-md-4 align-self-end">
-                            <button style="display: {{$productDisplay}};" id="add_button" class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i> Add Stock in Transit Details</button>
+                            <button style="display: {{$productDisplay}};" id="add_button" class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i> Update Stock in Transit Details</button>
                           </div>
                         </div>
                       </form>

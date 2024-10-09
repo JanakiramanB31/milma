@@ -45,6 +45,7 @@ class StockInTransitController extends Controller
     public function create()
     {
       $userID = Auth::id();
+      $userRole = Auth::user()->role;
       $users = User::where('role', 'sales')->get();
       $routes = Route::all();
       $vehicles = Vehicle::all();
@@ -58,7 +59,7 @@ class StockInTransitController extends Controller
       $routeDisplay = 'block';
       $productDisplay = 'none';
       $submitURL = route('stockintransit.store');
-      return view('stockintransit.create',compact('userID','users','routes','supplierProdQuantities','vehicles','products','roles','submitURL','routeDisplay','productDisplay'));
+      return view('stockintransit.create',compact('userID','userRole','users','routes','supplierProdQuantities','vehicles','products','roles','submitURL','routeDisplay','productDisplay'));
      }
 
      public function checkExistence(Request $request)

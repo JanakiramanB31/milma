@@ -41,7 +41,7 @@
 
 
       <div class="form-group col-md-4 align-self-end">
-          <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i> Add Price Details</button>
+          <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i> {{$editPage ? "Update" : "Add"}} Price</button>
       </div>
   </form>
 </div>

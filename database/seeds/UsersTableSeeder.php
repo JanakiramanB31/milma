@@ -15,6 +15,7 @@ class UsersTableSeeder extends Seeder
             'f_name' => "Admin",
             'l_name' => "Milma",
             'image' => "user.jpg",
+            'role'  => 'admin',
             'email' => 'admin@milma.com',
             'password' => bcrypt('admin@milma'),
         ]);
@@ -22,6 +23,7 @@ class UsersTableSeeder extends Seeder
         DB::table('users')->insert([
           'f_name' => "SalesMan",
           'l_name' => "A",
+          'role'  => 'sales',
           'image' => "user.jpg",
           'email' => 'salesman_a@milma.com',
           'password' => bcrypt('salesman_a@milma'),
@@ -30,6 +32,7 @@ class UsersTableSeeder extends Seeder
         DB::table('users')->insert([
           'f_name' => "SalesMan",
           'l_name' => "B",
+          'role'  => 'sales',
           'image' => "user.jpg",
           'email' => 'salesman_b@milma.com',
           'password' => bcrypt('salesman_b@milma'),

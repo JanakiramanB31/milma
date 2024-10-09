@@ -137,8 +137,8 @@ class ProductController extends Controller
         // }
 
         if ($request->hasFile('image')) {
-          echo "working";
-          exit;
+          // echo "working";
+          // exit;
             $image = $request->file('image');
             $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();        
             $image->move(public_path('images/product/'), $imageName);

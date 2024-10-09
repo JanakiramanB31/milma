@@ -70,7 +70,7 @@
                             @enderror
                           </div>
                             
-                          @if($userID == 1)
+                          @if($userRole == 'admin')
                           <div class="form-group col-md-12">
                             <label class="control-label">Select User</label>
                             <select name="user_id" id='user_id' class="form-control @error('user_id') is-invalid @enderror">
@@ -181,15 +181,21 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+      
+  </script>
+<script>
+  
   
   $(document).ready(function() {
-    var currentUserID = @if(Auth::check()) {{ Auth::id() }} @else null @endif;
+      var currentUserRole = @if(Auth::check()) {!! json_encode(Auth::user()->role) !!} @else 'guest' @endif;
+      console.log(currentUserRole);
+
     $('#nextButton').on('click', function() {
       var routeSelect = $('#route_id');
       var vehicleSelect = $('#vehicle_id');
       var userIDSelect = $('#user_id');
 
-      if (routeSelect.val() && vehicleSelect.val() && (currentUserID == 1 ? userIDSelect.val() : true)) {
+      if (routeSelect.val() && vehicleSelect.val() && (currentUserRole === "admin" ? userIDSelect.val() :true)) {
         var route_id = routeSelect.val();
         var vehicle_id = vehicleSelect.val();
         console.log(route_id, vehicle_id);

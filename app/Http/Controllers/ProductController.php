@@ -83,7 +83,7 @@ class ProductController extends Controller
             'stock_type' => 'required',
             'status' => 'required',
             'sit_status' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'file|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'tax_id' => 'required',
             'moq_number' => 'required|numeric|min:1',
             'rate_id' => 'required',

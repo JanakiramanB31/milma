@@ -31,7 +31,7 @@
             <div class="col-md-12">
                 <div class="tile">
                     <h3 class="tile-title">Company</h3>
-                    @include('Company.form.form')
+                    @include('company.form.form')
                 </div>
             </div>
         </div>

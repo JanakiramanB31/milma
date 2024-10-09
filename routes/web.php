@@ -43,7 +43,7 @@ Route::group(['middleware' => 'App\Http\Middleware\SuperAdminMiddleware', 'prefi
   Route::post('invoice/getProducts/{id}', 'InvoiceController@getProducts')->name('invoice.getProducts');
   Route::post('invoice/storeReturns', 'InvoiceController@storeReturns')->name('invoice.storeReturns');
   Route::resource('rate', 'RateController');
-  Route::get('sales', [SalesController::class, 'index'])->name('sales.admin.index');
+  Route::get('sales', [SalesController::class, 'index']);
   Route::resource('purchase', 'PurchaseController');
   Route::get('/findPrice', 'InvoiceController@findPrice')->name('findPrice');
   Route::get('/findPricePurchase', 'PurchaseController@findPricePurchase')->name('findPricePurchase');

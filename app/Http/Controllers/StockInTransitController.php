@@ -210,6 +210,7 @@ class StockInTransitController extends Controller
             $stockInTransit->vehicle_id = $request->vehicle_id;
             $stockInTransit->product_id = $productID;
             $stockInTransit->quantity = $quantity;
+            $stockInTransit->save();
           }
         } else {
             if (isset($newQuantities[$key]) && !empty($newQuantities[$key])) {
@@ -218,9 +219,9 @@ class StockInTransitController extends Controller
               $stockInTransit->vehicle_id = $request->vehicle_id;
               $stockInTransit->product_id = $productID;
               $stockInTransit->quantity = $oldQuantities[$key] + $newQuantities[$key];
+              $stockInTransit->save();
             }
         }
-        $stockInTransit->save();
       }
       return redirect()->back()->with('message', 'Stock In Transit Details Updated Successfully');
     }

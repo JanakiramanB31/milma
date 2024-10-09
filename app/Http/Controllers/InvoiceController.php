@@ -70,7 +70,7 @@ class InvoiceController extends Controller
           // $this->pr($products);
           // exit;
           $routeEmptyError = "Route Number or Vehicle Number Not Found";
-          return view('invoice.create', compact('customers','routeEmptyError','products'));
+          return view('invoice.createforphone', compact('customers','routeEmptyError','products'));
         }
       }
       return view('invoice.createforphone', compact('customers','products','routeEmptyError'));

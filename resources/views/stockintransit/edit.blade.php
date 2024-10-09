@@ -164,14 +164,13 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  var userId = <?php echo json_encode($userID); ?>;
-  console.log(userId)
+  var currentUserRole = @if(Auth::check()) {!! json_encode(Auth::user()->role) !!} @else 'guest' @endif;
   $(document).ready(function() {
     $('#nextButton').on('click', function() {
       var routeSelect = $('#route_id');
       var vehicleSelect = $('#vehicle_id');
 
-      if(userId == 1) {
+      if(currentUserRole == 'admin') {
         $('#route-vehicle-section').hide();
         $('#product-section').show();
         $('#add_button').show();

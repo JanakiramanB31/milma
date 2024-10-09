@@ -44,11 +44,12 @@ class InvoiceController extends Controller
     public function create()
     {
       $userID = Auth::id();
+      $userRole = Auth::user()->role;
       $today = now()->toDateString();
       $routeEmptyError = null;
     
       $customers = Customer::where('status',1)->get();
-      if ($userID == 1) {
+      if ($userRole == 'admin') {
         //echo "USERId : ", $userID;
         $products = Product::where('status',1)->get();
         

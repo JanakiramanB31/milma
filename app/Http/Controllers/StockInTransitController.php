@@ -92,7 +92,8 @@ class StockInTransitController extends Controller
       ]);
       //$this->pr($request->all());
      // exit;
-      $userId = Auth::id(); 
+      $userId = Auth::id();
+      $userRole = Auth::user()->role;
       $productIDs = $request->product_id;
       $quantities= $request->quantity;
       //exit;
@@ -103,7 +104,7 @@ class StockInTransitController extends Controller
 
           if (isset($quantities[$key]) && !empty($quantities[$key])) {
             $stockInTransit = new StockInTransit();
-            $stockInTransit->user_id = ($userId == 1 ? $request->user_id : $userId);
+            $stockInTransit->user_id = ($userRole == 'admin' ? $request->user_id : $userId);
             $stockInTransit->route_id = $request->route_id;
             $stockInTransit->vehicle_id = $request->vehicle_id;
             $stockInTransit->product_id = $productID;
@@ -149,6 +150,7 @@ class StockInTransitController extends Controller
       $vehicles = Vehicle::all();
       $products = Product::where('sit_status',1)->where('status',1)->get();
       $userID = Auth::id();
+      $userRole = Auth::user()->role;
       $existUserID = $stockInTransit->user_id;
       $users = User::where('role', 'sales')->get(); 
       $today = now()->format('Y-m-d');
@@ -172,12 +174,12 @@ class StockInTransitController extends Controller
          $supplierProdQuantities[$product->id] = $quantity;
        }
       // exit;
-      if ($userID == 1) {
-      $routeDisplay = 'block';
-      $productDisplay = 'none';
+      if ($userRole == 'admin') {
+        $routeDisplay = 'block';
+        $productDisplay = 'none';
       } else {
         $routeDisplay = 'none';
-      $productDisplay = 'block';
+        $productDisplay = 'block';
       }
       $submitURL = route('stockintransit.update',$stockInTransit->id);
       return view('stockintransit.edit',compact('stockInTransit','supplierProdQuantities','userID','users','routes','vehicles','products','submitURL', 'productIDsAndQuantities','routeDisplay','productDisplay','stockInTransitIDs'));

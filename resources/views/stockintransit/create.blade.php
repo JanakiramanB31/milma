@@ -151,15 +151,25 @@
                                 </button>
                               </div>
                               <div class="modal-body table-responsive">
-                                <table class="table table-hover" id="products-list">
-                                  <tr>
-                                    <td><strong>Route Number</strong></td>
-                                    <td><p id="route-number"></p></td>
-                                  </tr>
-                                  <tr>
-                                    <td><strong>Vehicle Number</strong></td>
-                                    <td><p id="vehicle-number"></p></td>
-                                  </tr>
+                                <table class="table table-hover" >
+                                  <thead>
+                                    <tr>
+                                      <td><strong>Route Number</strong><p id="route-number"></p></td>
+                                      <td><strong>Vehicle Number</strong><p id="vehicle-number"></p></td>
+                                    </tr>
+                                  </thead>
+                                  <tbody id="products-list">
+                                    <tr>
+                                      <td><strong>Product Name</strong></td>
+                                      <td><strong>Quantity</strong></td>
+                                    </tr>
+                                  </tbody>
+                                  <tfoot>
+                                    <tr>
+                                      <td align="end">Total</td>
+                                      <td align="start" class="tot-qty"></td>
+                                    </tr>
+                                  </tfoot>
                                 </table>
                               </div>
                               <div class="modal-footer">
@@ -180,9 +190,6 @@
 @endsection
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-      
-  </script>
 <script>
   
   
@@ -267,6 +274,7 @@
       var routeNumber = $('#route_id').find('option:selected').text();
       var vehicleNumber = $('#vehicle_id').find('option:selected').text();
       var products = [];
+      var totalQty = '';
 
       $('.prod-name').each(function () {
         var productName = $(this).val();
@@ -286,31 +294,55 @@
       var existingProducts = {};
 
       $('#products-list').find('tr').each(function () {
-        var existingProductName = $(this).find('p').text().trim();
+        var existingProductName = $(this).find('.product-name').text().trim();
         existingProducts[existingProductName] = true;
+        
       });
       
       var productListHtml = '';
       products.forEach(function(product) {
+        var existingProductQty = product.qty;
+        totalQty += existingProductQty;
         if (!existingProducts[product.prodName]) {
           productListHtml += `
-          <tr>
-            <td><strong>Product Name</strong></td>
-            <td><p>${product.prodName}</p></td>
-          </tr>
-          <tr>
-            <td><strong>Quantity</strong></td>
-            <td><p>${product.qty}</p></td>
+          <tr class="product-row">
+            <td><p class = "product-name">${product.prodName}</p></td>
+            <td><p class="product-quantity">${product.qty}</p></td>
           </tr>`
         }
       });
 
       if(productListHtml) {
-        $('#products-list').append(productListHtml); 
+        $('#products-list').append(productListHtml);
+        $('.tot-qty').html(totalQty)
       }
 
       $('#sit-data').modal('show');
     });
+
+    /* $(document).on('input', '.quantity-input', function () {
+      var quantity = $(this).val();
+      $(this).closest('tr').find('.product-quantity').text(quantity);
+      updateTotalQuantity();
+    });
+
+    function updateTotalQuantity() {
+      console.log("Updating total quantity...");
+      var totalQty = 0;
+
+      $('#products-list').find('.product-row').each(function () {
+          var quantityText = $(this).find('.product-quantity').text().trim(); 
+          var quantity = parseInt(quantityText, 10);
+
+          console.log(`Found quantity: ${quantityText}`); 
+
+          if (!isNaN(quantity)) { 
+              totalQty += quantity;
+          }
+      });
+
+      $('.tot-qty').html(totalQty);
+  } */
 
   });
   

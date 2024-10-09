@@ -55,7 +55,7 @@
 
       <div class="form-group col-md-12">
           <label class="control-label">Previous Credit Balance</label>
-          <input name="previous_balance" class="form-control @error('previous_balance') is-invalid @enderror" value="{{old('previous_balance', $customer->previous_balance)}}" type="text" placeholder="Example: 111">
+          <input name="previous_balance" class="form-control @error('previous_balance') is-invalid @enderror" value="{{old('previous_balance', $customer->previous_balance ? $customer->previous_balance : '0')}}" type="text" placeholder="Example: 111">
           @error('previous_balance')
           <span class="invalid-feedback" role="alert">
                   <strong>{{ $message }}</strong>

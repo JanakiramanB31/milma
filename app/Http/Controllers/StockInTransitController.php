@@ -120,7 +120,8 @@ class StockInTransitController extends Controller
 
         }
       }
-      return redirect()->back()->with('message', 'Stock In Transit Details Added Successfully');
+      return redirect()->route('invoice.create')->with('message', 'Stock In Transit Details Added Successfully');
+
     }
   
 

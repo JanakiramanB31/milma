@@ -73,7 +73,7 @@ class CustomerController extends Controller
             'address' => 'required|min:3',
             'email' => 'required|email|unique:customers',
             'details' => 'required|min:3',
-            'previous_balance' => 'min:3',
+            'previous_balance' => 'required',
             'company_name' => 'required|min:3',
             'contact_person' => 'required|min:3',
             'post_code' => 'required|min:3|max:6',

@@ -5,7 +5,7 @@
   @include('partials.header')
   @include('partials.sidebar')
   <main class="app-content">
-    <div class="app-title">
+    <!-- <div class="app-title">
       <div>
         <h1><i class="fa fa-edit"></i> Create Invoice</h1>
       </div>
@@ -14,7 +14,7 @@
         <li class="breadcrumb-item">Invoices</li>
         <li class="breadcrumb-item"><a href="#">Create</a></li>
       </ul>
-    </div>
+    </div> -->
 
     <div class="row">
       <div class="clearix"></div>

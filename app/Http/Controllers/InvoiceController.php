@@ -86,13 +86,16 @@ class InvoiceController extends Controller
     public function getProducts(Request $request, $id) {
      // $this->pr($request->all());
       //return response()->json(['message' => 'No Data'],200);
-      $products = Product::select('id','name')->where('status',1)->whereIn('id', function($query) use ($id) {
-        $query->select('product_id')->from('sales')->whereIn('invoice_id', function($subQuery) use ($id) {
-          $subQuery->select('id')->from('invoices') ->where('customer_id', $id);
+      $userID = Auth::id();
+      $cusID = $id;
+      $balAmt = Invoice::select('balance_amt')->where('customer_id', $cusID)->orderBy('created_at', 'desc')->first() ?? 0;
+      $products = Product::select('id','name')->where('status',1)->whereIn('id', function($query) use ($cusID) {
+        $query->select('product_id')->from('sales')->whereIn('invoice_id', function($subQuery) use ($cusID) {
+          $subQuery->select('id')->from('invoices') ->where('customer_id', $cusID);
         });
       })->get();
-      $productPricesAndIDs = ProductPrice::select('product_id','price')->whereIn('rate_id', function($query) use($id) {
-        $query->select('rate_id')->from('customers')->where('id', $id);
+      $productPricesAndIDs = ProductPrice::select('product_id','price')->whereIn('rate_id', function($query) use($cusID) {
+        $query->select('rate_id')->from('customers')->where('id', $cusID);
       })->get();
       
       $prodIDsAndPrices= $productPricesAndIDs->pluck('price', 'product_id')->toArray();
@@ -107,14 +110,13 @@ class InvoiceController extends Controller
       //$this->pr($quantityAndPrices);
       //exit;
 
-      return response()->json(['products' => $products,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices' => $prodIDsAndPrices]);
+      return response()->json(['products' => $products,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices' => $prodIDsAndPrices,'balance_amount' => $balAmt]);
       
      
     }
     public function store(Request $request)
     {
       $this->pr($request->all());
-    // exit;
         $request->validate([
             'customer_id' => 'required|integer',
             'product_id' => 'required',
@@ -122,13 +124,23 @@ class InvoiceController extends Controller
             'price' => 'required',
             'amount' => 'required',
         ]);
+        
         $userId = Auth::id();
-
+        $cusID = $request->customer_id;
+        
+        $oldInvoice = Invoice::where('customer_id', $cusID)->orderBy('created_at', 'desc')->first();
+        echo $oldInvoice;
+        if ($oldInvoice) {
+          $oldInvoice->balance_amt = 0;
+          $oldInvoice->save();
+        }
+        echo "Coming";
         $invoice = new Invoice();
         $invoice->customer_id = $request->customer_id;
         $invoice->user_id = $userId;
         $invoice->received_amt = $request->received_amt;
-        $invoice->balance_amt = ($request->total)- ($request->received_amt);
+        $invoice->prev_balance_amt = $request->prev_balance_amt;
+        $invoice->balance_amt = (($request->total) + ($request->prev_balance_amt))- ($request->received_amt);
         $invoice->total_amount = $request->total;
         $invoice->save();
 
@@ -158,7 +170,7 @@ class InvoiceController extends Controller
     public function storeReturns(Request $request)
     {
       $this->pr($request->all());
-      exit;
+      //exit;
       foreach ( $request->product_id as $key => $product_id){
         $return = new Returns();
         $return->product_id = $request->return_product_id[$key];
@@ -189,7 +201,7 @@ class InvoiceController extends Controller
     {
         $invoice = Invoice::findOrFail($id);
         $sales = Sale::where('invoice_id', $id)->get();
-        $amount = Invoice::select('total_amount','received_amt','balance_amt')->where('id', $id)->first();
+        $amount = Invoice::select('total_amount','received_amt','prev_balance_amt','balance_amt')->where('id', $id)->first();
         //$this->pr($Amount);
         return view('invoice.show', compact('invoice','sales','amount'));
 

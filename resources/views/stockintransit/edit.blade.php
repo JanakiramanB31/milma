@@ -100,17 +100,17 @@
                         
 
                           <div class="overflow-auto" style="max-height: 330px; overflow-y: auto;">
-                          <div  style="display: flex;">
-                          <div class="col-md-5">
-                          <label class="control-label">Product Name</label>
-                          </div>
-                          <div class="col-md-1">
-                          <label class="control-label">Existing Quantity</label>
-                          </div>
-                          <div class="col-md-6">
-                          <label class="control-label">Add Quantity</label>
-                          </div>
-                          </div>
+                            <div  style="display: flex;">
+                              <div class="col-md-5">
+                                <label class="control-label">Product Name</label>
+                              </div>
+                              <div class="col-md-1">
+                                <label class="control-label">Existing Quantity</label>
+                              </div>
+                              <div class="col-md-6">
+                                <label class="control-label">Add Quantity</label>
+                              </div>
+                            </div>
 
                           @foreach($products as $product)
                             @php

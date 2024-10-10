@@ -104,6 +104,15 @@
                         
 
                           <div class="overflow-auto" style="max-height: 330px; overflow-y: auto;">
+                            <div  style="display: flex;">
+                              <div class="col-md-6">
+                                <label class="control-label">Product Name</label>
+                              </div>
+                              <div class="col-md-6">
+                                <label class="control-label">Quantity</label>
+                              </div>
+                            </div>
+
                             @foreach($products as $product)
                             @php
                             $prodMaxQuantity = array_key_exists($product->id, $supplierProdQuantities)?$supplierProdQuantities[$product->id]:0;
@@ -111,7 +120,6 @@
                             @endphp
                             <div id="product-section2" style="display: flex;">
                               <div class="form-group col-md-6">
-                                <label class="control-label">Product Name</label>
                                 <input name="product_name[]" class="form-control prod-name @error('product_name') is-invalid @enderror" value="{{ old('product_name', $product->name) }}" readonly>
                                 <input type="hidden" name="product_id[]" value="{{ $product->id }}">
                                 @error('product_name')
@@ -121,7 +129,6 @@
                                 @enderror
                               </div>
                               <div class="form-group col-md-6">
-                                <label class="control-label">Quantity</label>
                                 <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ old('quantity.' . $product->id) }}"  type="number" placeholder="Enter Quantity" data-available = "{{$prodMaxQuantity}}" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
                                 @error('quantity')
                                 <span class="invalid-feedback" role="alert">
@@ -262,6 +269,7 @@
         $('#add_button').prop('disabled', false);
         $('#product-section1').hide();
       }
+      updateProductQuantities();
     }).on('blur', function() {
       var quantityValue = $(this).val();
       if (!quantityValue) {
@@ -274,7 +282,6 @@
       var routeNumber = $('#route_id').find('option:selected').text();
       var vehicleNumber = $('#vehicle_id').find('option:selected').text();
       var products = [];
-      var totalQty = '';
 
       $('.prod-name').each(function () {
         var productName = $(this).val();
@@ -301,8 +308,6 @@
       
       var productListHtml = '';
       products.forEach(function(product) {
-        var existingProductQty = product.qty;
-        totalQty += existingProductQty;
         if (!existingProducts[product.prodName]) {
           productListHtml += `
           <tr class="product-row">
@@ -314,35 +319,38 @@
 
       if(productListHtml) {
         $('#products-list').append(productListHtml);
-        $('.tot-qty').html(totalQty)
+        updateTotalQuantity();
       }
 
       $('#sit-data').modal('show');
     });
 
-    /* $(document).on('input', '.quantity-input', function () {
-      var quantity = $(this).val();
-      $(this).closest('tr').find('.product-quantity').text(quantity);
+    function updateProductQuantities () {
+      $('#products-list .product-row').each(function() {
+        var productName = $(this).find('.product-name').text().trim();
+        var quantity = $('.prod-name').filter(function () {
+          return $(this).val() == productName;
+        }).closest('div').next().find('.quantity-input').val();
+        $(this).find('.product-quantity').text(quantity);
+      });
       updateTotalQuantity();
-    });
+    }
 
     function updateTotalQuantity() {
-      console.log("Updating total quantity...");
-      var totalQty = 0;
+      var totalQuantity = 0;
 
-      $('#products-list').find('.product-row').each(function () {
-          var quantityText = $(this).find('.product-quantity').text().trim(); 
-          var quantity = parseInt(quantityText, 10);
-
-          console.log(`Found quantity: ${quantityText}`); 
-
-          if (!isNaN(quantity)) { 
-              totalQty += quantity;
-          }
+      $('#product-list .product-row').each(function () {
+        var quantity = parseInt($(this).find('.product-quantity').text()) || 0;
+        totalQuantity += quantity;
       });
 
-      $('.tot-qty').html(totalQty);
-  } */
+      $('.quantity-input').each(function () {
+        var inputQty = parseInt($(this).val()) || 0;
+        totalQuantity += inputQty;
+      });
+
+      $('.tot-qty').text(totalQuantity)
+    }
 
   });
   

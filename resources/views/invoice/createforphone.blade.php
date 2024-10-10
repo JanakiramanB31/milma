@@ -21,7 +21,10 @@
       <div class="col-md-12">
         <div class="tile">
           <div id="error-message"></div>
+          <div class="d-flex justify-content-between">
           <h3 class="tile-title">Invoice</h3>
+          <div class="d-flex"><h5 >Balance Amount : &nbsp;</h5><b id="bal-amt-symbol"></b> <p id="bal-amt"></p></div>
+          </div>
 
           <!-- Errors Section -->
           @if ($errors->any())
@@ -84,7 +87,7 @@
                       </tbody>
                       <tfoot>
                         <tr>
-                          <td></td>
+                          <td><input type="hidden" name="prev_balance_amt" id="balance-amount" class="form-control balance-amount" /></td>
                           <td hidden></td>
                           <td><input type="hidden" name="total" id="total" class="form-control total" /></td>
                           <td><b>Total</b></td>
@@ -407,7 +410,7 @@
 
         //Calculation the Balance Amount
         var total = salesTotal - returnsTotal;
-        $('.currency').html("$");
+        $('.currency').html("€");
         $('.total').html(parseFloat(total).toFixed(2));
         $('#total').val(parseFloat(total).toFixed(2));
       }
@@ -445,9 +448,15 @@
               try {
                 console.log("Working",response);
                 prodData= response;
-                console.log("proddata",prodData)
+                console.log("proddata",prodData);
+                var balAmount = response.balance_amount.balance_amt ?? 0;
+                console.log("Balance Amount", balAmount)
+                $('#bal-amt-symbol').text("€")
+                $('#bal-amt').text(balAmount);
+                $('#balance-amount').val(balAmount);
                 $('#return-product-id').empty().append('<option value="">Select Return Product</option>');
                 if (response.products.length > 0) {
+                  
                   $.each(response.products, function(index, product) {
                     $('#return-product-id').append('<option value="' + product.id + '">' + product.name + '</option>');
                   });
@@ -506,7 +515,7 @@
           var amount = $(this).val()-0;
           total += amount;
         });
-        $('.return-currency').html("$");
+        $('.return-currency').html("€");
         $('.return-total').html(parseFloat(total).toFixed(2));
       }
 

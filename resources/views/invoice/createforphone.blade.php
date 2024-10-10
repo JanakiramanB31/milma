@@ -21,9 +21,13 @@
       <div class="col-md-12">
         <div class="tile">
           <div id="error-message"></div>
-          <div class="d-flex justify-content-between">
-          <h3 class="tile-title">Invoice</h3>
-          <div class="d-flex"><h5 >Balance Amount : &nbsp;</h5><b id="bal-amt-symbol"></b> <p id="bal-amt"></p></div>
+          <div class="d-flex justify-content-between align-items-center">
+            <h3 class="tile-title">Invoice</h3>
+            <h5 >Date: {{now()->format('d-m-Y')}}</h5>
+            <div class="d-flex h-100 justify-content-center align-items-center">
+              <p class="mb-0 ">Bal Amt</p><p class="mb-0 mx-2">:</p>
+              <b id="bal-amt-symbol" class="h5 mb-0 mr-1"></b><b id="bal-amt" class="h5 mb-0"></b>
+            </div>
           </div>
 
           <!-- Errors Section -->
@@ -53,17 +57,17 @@
                   <div id="customer-name-error" class="text-danger"></div> 
                 </div>
 
-                <div class="form-group col-6">
+                <!-- <div class="form-group col-6">
                   <label class="control-label">Date</label>
                   <input name="date"  class="form-control datepicker"  value="<?php echo date('Y-m-d')?>" type="date" placeholder="Enter your email">
-                </div>
+                </div> -->
               </div>
 
               <!-- Return Items Adding Button -->
               <div class="d-flex justify-content-end mb-3">
                 <button id="return-button-add" type="button" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#returnForm">
                   <i class="fa fa-plus"></i>
-                  <span>Add Return Items</span>
+                  <span>Return Items</span>
                 </button>
               </div>
           
@@ -95,6 +99,7 @@
                         </tr>
                       </tfoot>
                     </table>
+                    <div id="product-table-error" class="text-danger"></div>
                   </div>
                 </div>
 
@@ -102,16 +107,14 @@
                 <div class="col-md-7 mb-5">
 
                   <!-- Products Search -->
-<!--                   <input id="product-search" type="text" class="form-control mb-5" placeholder="Search Products..."/>
- -->
                   <div class="input-group mb-4" style="position: relative;">
                     <div class="input-group-prepend ">
-                        <span class="input-group-text icon-container " style="border-right: none;background:transparent">
-                            <i style="color: #6c757d;" class="fa fa-search"></i>
-                        </span>
+                      <span class="input-group-text icon-container " style="border-right: none;background:transparent">
+                        <i style="color: #6c757d;" class="fa fa-search"></i>
+                      </span>
                     </div>
                     <input id="product-search" type="text" style="border-left: none;" class="form-control pl-0" placeholder="Search Products..."/>
-                </div>
+                  </div>
 
                   
                   <!-- <select name="product_id[]" class="form-control productname mb-5">
@@ -228,7 +231,7 @@
 
               <!-- Triggering Received Amount Form Section Model Button -->
               <div >
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#amountForm">Submit</button>
+                <button id="product-form-data" type="button" class="btn btn-primary">Submit</button>
               </div>
 
               <!-- Received Amount PopUp Form -->
@@ -240,8 +243,9 @@
                       <h3 class="modal-title text-center" id="amountFormLabel">Enter Received Amount</h3>
                     </div>
                     <!-- Received Amount PopUp Form Content -->
-                    <div class="modal-body d-flex justify-content-center">
-                      <input id="received_amt" type="number"  name="received_amt" class="form-control-md" style=" padding:20px;font-size:20px;" step="0.01" min="0"/>
+                    <div class="modal-body d-flex flex-column justify-content-center">
+                      <input id="received_amt" type="number"  name="received_amt" class="form-control-md" style=" padding:20px;font-size:20px;" min="0"/>
+                      <div id="received-amt-error" class="text-danger"></div>
                     </div>
                     <!-- Received Amount PopUp Form Footer -->
                     <div class="modal-footer">
@@ -323,24 +327,17 @@
             </div>
           </div>
 
-          <!-- Toast Message -->
-         <!--  <div class="toast align-items-center text-bg-alert border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-              <div class="toast-body"></div>
-              <button type="button" class="btn btn-danger btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"><i class="fa fa-remove"></i></button>
-            </div>
-          </div> -->
-
         </div>
       </div>
     </div>
   </main>
+  
 
 @endsection
 @push('js')
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
-  <script src="{{asset('/')}}js/multifield/jquery.multifield.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="{{asset('/')}}js/multifield/jquery.multifield.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
  
@@ -349,7 +346,8 @@
     var cusID = '' ;
     console.log("Data",prodData)
     $(document).ready(function(){
-
+      $('#bal-amt-symbol').text("€");
+      $('#bal-amt').text(parseFloat(0).toFixed(2));
       // Return Items Form PopOver Section Contents
       $('[data-toggle="popover"]').popover({
         html: true,
@@ -410,6 +408,7 @@
 
         //Calculation the Balance Amount
         var total = salesTotal - returnsTotal;
+        console.log("total",total)
         $('.currency').html("€");
         $('.total').html(parseFloat(total).toFixed(2));
         $('#total').val(parseFloat(total).toFixed(2));
@@ -452,7 +451,7 @@
                 var balAmount = response.balance_amount.balance_amt ?? 0;
                 console.log("Balance Amount", balAmount)
                 $('#bal-amt-symbol').text("€")
-                $('#bal-amt').text(balAmount);
+                $('#bal-amt').text(parseFloat(balAmount).toFixed(2));
                 $('#balance-amount').val(balAmount);
                 $('#return-product-id').empty().append('<option value="">Select Return Product</option>');
                 if (response.products.length > 0) {
@@ -615,18 +614,37 @@
         }
       });
 
+      $('#received_amt').on('change', function (){
+        let receivedAmount = $(this).val();
+        $(this).val(parseFloat(receivedAmount).toFixed(2));
+      });
+
       //After Submitting Return Items to Invoice Make this to Non Editable
       $('#submit-data').on('click', function () {
-        $('#product-section').find('tr').each(function (){
-          $(this).find('select').attr('disabled', false);
-          $(this).find('input').attr('readonly', false);
-        });
-        setTimeout(()=>{
+        let receivedAmt = $('#received_amt').val();
+        if(receivedAmt) {
+          $(this).attr("disabled", false)
           $('#product-section').find('tr').each(function (){
-            $(this).find('select').attr('disabled', true);
-            $(this).find('input').attr('readonly', true);
+            $(this).find('select').attr('disabled', false);
+            $(this).find('input').attr('readonly', false);
           });
-        }, 3000)
+          setTimeout(()=>{
+            $('#product-section').find('tr').each(function (){
+              $(this).find('select').attr('disabled', true);
+              $(this).find('input').attr('readonly', true);
+            });
+          }, 3000);
+        } else {
+          $(this).attr("disabled", true);
+          setTimeout(()=> {
+            $(this).attr("disabled", false);
+          }, 3000)
+          $('#received-amt-error').html("Please enter Amount");
+          $('#received-amt-error').show();
+          setTimeout(()=> {
+            $('#received-amt-error').hide();
+          }, 3000)
+        }
       });
 
       //Adding New Invoice Product Row
@@ -643,17 +661,20 @@
       };
 
       //Validating Customer Selected and Avoiding Same Products selecting Multiple Times Function  
-      $('.product-select').on("click", function() {
+      $(document).on("click", '.product-select', function() {
         var productID = $(this).data('id');
         var productName = $(this).data('name');
-        var customerID = $('#customer_name').val();
+        var customerID = parseInt($('#customer_name').val(), 10);
+        console.log(customerID)
 
-        if (customerID <= 0) {
+        if ( isNaN(customerID)|| customerID <= 0) {
           $('#customer-name-error').html("Please Select Customer Name");
+          $('#customer-name-error').show();
           setTimeout(()=> {
             $('#customer-name-error').hide();
           }, 3000)
         } else {
+          $('#customer-name-error').hide();
           var isProductExists = false;
           $('#product-section').find('tr').each(function () {
             var ExistingProdID =  $(this).find('.productname').data('id');
@@ -662,16 +683,16 @@
               return false;
             }
           });
-        }
 
-        if (!isProductExists) {
+          if (!isProductExists) {
           var prodPrices = prodData.productIdsAndPrices;
           var productPrice = parseFloat(prodPrices[productID]).toFixed(2);
           addProductMobileRow(productID, productName, productPrice);
-        } else {
-          alert('Already added the Product');
-          /* $('.toast-body').text("Already added the Product");
-          $('.toast').toast('show'); */
+          } else {
+            //alert('Already added the Product');
+            $('.toast-body').text("Already added the Product");
+            $('.toast').toast('show');
+          }
         }
       });
 
@@ -809,6 +830,66 @@
       //Removing Border to Search Icon
       $('#product-search').on('blur', function () {
         $('.input-group-text').removeClass("border-2 border-primary");
+      });
+
+      //Validating Product Data
+      $('#product-form-data').on('click', function() {
+        var customerID = parseInt($('#customer_name').val(), 10);
+        if ( isNaN(customerID)|| customerID <= 0) {
+          $('#customer-name-error').html("Please Select Customer Name");
+          $('#customer-name-error').show();
+          setTimeout(()=> {
+            $('#customer-name-error').hide();
+          }, 3000)
+        } else {
+          var productTableBody = $('#product-section');
+          let allFilled = true;
+          let productsCount = productTableBody.find('tr').length;
+          console.log(productsCount)
+          if(productsCount == 0) {
+            //alert("Please add minimum of 1 products");
+            $('#product-table-error').html("Please add minimum of 1 product");
+            $('#product-table-error').show();
+            setTimeout(()=> {
+              $('#product-table-error').hide();
+            }, 3000)
+          } else {
+            productTableBody.find('tr').each(function () {
+              let productID = $(this).find('.productname').data('id');
+              console.log("productID",productID)
+              let productQty = $(this).find('.qty').val();
+              // console.log("productID", productID)
+              // console.log("productQty", productQty)
+
+              if (productID == "") {
+                console.log("productID",productID)
+                $('#product-table-error').html("Please Select the Product");
+                $('#product-table-error').show();
+                setTimeout(()=> {
+                  $('#product-table-error').hide();
+                }, 3000);
+                allFilled = false; 
+                return false;
+              } else if (productQty == "") {
+                $('#product-table-error').html("Please Enter the Quantity");
+                $('#product-table-error').show();
+                setTimeout(()=> {
+                  $('#product-table-error').hide();
+                }, 3000)
+                allFilled = false; 
+                return false;
+              } else {
+                allFilled = true; 
+                return true;
+              }
+            });
+
+            if(allFilled) {
+              $('#amountForm').modal('show');
+            }
+          }
+
+        }
       });
       
     });

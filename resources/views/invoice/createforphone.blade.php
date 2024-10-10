@@ -689,7 +689,7 @@
           var productPrice = parseFloat(prodPrices[productID]).toFixed(2);
           addProductMobileRow(productID, productName, productPrice);
           } else {
-            //alert('Already added the Product');
+            alert('Already added the Product');
             $('.toast-body').text("Already added the Product");
             $('.toast').toast('show');
           }

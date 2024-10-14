@@ -118,6 +118,7 @@
                             $stockInTransitID = array_key_exists($product->id, $stockInTransitIDs)?$stockInTransitIDs[$product->id]:'';
                             $prodMaxQuantity = array_key_exists($product->id, $supplierProdQuantities)?$supplierProdQuantities[$product->id]:0;
                             @endphp
+                            @if($prdQuantity != 0)
                             <div id="product-section2" style="display: flex;">
                               <div class="form-group col-md-5">
                                 <input name="product_name[]" class="form-control product-name @error('product_name') is-invalid @enderror" value="{{ old('product_name', $product->name) }}" readonly>
@@ -147,6 +148,7 @@
                                 @enderror
                               </div>
                             </div>
+                            @endif
                             @endforeach
                           </div>
 

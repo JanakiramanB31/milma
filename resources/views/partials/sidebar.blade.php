@@ -112,11 +112,11 @@
             </ul>
         </li>
 
-        <li class="treeview"><a class="app-menu__item {{ request()->is('stockintransit*') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-archive"></i><span class="app-menu__label">Stock In Transit</span><i class="treeview-indicator fa fa-angle-right"></i></a>
-            <ul class="treeview-menu">
+        <li><a class="app-menu__item {{ request()->is('stockintransit*') ? 'active' : ''}}" href="{{route('stockintransit.index')}}"><i class="app-menu__icon fa fa-archive"></i><span class="app-menu__label">Stock In Transit</span></a>
+            <!-- <ul class="treeview-menu">
                 <li><a class="treeview-item" href="{{route('stockintransit.create')}}"><i class="icon fa fa-circle-o"></i> Add Stock In Transit</a></li>
                 <li><a class="treeview-item" href="{{route('stockintransit.index')}}"><i class="icon fa fa-circle-o"></i> Manage Stock In Transits</a></li>
-            </ul>
+            </ul> -->
         </li>
 
     </ul>

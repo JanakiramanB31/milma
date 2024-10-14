@@ -203,6 +203,7 @@
   $(document).ready(function() {
       var currentUserRole = @if(Auth::check()) {!! json_encode(Auth::user()->role) !!} @else 'guest' @endif;
       console.log(currentUserRole);
+      $('#check-button').attr('disabled', true);
 
     $('#nextButton').on('click', function() {
       var routeSelect = $('#route_id');
@@ -252,21 +253,30 @@
       var barcode = $(this).data('barcode');
       var quantityValue = $(this).val();
       var availableQuantity = $(this).data('available');
-      console.log(availableQuantity)
+      console.log(availableQuantity);
       $('#product-section1').show();
       $('#sku_code').text(sku);
       $('#barcode').text(barcode);
-      if (quantityValue >= 0 && quantityValue <= availableQuantity) {
-        $('#quantity-error').css("display", "none");
+      if (quantityValue < 0) {
+        $('#quantity-error').css("display", "block");
+        $('#quantity-error').text('Please enter non-negative quantities.').show();
+        $('#add_button').prop('disabled', true);
+        $('#check-button').attr('disabled', true);
+      }
+      else if (quantityValue >= 0 && quantityValue <= availableQuantity) {
+        $('#quantity-error').hide();
         $('#add_button').prop('disabled', false);
+        $('#check-button').attr('disabled', false);
         $('#product-section1').show();
         $('#sku_code').text(sku);
         $('#barcode').text(barcode);
       } else if (quantityValue > availableQuantity) {
         $('#add_button').prop('disabled', true);
+        $('#check-button').attr('disabled', true);
         $('#quantity-error').text('Quantity exceeds available stock of Available Quantity').show();
       } else {
         $('#add_button').prop('disabled', false);
+        $('#check-button').attr('disabled', false);
         $('#product-section1').hide();
       }
       updateProductQuantities();
@@ -351,6 +361,11 @@
 
       $('.tot-qty').text(totalQuantity)
     }
+
+    $('#product-section').on('focus', '.prod-name, .quantity-input', function () {
+        console.log("Working");
+        $(this).css('border-color','#ced4da');
+      });
 
   });
   

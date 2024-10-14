@@ -25,7 +25,14 @@ class StockInTransitController extends Controller
     public function index()
     {
       $today = now()->format('Y-m-d');
-      $stockInTransits = StockInTransit::with('Route', 'Product','Vehicle')->whereDate('created_at', $today)->get();
+      $userID = Auth::id();
+      $userRole = Auth::user()->role;
+      $recordExists = StockInTransit::where('user_id',$userID)->whereDate('created_at', $today)->exists();
+      if ($userRole == 'admin') {
+        $stockInTransits = StockInTransit::with('Route', 'Product','Vehicle')->whereDate('created_at', $today)->get();
+      } else {
+        $stockInTransits = StockInTransit::with('Route', 'Product','Vehicle')->where('user_id',$userID)->whereDate('created_at', $today)->get();
+      }
       $groupedStockInTransits = $stockInTransits->groupBy(function($item) {
         return $item->created_at->format('d-m-Y'); 
       })->map(function($group) {
@@ -34,7 +41,7 @@ class StockInTransitController extends Controller
         });
       });
       //exit;
-      return view('stockintransit.index', compact('groupedStockInTransits'));
+      return view('stockintransit.index', compact('groupedStockInTransits', 'recordExists','stockInTransits'));
     }
 
     /**
@@ -240,7 +247,9 @@ class StockInTransitController extends Controller
      */
     public function destroy($id)
     {
-      $stockInTransit = StockInTransit::find($id);
+      $today = now()->format('Y-m-d');
+      //$stockInTransit = StockInTransit::find($id);
+      $stockInTransit = StockInTransit::where('vehicle_id', $id)->whereDate('created_at', $today);
       $stockInTransit->delete();
       return redirect()->back();
     }

@@ -104,10 +104,10 @@
                               <div class="col-md-5">
                                 <label class="control-label">Product Name</label>
                               </div>
-                              <div class="col-md-1">
+                              <div class="col-md-2">
                                 <label class="control-label">Existing Quantity</label>
                               </div>
-                              <div class="col-md-6">
+                              <div class="col-md-5">
                                 <label class="control-label">Add Quantity</label>
                               </div>
                             </div>
@@ -120,7 +120,7 @@
                             @endphp
                             <div id="product-section2" style="display: flex;">
                               <div class="form-group col-md-5">
-                                <input name="product_name[]" class="form-control @error('product_name') is-invalid @enderror" value="{{ old('product_name', $product->name) }}" readonly>
+                                <input name="product_name[]" class="form-control product-name @error('product_name') is-invalid @enderror" value="{{ old('product_name', $product->name) }}" readonly>
                                 <input type="hidden" name="product_id[]" value="{{ $product->id }}">
                                 <input type="hidden" name="stock_in_transit_id[]" value="{{$stockInTransitID }}">
                                 @error('product_name')
@@ -129,7 +129,7 @@
                                 </span>
                                 @enderror
                               </div>
-                              <div class="form-group col-md-1">
+                              <div class="form-group col-md-2">
                                 <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ number_format($prdQuantity, 2) }}"   type="number" readonly>
                                 @error('quantity')
                                 <span class="invalid-feedback" role="alert">
@@ -138,7 +138,7 @@
                                 @enderror
                               </div>
 
-                              <div class="form-group col-md-6">
+                              <div class="form-group col-md-5">
                                 <input name="new_quantity[]" id="new_quantity-{{ $product->id }}" class="form-control new-quantity-input @error('new_quantity') is-invalid @enderror" value="{{ old('new_quantity.' . $product->id) }}"    type="number" placeholder="Enter Quantity" data-existing="{{$prdQuantity}}" data-available = "{{$prodMaxQuantity}}" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
                                 @error('new_quantity')
                                 <span class="invalid-feedback" role="alert">
@@ -151,7 +151,7 @@
                           </div>
 
                           <div class="form-group mt-3 col-md-4 align-self-end">
-                            <button style="display: {{$productDisplay}};" id="add_button" class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i> Update Stock in Transit Details</button>
+                            <button style="display: {{$productDisplay}};" id="add_button" class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i> Update</button>
                           </div>
                         </div>
                       </form>
@@ -166,6 +166,7 @@
 <script>
   var currentUserRole = @if(Auth::check()) {!! json_encode(Auth::user()->role) !!} @else 'guest' @endif;
   $(document).ready(function() {
+    $('#add_button').attr('disabled', true);
     $('#nextButton').on('click', function() {
       var routeSelect = $('#route_id');
       var vehicleSelect = $('#vehicle_id');
@@ -239,6 +240,12 @@
         $('#product-section1').hide();
       }
     });
+
+    $('#product-section').on('focus', '.product-name, .quantity-input', function () {
+    console.log("Working");
+    $(this).css('border-color', '#ced4da');
+});
+    
   });
 </script>
 

@@ -47,6 +47,7 @@ class InvoiceController extends Controller
       $userRole = Auth::user()->role;
       $today = now()->toDateString();
       $routeEmptyError = null;
+      $returnProducts = array();
     
       $customers = Customer::where('status',1)->get();
       if ($userRole == 'admin') {
@@ -68,13 +69,14 @@ class InvoiceController extends Controller
         } else {
           
           $products =array();
+          $returnProducts = array();
           // $this->pr($products);
           // exit;
           $routeEmptyError = "Route Number or Vehicle Number Not Found";
-          return view('invoice.createforphone', compact('customers','routeEmptyError','products'));
+          return view('invoice.createforphone', compact('customers','returnProducts','routeEmptyError','products'));
         }
       }
-      return view('invoice.createforphone', compact('customers','products','routeEmptyError'));
+      return view('invoice.createforphone', compact('customers','returnProducts','products','routeEmptyError'));
     }
 
     /**
@@ -89,7 +91,7 @@ class InvoiceController extends Controller
       $userID = Auth::id();
       $cusID = $id;
       $balAmt = Invoice::select('balance_amt')->where('customer_id', $cusID)->orderBy('created_at', 'desc')->first() ?? 0;
-      $products = Product::select('id','name')->where('status',1)->whereIn('id', function($query) use ($cusID) {
+      $returnProducts = Product::select('id','name')->where('status',1)->whereIn('id', function($query) use ($cusID) {
         $query->select('product_id')->from('sales')->whereIn('invoice_id', function($subQuery) use ($cusID) {
           $subQuery->select('id')->from('invoices') ->where('customer_id', $cusID);
         });
@@ -101,7 +103,7 @@ class InvoiceController extends Controller
       $prodIDsAndPrices= $productPricesAndIDs->pluck('price', 'product_id')->toArray();
       //$this->pr($prodIDsAndPrices);
       //exit;
-      $productIDs = $products->pluck('id')->toArray();
+      $productIDs = $returnProducts->pluck('id')->toArray();
       $invoiceIDs = Invoice::where('customer_id', $id)->pluck('id')->toArray();
       
       $quantityAndPrices = Sales::select('product_id','qty','price')->whereIn('product_id',$productIDs)->whereIn('invoice_id',$invoiceIDs)->get()->toArray();
@@ -110,7 +112,7 @@ class InvoiceController extends Controller
       //$this->pr($quantityAndPrices);
       //exit;
 
-      return response()->json(['products' => $products,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices' => $prodIDsAndPrices,'balance_amount' => $balAmt]);
+      return response()->json(['returnProducts' => $returnProducts,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices' => $prodIDsAndPrices,'balance_amount' => $balAmt]);
       
      
     }

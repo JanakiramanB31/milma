@@ -41,6 +41,8 @@
             </div>
           @endif
 
+          <div id="alert-message" class="alert alert-danger" role="alert" hidden></div>
+
           <div class="tile-body">
             <form  method="POST" action="{{route('invoice.store')}}">
               @csrf
@@ -48,7 +50,7 @@
               <div class="row" >
                 <div class="form-group col-6">
                   <label class="control-label">Customer Name</label>
-                  <select name="customer_id" class="form-control" id="customer_name">
+                  <select name="customer_id" class="form-control select2" id="customer_name" data-live-search="true">
                     <option value = '0'>Select Customer</option>
                     @foreach($customers as $customer)
                       <option name="customer_id" value="{{$customer->id}}">{{$customer->name}} </option>
@@ -59,7 +61,7 @@
 
                 <!-- <div class="form-group col-6">
                   <label class="control-label">Date</label>
-                  <input name="date"  class="form-control datepicker"  value="<?php echo date('Y-m-d')?>" type="date" placeholder="Enter your email">
+                  <input name="date"  class="form-control datepicker"  value="" type="date" placeholder="Enter your email">
                 </div> -->
               </div>
 
@@ -174,11 +176,11 @@
                                 <option value =''>Select Return Product</option>
                                 @if(session('routeEmptyError'))
                                   <option value = ''>{{session('routeEmptyError')}}</option>
-                                @elseif(count($products) == 0)
+                                @elseif(count($returnProducts) == 0)
                                   <option value = ''>No Products Found</option>
                                 @else
-                                  @foreach($products as $product)
-                                  <option value="{{$product->id}}" >{{$product->name}}</option>
+                                  @foreach($returnProducts as $returnProduct)
+                                  <option value="{{$returnProduct->id}}" data-id="{{$returnProduct->id}}">{{$returnProduct->name}}</option>
                                   @endforeach
                                 @endif
                               </select>
@@ -340,12 +342,16 @@
   <script src="{{asset('/')}}js/multifield/jquery.multifield.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
- 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
   <script type="text/javascript">
     var prodData= '';
     var cusID = '' ;
+    var returnProducts = [];
     console.log("Data",prodData)
     $(document).ready(function(){
+      $('#alert-message').attr("hidden", false);
+      $('#alert-message').hide();
+      $('.select2').select2();
       $('#bal-amt-symbol').text("€");
       $('#bal-amt').text(parseFloat(0).toFixed(2));
       // Return Items Form PopOver Section Contents
@@ -424,7 +430,12 @@
         var length = $('#product-section').find('tr').length;
         console.log(length)
         if (length == 1) {
-          alert('you cant delete last one')
+          $('#alert-message').text("You can't delete Last One");
+          $('#alert-message').show();
+          setTimeout(()=> {
+            $('#alert-message').hide();
+          }, 3000);
+          //alert(`You can't delete last one`)
         } else {
           $(this).closest('tr').remove();
         }
@@ -432,10 +443,16 @@
 
       //Fetching Customer Details Functionality
       $('#customer_name').on('change', function() {
-        var customerID = $(this).val();
+        fetchReturnProducts();
+      });
+
+      //Fetch Return Products Function
+      function fetchReturnProducts() {
+        var customerID = $('#customer_name').val();
         //console.log(customerID);
         cusID = customerID;
         if(customerID) {
+          $('#customer-name-error').hide();
           $.ajax({
             url: '{{ route("invoice.getProducts",":id") }}'.replace(':id', customerID),
             type: 'POST',
@@ -453,14 +470,15 @@
                 $('#bal-amt-symbol').text("€")
                 $('#bal-amt').text(parseFloat(balAmount).toFixed(2));
                 $('#balance-amount').val(balAmount);
-                $('#return-product-id').empty().append('<option value="">Select Return Product</option>');
-                if (response.products.length > 0) {
-                  
-                  $.each(response.products, function(index, product) {
-                    $('#return-product-id').append('<option value="' + product.id + '">' + product.name + '</option>');
+                $('.return-product-id').empty().append('<option value="">Select Return Product</option>');
+                if (response.returnProducts.length > 0) {
+                  returnProducts = response.returnProducts;
+                  console.log("returnProducts",returnProducts);
+                  $.each(response.returnProducts, function(index, returnProduct) {
+                    $('.return-product-id').append('<option value="' + returnProduct.id + '">' + returnProduct.name + '</option>');
                   });
                 } else {
-                  $('#return-product-id').append('<option value="">No products available</option>');
+                  $('.return-product-id').append('<option value="">No products available</option>');
                 }
                 //console.log(response.quantityAndPrices);
               } catch(error) {
@@ -475,7 +493,8 @@
         } else {
           console.log("Failed")
         }
-      });
+      }
+
 
       //Fetch Return Product Details
       $('#return-product-body').on('change', '.return-product-id', function() {
@@ -510,7 +529,7 @@
       //Calculating Total Amount for All Return Products Function
       function returnTotal(){
         var total = 0;
-        $('.return-amount').each(function (i,e) {
+        $('#return-product-body .return-amount').each(function (i,e) {
           var amount = $(this).val()-0;
           total += amount;
         });
@@ -521,7 +540,9 @@
       //Adding New Return Product Row
       $('#return-button-add').on("click", function() {
         var returnTableLength = $('#return-product-body').find('tr').length;
+        $('.return-total').html('');
         if (returnTableLength <= 0) {
+          fetchReturnProducts();
           addReturnMobileRow();
           $('.return-total').html('');
         }
@@ -531,13 +552,17 @@
       function addReturnMobileRow() {
         var newRow = `
           <tr>
-            <td class="d-flex align-items-center" style="gap: 10px;">
-              <b class="return-symbol" style="color: red;" hidden>R</b>
-              <select name="product_id[]" id="return-product-id" class="form-control p-1 return-product-id return-product-name">
-                <option value="">Select Return Product</option>
-                @foreach($products as $product)
-                  <option value="{{$product->id}}">{{ $product -> name}}</option>
-                @endforeach
+            <td class="d-flex align-items-center" style="gap: 10px;"><b class="return-symbol" style="color: red;" hidden>R</b>
+              <select id="return-product-id" name="product_id[]" class="form-control p-1 return-product-id" >
+                <option value =''>Select Return Product</option>
+                  {returnProducts.map((item)=>{
+                  return(
+                  <option value="{item.id}" data-id="{item.id}">{item.name}</option>
+                  )
+                  })}
+                  jQuery.map(returnProducts, function(item) {  
+                    return  <option value="{item.id}" data-id="{item.id}">{item.name}</option>;
+                    });  
               </select>
             </td>
             <td>
@@ -564,6 +589,7 @@
 
       //Adding New Return Product Row
       $('.add-return-row').on("click",function() {
+        fetchReturnProducts();
         addReturnMobileRow();
       });
 
@@ -574,43 +600,78 @@
 
       //Adding Return Items Details to Invoice Form Functionality
       $('#return-entry-button').on("click", function () {
-        var returnSection = $('#return-product-body').find('tr');
-        let allFilled = true;
+        var customerID = parseInt($('#customer_name').val(), 10);
+        if ( isNaN(customerID)|| customerID <= 0) {
 
-        returnSection.each(function () {
-          var selectedValue = $(this).val();
-          $(this).val(selectedValue);
-          var inputValue = $(this).find('input').val();
-          var selectValue = $(this).find('select').val();
+          $('#customer-name-error').html("Please select Customer Name");
+          $('#return-table-error').html("Please select Customer Name");
+          $('#customer-name-error').show();
+          $('#return-table-error').show();
+          setTimeout(()=> {
+            $('#customer-name-error').hide();
+            $('#return-table-error').hide();
+          }, 3000);
+        }
+        else {
+          var returnSection = $('#return-product-body').find('tr');
+          let allFilled = true;
+          var isProductExists = false;
 
-          if ( selectValue.length == 0) {
-            $('#return-table-error').html("Please Select the Product");
-            allFilled = false; 
-            return false;
-          } else if (inputValue.length == 0) {
-            $('#return-table-error').html("Please Enter the Quantity")
-            allFilled = false; 
-            return false;
-          } else {
-            $(this).find('input').attr('readonly', true);
-            $(this).find('select').attr('disabled', true);
-          }
-        });
+          returnSection.each(function () {
+            var selectedValue = $(this).val();
+            $(this).val(selectedValue);
+            var inputValue = $(this).find('input').val();
+            var selectValue = $(this).find('select').val();
 
-        if (allFilled) {
-          returnSection.each(function() {
-            $(this).find('td').last().html('<i class="fa fa-trash-o fa-sm btn btn-danger prod-remove"></i>');
+            if ( selectValue.length == 0) {
+              $('#return-table-error').html("Please Select the Product");
+              $('#return-table-error').show();
+              setTimeout(()=> {
+                $('#return-table-error').hide();
+              }, 3000);
+              allFilled = false; 
+              return false;
+            } else if (inputValue.length == 0) {
+              $('#return-table-error').html("Please Enter the Quantity");
+              $('#return-table-error').show();
+              setTimeout(()=> {
+                $('#return-table-error').hide();
+              }, 3000);
+              allFilled = false; 
+              return false;
+            } else {
+
+              if (!isProductExists) {
+                $('#return-table-error').hide();
+                allFilled = true;
+                return true;
+              } else {
+                $('#alert-message').text("Already added the Product");
+                $('#alert-message').show();
+                setTimeout(()=> {
+                  $('#alert-message').hide();
+                }, 3000);
+              }
+            }
           });
-          /* returnSectionModified = returnSection.find('tr').last('td').each(function (){
-            $(this).remove();
-            $(this).parent().add('td').val('<td align="center"><i class="fa fa-trash-o fa-sm btn btn-danger prod-remove"></i></td>')
-          }) */
-          $('.return-symbol').attr("hidden", false);
-          $('#product-section').append(returnSection);
-          total();
-          $('.return-total').html('');
-          $('#returnForm').modal('hide');
-          addReturnMobileRow();
+
+          if (allFilled) {
+            returnSection.each(function() {
+              $(this).find('td').last().html('<i class="fa fa-trash-o fa-sm btn btn-danger prod-remove"></i>');
+              $(this).find('input').attr('readonly', true);
+              $(this).find('select').attr('disabled', true);
+            });
+            /* returnSectionModified = returnSection.find('tr').last('td').each(function (){
+              $(this).remove();
+              $(this).parent().add('td').val('<td align="center"><i class="fa fa-trash-o fa-sm btn btn-danger prod-remove"></i></td>')
+            }) */
+            $('.return-symbol').attr("hidden", false);
+            $('#product-section').append(returnSection);
+            total();
+            $('.return-total').html('');
+            $('#returnForm').modal('hide');
+            addReturnMobileRow();
+          }
         }
       });
 
@@ -668,11 +729,12 @@
         console.log(customerID)
 
         if ( isNaN(customerID)|| customerID <= 0) {
-          $('#customer-name-error').html("Please Select Customer Name");
+
+          $('#customer-name-error').html("Please select Customer Name");
           $('#customer-name-error').show();
           setTimeout(()=> {
             $('#customer-name-error').hide();
-          }, 3000)
+          }, 3000);
         } else {
           $('#customer-name-error').hide();
           var isProductExists = false;
@@ -689,7 +751,12 @@
           var productPrice = parseFloat(prodPrices[productID]).toFixed(2);
           addProductMobileRow(productID, productName, productPrice);
           } else {
-            alert('Already added the Product');
+            $('#alert-message').text("Already added the Product");
+            $('#alert-message').show();
+            setTimeout(()=> {
+              $('#alert-message').hide();
+            }, 3000);
+            //alert('Already added the Product');
             $('.toast-body').text("Already added the Product");
             $('.toast').toast('show');
           }
@@ -836,25 +903,32 @@
       $('#product-form-data').on('click', function() {
         var customerID = parseInt($('#customer_name').val(), 10);
         if ( isNaN(customerID)|| customerID <= 0) {
-          $('#customer-name-error').html("Please Select Customer Name");
+      
+          $('#customer-name-error').html("Please select Customer Name");
           $('#customer-name-error').show();
           setTimeout(()=> {
             $('#customer-name-error').hide();
-          }, 3000)
+          }, 3000);
         } else {
           var productTableBody = $('#product-section');
           let allFilled = true;
           let productsCount = productTableBody.find('tr').length;
           console.log(productsCount)
           if(productsCount == 0) {
-            //alert("Please add minimum of 1 products");
-            $('#product-table-error').html("Please add minimum of 1 product");
-            $('#product-table-error').show();
+            $('#alert-message').text("Please add minimum of 1 Product");
+            $('#alert-message').show();
             setTimeout(()=> {
-              $('#product-table-error').hide();
-            }, 3000)
+              $('#alert-message').hide();
+            }, 3000);
+            //alert("Please add minimum of 1 products");
+            // $('#product-table-error').html("Please add minimum of 1 product");
+            // $('#product-table-error').show();
+            // setTimeout(()=> {
+            //   $('#product-table-error').hide();
+            // }, 3000)
           } else {
             productTableBody.find('tr').each(function () {
+              $('#product-table-error').hide();
               let productID = $(this).find('.productname').data('id');
               console.log("productID",productID)
               let productQty = $(this).find('.qty').val();
@@ -862,35 +936,53 @@
               // console.log("productQty", productQty)
 
               if (productID == "") {
-                console.log("productID",productID)
-                $('#product-table-error').html("Please Select the Product");
-                $('#product-table-error').show();
+                console.log("productID",productID);
+                $('#alert-message').text("Please select the Product");
+                $('#alert-message').show();
                 setTimeout(()=> {
-                  $('#product-table-error').hide();
+                  $('#alert-message').hide();
                 }, 3000);
+                // $('#product-table-error').html("Please Select the Product");
+                // $('#product-table-error').show();
+                // setTimeout(()=> {
+                //   $('#product-table-error').hide();
+                // }, 3000);
                 allFilled = false; 
                 return false;
               } else if (productQty == "") {
-                $('#product-table-error').html("Please Enter the Quantity");
-                $('#product-table-error').show();
+                $('#alert-message').text("Please enter the Quantity");
+                $('#alert-message').show();
                 setTimeout(()=> {
-                  $('#product-table-error').hide();
-                }, 3000)
+                  $('#alert-message').hide();
+                }, 3000);
+                // $('#product-table-error').html("Please Enter the Quantity");
+                // $('#product-table-error').show();
+                // setTimeout(()=> {
+                //   $('#product-table-error').hide();
+                // }, 3000)
                 allFilled = false; 
                 return false;
               } else {
+                $('#alert-message').hide();
+                $('#product-table-error').hide();
                 allFilled = true; 
                 return true;
               }
             });
 
             if(allFilled) {
+              $('#product-table-error').hide();
               $('#amountForm').modal('show');
             }
           }
 
         }
       });
+      $('#product-section').on('focus', '.return-qty, .return-amount', function () {
+        console.log("Working");
+        $(this).css('border-color','#ced4da');
+      });
+
       
     });
   </script>

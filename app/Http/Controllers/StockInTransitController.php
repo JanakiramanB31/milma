@@ -206,8 +206,8 @@ class StockInTransitController extends Controller
       $productIDs = $request->product_id;
       $oldQuantities = $request->quantity;
       $newQuantities = $request->new_quantity;
-      $this->pr($request->all());
-      exit;      
+      // $this->pr($request->all());
+      // exit;      
      $this->pr($oldQuantities);
      $this->pr($newQuantities);
      
@@ -224,7 +224,7 @@ class StockInTransitController extends Controller
             $stockInTransit->save();
           }
         } else {
-            if (isset($newQuantities[$key]) && !empty($newQuantities[$key]) && $newQuantities[$key] != 0 ) {
+            if (isset($newQuantities[$key]) && !empty($newQuantities[$key]) ) {
               $stockInTransit = new StockInTransit(); 
               $stockInTransit->route_id = $request->route_id;
               $stockInTransit->vehicle_id = $request->vehicle_id;

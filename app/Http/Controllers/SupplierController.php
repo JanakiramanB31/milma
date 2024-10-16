@@ -43,7 +43,7 @@ class SupplierController extends Controller
             'address' => 'required|min:3',
             'mobile' => 'required|min:3|digits:11',
             'details' => 'required|min:3|',
-            'previous_balance' => 'min:3',
+            'previous_balance' => 'required',
 
         ]);
 
@@ -95,7 +95,7 @@ class SupplierController extends Controller
             'address' => 'required|min:3',
             'mobile' => 'required|min:3|digits:11',
             'details' => 'required|min:3|',
-            'previous_balance' => 'min:3',
+            'previous_balance' => 'required',
         ]);
 
         $supplier = Supplier::findOrFail($id);

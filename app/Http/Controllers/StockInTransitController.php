@@ -15,7 +15,7 @@ class StockInTransitController extends Controller
 {
   public function __construct()
     {
-        $this->middleware('auth');
+      $this->middleware('auth');
     }
     /**
      * Display a listing of the resource.
@@ -40,7 +40,6 @@ class StockInTransitController extends Controller
           return $item->route->route_number . '-' . $item->vehicle->vehicle_number;
         });
       });
-      //exit;
       return view('stockintransit.index', compact('groupedStockInTransits', 'recordExists','stockInTransits'));
     }
 
@@ -97,13 +96,10 @@ class StockInTransitController extends Controller
         'route_id' => 'required',
         'vehicle_id'=>'required',
       ]);
-      //$this->pr($request->all());
-     // exit;
       $userId = Auth::id();
       $userRole = Auth::user()->role;
       $productIDs = $request->product_id;
       $quantities= $request->quantity;
-      //exit;
       foreach ($productIDs as $key => $productID) {
         $supplier = ProductSupplier::where('product_id', $productID)->first();
         if($supplier) {
@@ -119,9 +115,6 @@ class StockInTransitController extends Controller
             $stockInTransit->save();
 
             $supplier->quantity = $supplier->quantity - $quantities[$key];
-            // $this->pr($existingQuantity );
-            // $this->pr($supplier->quantity);
-            // exit;
             $supplier->save();
           }
 
@@ -153,7 +146,6 @@ class StockInTransitController extends Controller
     {
       $stockInTransitID = $id; 
       $stockInTransit = StockInTransit::with(['route', 'vehicle', 'product'])->findOrFail($id);
-      //$this->pr($stockInTransit);
       $routes = Route::all();
       $vehicles = Vehicle::all();
       $products = Product::where('sit_status',1)->where('status',1)->get();
@@ -162,26 +154,14 @@ class StockInTransitController extends Controller
       $existUserID = $stockInTransit->user_id;
       $users = User::where('role', 'sales')->get(); 
       $today = now()->format('Y-m-d');
-      //echo $stockInTransit->route_id;
-      //echo $stockInTransit->vehicle_id;
       $productIDsAndQuantities = StockInTransit::select('id', 'quantity', 'product_id')->where('route_id', $stockInTransit->route_id)->where('vehicle_id', $stockInTransit->vehicle_id)->where('user_id', $existUserID)->whereDate('created_at', $today)->get();    
       $stockInTransitIDs = $productIDsAndQuantities->pluck('id','product_id')->toArray();
       $productIDsAndQuantities = $productIDsAndQuantities->pluck('quantity','product_id')->toArray();
-      //  $Quantities = $productIDsAndQuantities->pluck('', 'quantity')->toArray();
-      //  $this->pr($stockInTransitIds);
-      //  $this->pr($productIds);
-      //  $this->pr($Quantities);
-      //  $this->pr($productIds);
-      //  exit;
-      //  $productIds = array_keys($productIDsAndQuantities);
-      //  $Quantities = array_values($productIDsAndQuantities);
-       //$this->pr($productIDsAndQuantities);
-       $supplierProdQuantities = [];
-       foreach ($products as $product) {
-         $quantity = ProductSupplier::where('product_id', $product->id)->value('quantity');
-         $supplierProdQuantities[$product->id] = $quantity;
-       }
-      // exit;
+      $supplierProdQuantities = [];
+      foreach ($products as $product) {
+        $quantity = ProductSupplier::where('product_id', $product->id)->value('quantity');
+        $supplierProdQuantities[$product->id] = $quantity;
+      }
       if ($userRole == 'admin') {
         $routeDisplay = 'block';
         $productDisplay = 'none';
@@ -206,10 +186,6 @@ class StockInTransitController extends Controller
       $productIDs = $request->product_id;
       $oldQuantities = $request->quantity;
       $newQuantities = $request->new_quantity;
-      // $this->pr($request->all());
-      // exit;      
-     $this->pr($oldQuantities);
-     $this->pr($newQuantities);
      
       foreach ($productIDs as $key => $productID) {
         if ($stockIDs[$key]) {
@@ -248,7 +224,6 @@ class StockInTransitController extends Controller
     public function destroy($id)
     {
       $today = now()->format('Y-m-d');
-      //$stockInTransit = StockInTransit::find($id);
       $stockInTransit = StockInTransit::where('vehicle_id', $id)->whereDate('created_at', $today);
       $stockInTransit->delete();
       return redirect()->back();

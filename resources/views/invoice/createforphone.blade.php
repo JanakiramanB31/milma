@@ -21,6 +21,7 @@
       <div class="col-md-12">
         <div class="tile">
           <div id="error-message"></div>
+          <!-- Page Header Section -->
           <div class="d-flex justify-content-between align-items-center">
             <h3 class="tile-title">Invoice</h3>
             <h5 >Date: {{now()->format('d-m-Y')}}</h5>
@@ -53,7 +54,7 @@
                   <select name="customer_id" class="form-control select2" id="customer_name" data-live-search="true">
                     <option value = '0'>Select Customer</option>
                     @foreach($customers as $customer)
-                      <option name="customer_id" value="{{$customer->id}}">{{$customer->name}} </option>
+                    <option name="customer_id" value="{{$customer->id}}">{{$customer->name}} </option>
                     @endforeach
                   </select>
                   <div id="customer-name-error" class="text-danger"></div> 
@@ -347,13 +348,15 @@
     var prodData= '';
     var cusID = '' ;
     var returnProducts = [];
-    console.log("Data",prodData)
+    var selectedReturnProductIDs = [];
+    //console.log("Data",prodData)
     $(document).ready(function(){
       $('#alert-message').attr("hidden", false);
       $('#alert-message').hide();
       $('.select2').select2();
       $('#bal-amt-symbol').text("€");
       $('#bal-amt').text(parseFloat(0).toFixed(2));
+
       // Return Items Form PopOver Section Contents
       $('[data-toggle="popover"]').popover({
         html: true,
@@ -391,7 +394,7 @@
       //Calculating the Total Amount for Selected Product when Foucs in Amount Field
       $('.amount').on('keyup', function () {
         total();
-      })
+      });
 
       //Calculating the Total Amount for Selected Product Function
       function total(){
@@ -402,19 +405,19 @@
         $('#product-section .amount').each(function () {
           var salesAmount =$(this).val()-0;
           salesTotal += salesAmount;
-          console.log(salesAmount)
+          //console.log(salesAmount)
         });
 
         //Return Product Total Amount
         $('#product-section .return-amount').each(function () {
           var returnsAmount =$(this).val()-0;
           returnsTotal += returnsAmount;
-          console.log("Returns Amount",returnsTotal)
+          //console.log("Returns Amount",returnsTotal)
         });
 
         //Calculation the Balance Amount
         var total = salesTotal - returnsTotal;
-        console.log("total",total)
+        //console.log("total",total)
         $('.currency').html("€");
         $('.total').html(parseFloat(total).toFixed(2));
         $('#total').val(parseFloat(total).toFixed(2));
@@ -428,7 +431,7 @@
       //Removing Selected Product Functionality 
       $(document).on('click', '.prod-remove', function () {
         var length = $('#product-section').find('tr').length;
-        console.log(length)
+        //console.log(length)
         if (length == 1) {
           $('#alert-message').text("You can't delete Last One");
           $('#alert-message').show();
@@ -462,11 +465,11 @@
             },
             success: function(response) {
               try {
-                console.log("Working",response);
+                //console.log("Working",response);
                 prodData= response;
-                console.log("proddata",prodData);
+                //console.log("proddata",prodData);
                 var balAmount = response.balance_amount.balance_amt ?? 0;
-                console.log("Balance Amount", balAmount)
+                //console.log("Balance Amount", balAmount)
                 $('#bal-amt-symbol').text("€")
                 $('#bal-amt').text(parseFloat(balAmount).toFixed(2));
                 $('#balance-amount').val(balAmount);
@@ -550,19 +553,17 @@
 
       //Return Product Row for Mobile Responsiveness
       function addReturnMobileRow() {
+
+        var returnOptions = returnProducts.map((item) => {
+          return `<option value="${item.id}" data-id="${item.id}">${item.name}</option>`;
+        }).join('');
+
         var newRow = `
           <tr>
             <td class="d-flex align-items-center" style="gap: 10px;"><b class="return-symbol" style="color: red;" hidden>R</b>
               <select id="return-product-id" name="product_id[]" class="form-control p-1 return-product-id" >
                 <option value =''>Select Return Product</option>
-                  {returnProducts.map((item)=>{
-                  return(
-                  <option value="{item.id}" data-id="{item.id}">{item.name}</option>
-                  )
-                  })}
-                  jQuery.map(returnProducts, function(item) {  
-                    return  <option value="{item.id}" data-id="{item.id}">{item.name}</option>;
-                    });  
+                ${returnOptions}
               </select>
             </td>
             <td>
@@ -615,7 +616,7 @@
         else {
           var returnSection = $('#return-product-body').find('tr');
           let allFilled = true;
-          var isProductExists = false;
+          let productSet = new Set(); 
 
           returnSection.each(function () {
             var selectedValue = $(this).val();
@@ -640,17 +641,16 @@
               allFilled = false; 
               return false;
             } else {
-
-              if (!isProductExists) {
-                $('#return-table-error').hide();
-                allFilled = true;
-                return true;
-              } else {
-                $('#alert-message').text("Already added the Product");
-                $('#alert-message').show();
-                setTimeout(()=> {
-                  $('#alert-message').hide();
+              if (productSet.has(selectValue)) {
+                $('#return-table-error').text("Same Product added multiple times");
+                $('#return-table-error').show();
+                setTimeout(() => {
+                    $('#return-table-error').hide();
                 }, 3000);
+                allFilled = false;
+                return false;
+              } else {
+                productSet.add(selectValue);
               }
             }
           });
@@ -726,7 +726,7 @@
         var productID = $(this).data('id');
         var productName = $(this).data('name');
         var customerID = parseInt($('#customer_name').val(), 10);
-        console.log(customerID)
+        //console.log(customerID)
 
         if ( isNaN(customerID)|| customerID <= 0) {
 
@@ -766,29 +766,21 @@
       //Avoiding Same Products selecting Multiple Times in the Return Form Function
       $(document).on("change", '.return-product-id', function () {
         var selectedValue = $(this).val();
-
-        // $('#return-product-body').find('tr').each(function (){
-        //   var existingProductID = $(this).find('select').val();
-        //   if (selectedValue == existingProductID) {
-        //     $('#return-table-error').html("Selected Product already Added");
-        //   } else {
-            var parentRow = $(this).closest('tr');
-            console.log(selectedValue);
-            var popoverContent = `
-            <i id="remove-prodID" class="fa fa-remove btn btn-danger btn-sm action-icon remove" title="Remove"></i>
-            <i id="edit-prodID" class="fa fa-edit btn btn-success btn-sm add-return-reason" title="Edit"></i>
-            <i id="view-prodID" class="fa fa-eye btn btn-info btn-sm action-icon" title="View"></i>
-            <i id="addrow-prodID" class="fa fa-plus btn btn-primary btn-sm action-icon add-return-row" title="Add"></i>
-            `.replace(/prodID/g, selectedValue);
-            var button = parentRow.find('.popoverButton');
-            button.popover('dispose'); 
-            button.popover({
-              html: true,
-              content: popoverContent,
-              trigger: 'click'
-            }).popover();
-        //   }
-        // });
+        var parentRow = $(this).closest('tr');
+        console.log(selectedValue);
+        var popoverContent = `
+        <i id="remove-prodID" class="fa fa-remove btn btn-danger btn-sm action-icon remove" title="Remove"></i>
+        <i id="edit-prodID" class="fa fa-edit btn btn-success btn-sm add-return-reason" title="Edit"></i>
+        <i id="view-prodID" class="fa fa-eye btn btn-info btn-sm action-icon" title="View"></i>
+        <i id="addrow-prodID" class="fa fa-plus btn btn-primary btn-sm action-icon add-return-row" title="Add"></i>
+        `.replace(/prodID/g, selectedValue);
+        var button = parentRow.find('.popoverButton');
+        button.popover('dispose'); 
+        button.popover({
+          html: true,
+          content: popoverContent,
+          trigger: 'click'
+        }).popover();
       });
 
       //Adding New Row Functionality in the Return Form
@@ -802,11 +794,8 @@
       //Adding Selected Product Reason PopUp Form Functionality in the Return Form
       $(document).on('click', '[id^="edit-"]', function() {
         var productId = $(this).attr('id').split('-')[1];
-
         $('#returnReasonForm').modal('show');
-
         $('#returnReasonForm').data('productID', productId);
-
         setTimeout(()=> {
           $('#return-product-body').find('.popoverButton').popover('hide'); 
         }, 500);
@@ -832,7 +821,6 @@
 
       //Showing Selected Product Details Functionality in the Return Form
       $(document).on('click', '[id^="view-"]', function() {
-        console.log($.fn.modal);
         var productId = $(this).attr('id').split('-')[1];
         var parentRow = $('#return-product-body').find('tr').each(function () {
           var selectedValue = $(this).find('select').val();
@@ -850,7 +838,6 @@
             $('#prod-rtn-reason').text(rtnReason);
             $('#return-view-tot-currency').text('$');
             $('#prod-tot-amt').text(parseFloat(totalAmt).toFixed(2));
-
             $('#productDetailsModal').modal('show');
 
             setTimeout(()=> {
@@ -903,7 +890,6 @@
       $('#product-form-data').on('click', function() {
         var customerID = parseInt($('#customer_name').val(), 10);
         if ( isNaN(customerID)|| customerID <= 0) {
-      
           $('#customer-name-error').html("Please select Customer Name");
           $('#customer-name-error').show();
           setTimeout(()=> {
@@ -914,26 +900,18 @@
           let allFilled = true;
           let productsCount = productTableBody.find('tr').length;
           console.log(productsCount)
-          if(productsCount == 0) {
+          if (productsCount == 0) {
             $('#alert-message').text("Please add minimum of 1 Product");
             $('#alert-message').show();
             setTimeout(()=> {
               $('#alert-message').hide();
             }, 3000);
-            //alert("Please add minimum of 1 products");
-            // $('#product-table-error').html("Please add minimum of 1 product");
-            // $('#product-table-error').show();
-            // setTimeout(()=> {
-            //   $('#product-table-error').hide();
-            // }, 3000)
           } else {
             productTableBody.find('tr').each(function () {
               $('#product-table-error').hide();
               let productID = $(this).find('.productname').data('id');
               console.log("productID",productID)
               let productQty = $(this).find('.qty').val();
-              // console.log("productID", productID)
-              // console.log("productQty", productQty)
 
               if (productID == "") {
                 console.log("productID",productID);
@@ -942,11 +920,6 @@
                 setTimeout(()=> {
                   $('#alert-message').hide();
                 }, 3000);
-                // $('#product-table-error').html("Please Select the Product");
-                // $('#product-table-error').show();
-                // setTimeout(()=> {
-                //   $('#product-table-error').hide();
-                // }, 3000);
                 allFilled = false; 
                 return false;
               } else if (productQty == "") {
@@ -955,11 +928,6 @@
                 setTimeout(()=> {
                   $('#alert-message').hide();
                 }, 3000);
-                // $('#product-table-error').html("Please Enter the Quantity");
-                // $('#product-table-error').show();
-                // setTimeout(()=> {
-                //   $('#product-table-error').hide();
-                // }, 3000)
                 allFilled = false; 
                 return false;
               } else {
@@ -978,12 +946,12 @@
 
         }
       });
+
+      //Removing Input Highlighting Border Color
       $('#product-section').on('focus', '.return-qty, .return-amount', function () {
-        console.log("Working");
         $(this).css('border-color','#ced4da');
       });
 
-      
     });
   </script>
 @endpush

@@ -32,8 +32,8 @@ class InvoiceController extends Controller
 
     public function index()
     {
-        $invoices = Invoice::all();
-        return view('invoice.index', compact('invoices'));
+      $invoices = Invoice::all();
+      return view('invoice.index', compact('invoices'));
     }
 
     /**
@@ -48,30 +48,19 @@ class InvoiceController extends Controller
       $today = now()->toDateString();
       $routeEmptyError = null;
       $returnProducts = array();
-    
       $customers = Customer::where('status',1)->get();
       if ($userRole == 'admin') {
-        //echo "USERId : ", $userID;
         $products = Product::where('status',1)->get();
-        
       } else {
-        
         $routeData = StockInTransit::select('route_id', 'vehicle_id')->where('user_id',$userID)->whereDate('created_at', $today)->first();
-        // $this->pr($routeData);
-        // exit;
-        // $VehicleID = StockInTransit::select('vehicle_id')->where('user_id',$userID)->whereDate('created_at', $today)->first();
+
         if ($routeData) {
-        //   $this->pr("passing");
-        // exit;
           $products = Product::where('status',1)->whereIn('id', function ($query) use( $userID, $routeData) {
             $query->select('product_id')->where('user_id',$userID)->where('route_id',$routeData->route_id)->where('vehicle_id',$routeData->vehicle_id)->from('stock_in_transits');
           })->get();         
         } else {
-          
           $products =array();
           $returnProducts = array();
-          // $this->pr($products);
-          // exit;
           $routeEmptyError = "Route Number or Vehicle Number Not Found";
           return view('invoice.createforphone', compact('customers','returnProducts','routeEmptyError','products'));
         }
@@ -86,8 +75,6 @@ class InvoiceController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function getProducts(Request $request, $id) {
-     // $this->pr($request->all());
-      //return response()->json(['message' => 'No Data'],200);
       $userID = Auth::id();
       $cusID = $id;
       $balAmt = Invoice::select('balance_amt')->where('customer_id', $cusID)->orderBy('created_at', 'desc')->first() ?? 0;
@@ -101,87 +88,68 @@ class InvoiceController extends Controller
       })->get();
       
       $prodIDsAndPrices= $productPricesAndIDs->pluck('price', 'product_id')->toArray();
-      //$this->pr($prodIDsAndPrices);
-      //exit;
       $productIDs = $returnProducts->pluck('id')->toArray();
       $invoiceIDs = Invoice::where('customer_id', $id)->pluck('id')->toArray();
-      
       $quantityAndPrices = Sales::select('product_id','qty','price')->whereIn('product_id',$productIDs)->whereIn('invoice_id',$invoiceIDs)->get()->toArray();
-      //$this->pr($productIDs);
-      //$this->pr($invoiceIDs);
-      //$this->pr($quantityAndPrices);
-      //exit;
 
       return response()->json(['returnProducts' => $returnProducts,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices' => $prodIDsAndPrices,'balance_amount' => $balAmt]);
       
-     
     }
     public function store(Request $request)
     {
-      $this->pr($request->all());
-        $request->validate([
-            'customer_id' => 'required|integer',
-            'product_id' => 'required',
-            'qty' => 'required',
-            'price' => 'required',
-            'amount' => 'required',
-        ]);
-        
-        $userId = Auth::id();
-        $cusID = $request->customer_id;
-        
-        $oldInvoice = Invoice::where('customer_id', $cusID)->orderBy('created_at', 'desc')->first();
-        echo $oldInvoice;
-        if ($oldInvoice) {
-          $oldInvoice->balance_amt = 0;
-          $oldInvoice->save();
+      $request->validate([
+        'customer_id' => 'required|integer',
+        'product_id' => 'required',
+        'qty' => 'required',
+        'price' => 'required',
+        'amount' => 'required',
+      ]);
+      
+      $userId = Auth::id();
+      $cusID = $request->customer_id;
+      
+      $oldInvoice = Invoice::where('customer_id', $cusID)->orderBy('created_at', 'desc')->first();
+      if ($oldInvoice) {
+        $oldInvoice->balance_amt = 0;
+        $oldInvoice->save();
+      }
+      $invoice = new Invoice();
+      $invoice->customer_id = $request->customer_id;
+      $invoice->user_id = $userId;
+      $invoice->received_amt = $request->received_amt;
+      $invoice->prev_balance_amt = $request->prev_balance_amt;
+      $invoice->balance_amt = (($request->total) + ($request->prev_balance_amt))- ($request->received_amt);
+      $invoice->total_amount = $request->total;
+      $invoice->save();
+
+      foreach ( $request->product_id as $key => $product_id){
+        if ($product_id && isset($request->qty[$key]) && $request->qty[$key]) {
+          $sale = new Sale();
+          $sale->type = $request->type[$key];
+          $sale->reason = $request->reason[$key];
+          $sale->user_id = $userId;
+          $sale->qty = $request->qty[$key];
+          $sale->price = $request->price[$key];
+          $sale->total_amount = $request->total;
+          $sale->product_id = $request->product_id[$key];
+          $sale->invoice_id = $invoice->id;
+          $sale->save();
         }
-        echo "Coming";
-        $invoice = new Invoice();
-        $invoice->customer_id = $request->customer_id;
-        $invoice->user_id = $userId;
-        $invoice->received_amt = $request->received_amt;
-        $invoice->prev_balance_amt = $request->prev_balance_amt;
-        $invoice->balance_amt = (($request->total) + ($request->prev_balance_amt))- ($request->received_amt);
-        $invoice->total_amount = $request->total;
-        $invoice->save();
+      }
 
-        foreach ( $request->product_id as $key => $product_id){
-          if ($product_id && isset($request->qty[$key]) && $request->qty[$key]) {
-            $sale = new Sale();
-            $sale->type = $request->type[$key];
-            $sale->reason = $request->reason[$key];
-            $sale->user_id = $userId;
-            $sale->qty = $request->qty[$key];
-            $sale->price = $request->price[$key];
-            $sale->total_amount = $request->total;
-            $sale->product_id = $request->product_id[$key];
-            $sale->invoice_id = $invoice->id;
-            $sale->save();
-
-          }
-         }
-
-         return redirect('invoice/'.$invoice->id)->with('message','Invoice created Successfully');
-
-
-
+      return redirect('invoice/'.$invoice->id)->with('message','Invoice created Successfully');
 
     }
 
     public function storeReturns(Request $request)
     {
-      $this->pr($request->all());
-      //exit;
       foreach ( $request->product_id as $key => $product_id){
         $return = new Returns();
         $return->product_id = $request->return_product_id[$key];
         $return->quantity = $request->return_qty[$key];
         $return->price = $request->return_amount[$key];
         $return->save();
-
-
-    }
+      }
     }
 
     public function findPrice(Request $request, $id){
@@ -189,8 +157,7 @@ class InvoiceController extends Controller
         $query->select('rate_id')->from('customers')->where('id', $id);
       })->get();
       $prodIDsAndPrices= $productPricesAndIDs->pluck('price', 'product_id')->toArray();
-       // $data = DB::table('products')->select('sales_price')->where('id', $request->id)->first();
-        return response()->json($prodIDsAndPrices);
+      return response()->json($prodIDsAndPrices);
     }
 
     /**
@@ -201,12 +168,10 @@ class InvoiceController extends Controller
      */
     public function show($id)
     {
-        $invoice = Invoice::findOrFail($id);
-        $sales = Sale::where('invoice_id', $id)->get();
-        $amount = Invoice::select('total_amount','received_amt','prev_balance_amt','balance_amt')->where('id', $id)->first();
-        //$this->pr($Amount);
-        return view('invoice.show', compact('invoice','sales','amount'));
-
+      $invoice = Invoice::findOrFail($id);
+      $sales = Sale::where('invoice_id', $id)->get();
+      $amount = Invoice::select('total_amount','received_amt','prev_balance_amt','balance_amt')->where('id', $id)->first();
+      return view('invoice.show', compact('invoice','sales','amount'));
     }
 
     /**
@@ -217,11 +182,11 @@ class InvoiceController extends Controller
      */
     public function edit($id)
     {
-        $customers = Customer::where('status',1)->get();
-        $products = Product::orderBy('id', 'DESC')->get();
-        $invoice = Invoice::findOrFail($id);
-        $sales = Sale::where('invoice_id', $id)->get();
-        return view('invoice.edit', compact('customers','products','invoice','sales'));
+      $customers = Customer::where('status',1)->get();
+      $products = Product::orderBy('id', 'DESC')->get();
+      $invoice = Invoice::findOrFail($id);
+      $sales = Sale::where('invoice_id', $id)->get();
+      return view('invoice.edit', compact('customers','products','invoice','sales'));
     }
 
     /**
@@ -235,38 +200,33 @@ class InvoiceController extends Controller
     
     public function update(Request $request, $id)
     {
-        $request->validate([
+      $request->validate([
+          'customer_id' => 'required',
+          'product_id' => 'required',
+          'qty' => 'required',
+          'price' => 'required',
+          'dis' => 'required',
+          'amount' => 'required',
+      ]);
 
-        'customer_id' => 'required',
-        'product_id' => 'required',
-        'qty' => 'required',
-        'price' => 'required',
-        'dis' => 'required',
-        'amount' => 'required',
-    ]);
+      $invoice = Invoice::findOrFail($id);
+      $invoice->customer_id = $request->customer_id;
+      $invoice->total = 1000;
+      $invoice->save();
 
-        $invoice = Invoice::findOrFail($id);
-        $invoice->customer_id = $request->customer_id;
-        $invoice->total = 1000;
-        $invoice->save();
+      Sale::where('invoice_id', $id)->delete();
 
-        Sale::where('invoice_id', $id)->delete();
-
-        foreach ( $request->product_id as $key => $product_id){
-            $sale = new Sale();
-            $sale->qty = $request->qty[$key];
-            $sale->price = $request->price[$key];
-            $sale->dis = $request->dis[$key];
-            $sale->amount = $request->amount[$key];
-            $sale->product_id = $request->product_id[$key];
-            $sale->invoice_id = $invoice->id;
-            $sale->save();
-
-
-        }
-
-         return redirect('invoice/'.$invoice->id)->with('message','invoice created Successfully');
-
+      foreach ( $request->product_id as $key => $product_id){
+        $sale = new Sale();
+        $sale->qty = $request->qty[$key];
+        $sale->price = $request->price[$key];
+        $sale->dis = $request->dis[$key];
+        $sale->amount = $request->amount[$key];
+        $sale->product_id = $request->product_id[$key];
+        $sale->invoice_id = $invoice->id;
+        $sale->save();
+      }
+      return redirect('invoice/'.$invoice->id)->with('message','invoice created Successfully');
 
     }
 
@@ -279,10 +239,9 @@ class InvoiceController extends Controller
 
     public function destroy($id)
     {
-        Sales::where('invoice_id', $id)->delete();
-        $invoice = Invoice::findOrFail($id);
-        $invoice->delete();
-        return redirect()->back();
-
+      Sales::where('invoice_id', $id)->delete();
+      $invoice = Invoice::findOrFail($id);
+      $invoice->delete();
+      return redirect()->back();
     }
 }

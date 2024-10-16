@@ -8,7 +8,7 @@
 @include('partials.sidebar')
 
   <main class="app-content">
-      <div class="app-title">
+      <!-- <div class="app-title">
         <div>
           <h1><i class="fa fa-th-list"></i> Manage Stock in Transits </h1>
         </div>
@@ -17,7 +17,7 @@
           <li class="breadcrumb-item">Stock in Transit </li>
           <li class="breadcrumb-item active"><a href="#">Manage Stock in Transits </a></li>
         </ul>
-      </div>
+      </div> -->
       @if(Auth::check())
         @if(Auth::user()->role == 'admin')
           <div class="">

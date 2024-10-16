@@ -5,7 +5,7 @@
 @include('partials.header')
 @include('partials.sidebar')
   <main class="app-content">
-    <div class="app-title">
+    <!-- <div class="app-title">
       <div>
         <h1><i class="fa fa-edit"></i> Edit Stock in Transit </h1>
       </div>
@@ -14,7 +14,7 @@
         <li class="breadcrumb-item">Stock in Transit </li>
         <li class="breadcrumb-item"><a href="#">Edit Stock in Transit </a></li>
       </ul>
-    </div>
+    </div> -->
 
     @if(session()->has('message'))
       <div class="alert alert-success">

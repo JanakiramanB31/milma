@@ -110,6 +110,9 @@
                         <p class="mb-0 ">Route Number : </p>
                         <b>{{ $firstItem->route->route_number }}</b>
                       </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end align-items-center">
                       <div class="d-flex align-self-end" style="gap: 10px;">
                         <a class="btn btn-primary btn-sm" href="{{ route('stockintransit.edit', $firstItem->id) }}">
                           <i class="fa fa-edit"></i>

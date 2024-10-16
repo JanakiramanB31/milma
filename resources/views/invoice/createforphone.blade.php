@@ -23,8 +23,10 @@
           <div id="error-message"></div>
           <!-- Page Header Section -->
           <div class="d-flex justify-content-between align-items-center">
-            <h3 class="tile-title">Invoice</h3>
-            <h5 >Date: {{now()->format('d-m-Y')}}</h5>
+            <h3 class="tile-title mb-0">Invoice</h3>
+            <h5 class="mb-0">Date: {{now()->format('d-m-Y')}}</h5>
+          </div>
+          <div class="d-flex justify-content-end align-items-center mt-2">
             <div class="d-flex h-100 justify-content-center align-items-center">
               <p class="mb-0 ">Bal Amt</p><p class="mb-0 mx-2">:</p>
               <b id="bal-amt-symbol" class="h5 mb-0 mr-1"></b><b id="bal-amt" class="h5 mb-0"></b>
@@ -49,7 +51,7 @@
               @csrf
               <!-- Gathering Customer Name and Date -->
               <div class="row" >
-                <div class="form-group col-6">
+                <div class="form-group col">
                   <label class="control-label">Customer Name</label>
                   <select name="customer_id" class="form-control select2" id="customer_name" data-live-search="true">
                     <option value = '0'>Select Customer</option>

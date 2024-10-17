@@ -8,7 +8,7 @@
     @include('partials.sidebar')
 
     <main class="app-content">
-        <div class="app-title">
+        <!-- <div class="app-title">
             <div>
                 <h1><i class="fa fa-th-list"></i> Invoices Table</h1>
             </div>
@@ -17,7 +17,7 @@
                 <li class="breadcrumb-item">Invoice</li>
                 <li class="breadcrumb-item active"><a href="#">Invoice Table</a></li>
             </ul>
-        </div>
+        </div> -->
         <div class="">
             <a class="btn btn-primary" href="{{route('invoice.create')}}"><i class="fa fa-plus"></i> Create New Invoice</a>
         </div>
@@ -25,7 +25,7 @@
         <div class="row mt-2">
             <div class="col-md-12">
                 <div class="tile">
-                    <div class="tile-body">
+                    <div class="tile-body table-responsive">
                         <table class="table table-hover table-bordered" id="sampleTable">
                             <thead>
                             <tr>
@@ -41,10 +41,10 @@
                                  <tr>
                                      <td>{{1000+$invoice->id}}</td>
                                      <td>{{$invoice->customer->name}}</td>
-                                     <td>{{$invoice->created_at->format('Y-m-d')}}</td>
-                                     <td>
+                                     <td>{{$invoice->created_at->format('d-m-Y')}}</td>
+                                     <td class="d-flex" style="gap: 10px;">
                                          <a class="btn btn-primary btn-sm" href="{{route('invoice.show', $invoice->id)}}"><i class="fa fa-eye" ></i></a>
-                                         <a class="btn btn-info btn-sm" href="{{route('invoice.edit', $invoice->id)}}"><i class="fa fa-edit" ></i></a>
+                                         <!-- <a class="btn btn-info btn-sm" href="{{route('invoice.edit', $invoice->id)}}"><i class="fa fa-edit" ></i></a> -->
 
                                          <button class="btn btn-danger btn-sm waves-effect" type="submit" onclick="deleteTag({{ $invoice->id }})">
                                              <i class="fa fa-trash"></i>

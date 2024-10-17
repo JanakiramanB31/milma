@@ -49,6 +49,7 @@ class InvoiceController extends Controller
       $routeEmptyError = null;
       $returnProducts = array();
       $customers = Customer::where('status',1)->get();
+      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit Card');
       if ($userRole == 'admin') {
         $products = Product::where('status',1)->get();
       } else {
@@ -62,10 +63,10 @@ class InvoiceController extends Controller
           $products =array();
           $returnProducts = array();
           $routeEmptyError = "Route Number or Vehicle Number Not Found";
-          return view('invoice.createforphone', compact('customers','returnProducts','routeEmptyError','products'));
+          return view('invoice.createforphone', compact('customers','returnProducts','paymentMethods','routeEmptyError','products'));
         }
       }
-      return view('invoice.createforphone', compact('customers','returnProducts','products','routeEmptyError'));
+      return view('invoice.createforphone', compact('customers','returnProducts','paymentMethods','products','routeEmptyError'));
     }
 
     /**
@@ -116,6 +117,7 @@ class InvoiceController extends Controller
       $invoice = new Invoice();
       $invoice->customer_id = $request->customer_id;
       $invoice->user_id = $userId;
+      $invoice->payment_type = $request->payment_type;
       $invoice->received_amt = $request->received_amt;
       $invoice->prev_balance_amt = $request->prev_balance_amt;
       $invoice->balance_amt = (($request->total) + ($request->prev_balance_amt))- ($request->received_amt);

@@ -252,7 +252,7 @@
           console.log("Retuens Amount",returnsTotal)
         })
         var total = salesTotal - returnsTotal;
-        $('.currency').html("$");
+        $('.currency').html("£");
         $('.total').html(total);
         $('#total').val(total.toFixed(2));
       }
@@ -408,7 +408,7 @@
           var amount =$(this).val()-0;
           total += amount;
         })
-        $('.return-currency').html("$");
+        $('.return-currency').html("£");
         $('.return-total').html(total.toFixed(2));
       }
 

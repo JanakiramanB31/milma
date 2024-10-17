@@ -234,9 +234,16 @@
                 </div>
               </div>
 
-              <!-- Triggering Received Amount Form Section Model Button -->
-              <div >
-                <button id="product-form-data" type="button" class="btn btn-primary">Submit</button>
+              <div class="d-flex justify-content-between">
+                <!-- Back to Index Page Button -->
+                <div>
+                  <button id="invoice-close-btn" type="button" class="btn btn-danger">Close</button>
+                </div>
+
+                <!-- Triggering Received Amount Form Section Model Button -->
+                <div >
+                  <button id="product-form-data" type="button" class="btn btn-primary">Submit</button>
+                </div>
               </div>
 
               <!-- Received Amount PopUp Form -->
@@ -247,9 +254,20 @@
                     <div class="modal-header d-flex justify-content-center">
                       <h3 class="modal-title text-center" id="amountFormLabel">Enter Received Amount</h3>
                     </div>
+                    <div style="padding:18px;">
+                      <label class="form-label">Payment Type</label>
+                      <select id="payment_type" name="payment_type" class="form-control">
+                        <option value = ''>Select Payment Type</option>
+                        @foreach($paymentMethods as $paymentMethod)
+                        <option name="payment_type"  value="{{$paymentMethod}}">{{$paymentMethod}}</option>
+                        @endforeach
+                      </select>
+                      <div id="payment-type-error" class="text-danger"></div>
+                    </div>
                     <!-- Received Amount PopUp Form Content -->
                     <div class="modal-body d-flex flex-column justify-content-center">
-                      <input id="received_amt" type="number"  name="received_amt" class="form-control-md" style=" padding:20px;font-size:20px;" min="0"/>
+                    <label class="form-label">Enter Amount</label>
+                      <input id="received_amt" type="number"  name="received_amt" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
                       <div id="received-amt-error" class="text-danger"></div>
                     </div>
                     <!-- Received Amount PopUp Form Footer -->
@@ -356,7 +374,7 @@
       $('#alert-message').attr("hidden", false);
       $('#alert-message').hide();
       $('.select2').select2();
-      $('#bal-amt-symbol').text("€");
+      $('#bal-amt-symbol').text("£");
       $('#bal-amt').text(parseFloat(0).toFixed(2));
 
       // Return Items Form PopOver Section Contents
@@ -420,7 +438,7 @@
         //Calculation the Balance Amount
         var total = salesTotal - returnsTotal;
         //console.log("total",total)
-        $('.currency').html("€");
+        $('.currency').html("£");
         $('.total').html(parseFloat(total).toFixed(2));
         $('#total').val(parseFloat(total).toFixed(2));
       }
@@ -472,13 +490,13 @@
                 //console.log("proddata",prodData);
                 var balAmount = response.balance_amount.balance_amt ?? 0;
                 //console.log("Balance Amount", balAmount)
-                $('#bal-amt-symbol').text("€")
+                $('#bal-amt-symbol').text("£")
                 $('#bal-amt').text(parseFloat(balAmount).toFixed(2));
                 $('#balance-amount').val(balAmount);
                 $('.return-product-id').empty().append('<option value="">Select Return Product</option>');
                 if (response.returnProducts.length > 0) {
                   returnProducts = response.returnProducts;
-                  console.log("returnProducts",returnProducts);
+                  //console.log("returnProducts",returnProducts);
                   $.each(response.returnProducts, function(index, returnProduct) {
                     $('.return-product-id').append('<option value="' + returnProduct.id + '">' + returnProduct.name + '</option>');
                   });
@@ -538,7 +556,7 @@
           var amount = $(this).val()-0;
           total += amount;
         });
-        $('.return-currency').html("€");
+        $('.return-currency').html("£");
         $('.return-total').html(parseFloat(total).toFixed(2));
       }
 
@@ -684,8 +702,17 @@
 
       //After Submitting Return Items to Invoice Make this to Non Editable
       $('#submit-data').on('click', function () {
+        let paymentType = $('#payment_type').val();
         let receivedAmt = $('#received_amt').val();
-        if(receivedAmt) {
+        if(!paymentType){
+          $(this).attr("disabled", true);
+          $('#payment-type-error').html("Please select Payment Type");
+          $('#payment-type-error').show();
+          setTimeout(()=> {
+            $(this).attr("disabled", false);
+            $('#payment-type-error').hide();
+          }, 3000);
+        } else if(receivedAmt) {
           $(this).attr("disabled", false)
           $('#product-section').find('tr').each(function (){
             $(this).find('select').attr('disabled', false);
@@ -734,6 +761,12 @@
 
           $('#customer-name-error').html("Please select Customer Name");
           $('#customer-name-error').show();
+          let cusErr = $('#customer-name-error').text().length;
+          if(cusErr > 0) {
+            $('html, body').animate({
+              scrollTop: $('#customer_name').offset().top - 300
+            }, 500);
+          }
           setTimeout(()=> {
             $('#customer-name-error').hide();
           }, 3000);
@@ -755,6 +788,12 @@
           } else {
             $('#alert-message').text("Already added the Product");
             $('#alert-message').show();
+            let isErr = $('#alert-message').text().length;
+            if (isErr > 0) {
+              $('html, body').animate({
+                  scrollTop: $('#alert-message').offset().top - 300
+              }, 500);
+            }
             setTimeout(()=> {
               $('#alert-message').hide();
             }, 3000);
@@ -835,10 +874,10 @@
 
             $('#prod-name').text(prodName);
             $('#prod-qty').text(qtyValue);
-            $('#return-view-price-currency').text('$');
+            $('#return-view-price-currency').text('£');
             $('#prod-price').text(parseFloat(prodPrice).toFixed(2));
             $('#prod-rtn-reason').text(rtnReason);
-            $('#return-view-tot-currency').text('$');
+            $('#return-view-tot-currency').text('£');
             $('#prod-tot-amt').text(parseFloat(totalAmt).toFixed(2));
             $('#productDetailsModal').modal('show');
 
@@ -894,6 +933,12 @@
         if ( isNaN(customerID)|| customerID <= 0) {
           $('#customer-name-error').html("Please select Customer Name");
           $('#customer-name-error').show();
+          let cusErr = $('#customer-name-error').text().length;
+          if(cusErr > 0) {
+            $('html, body').animate({
+              scrollTop: $('#customer_name').offset().top - 300
+            }, 500);
+          }
           setTimeout(()=> {
             $('#customer-name-error').hide();
           }, 3000);
@@ -905,6 +950,12 @@
           if (productsCount == 0) {
             $('#alert-message').text("Please add minimum of 1 Product");
             $('#alert-message').show();
+            let isErr = $('#alert-message').text().length;
+            if (isErr > 0) {
+              $('html, body').animate({
+                  scrollTop: $('#alert-message').offset().top - 300
+              }, 500);
+            }
             setTimeout(()=> {
               $('#alert-message').hide();
             }, 3000);
@@ -919,6 +970,12 @@
                 console.log("productID",productID);
                 $('#alert-message').text("Please select the Product");
                 $('#alert-message').show();
+                let isErr = $('#alert-message').text().length;
+                  if (isErr > 0) {
+                  $('html, body').animate({
+                      scrollTop: $('#alert-message').offset().top - 300
+                  }, 500);
+                }
                 setTimeout(()=> {
                   $('#alert-message').hide();
                 }, 3000);
@@ -927,6 +984,12 @@
               } else if (productQty == "") {
                 $('#alert-message').text("Please enter the Quantity");
                 $('#alert-message').show();
+                let isErr = $('#alert-message').text().length;
+                  if (isErr > 0) {
+                  $('html, body').animate({
+                      scrollTop: $('#alert-message').offset().top - 300
+                  }, 500);
+                }
                 setTimeout(()=> {
                   $('#alert-message').hide();
                 }, 3000);
@@ -939,6 +1002,7 @@
                 return true;
               }
             });
+            
 
             if(allFilled) {
               $('#product-table-error').hide();
@@ -952,6 +1016,11 @@
       //Removing Input Highlighting Border Color
       $('#product-section').on('focus', '.return-qty, .return-amount', function () {
         $(this).css('border-color','#ced4da');
+      });
+
+      //Back to Index Page Button
+      $('#invoice-close-btn').on('click', function() {
+        window.location.href = "{{ route('invoice.index') }}";
       });
 
     });

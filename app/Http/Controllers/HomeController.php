@@ -109,7 +109,6 @@ class HomeController extends Controller
 
     public function update_profile(Request $request, $id){
 
-
         $user = User::find($id);
         $user->f_name = $request->f_name;
         $user->l_name = $request->l_name;

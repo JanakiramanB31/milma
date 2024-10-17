@@ -29,7 +29,13 @@
                   <br>Email: {{$invoice->customer->email}}
                 </address>
               </div>
-              <div class="col-4"><b>Invoice #{{1000+$invoice->id}}</b><br><br><b>Order ID:</b> 4F3S8J<br><b>Payment Due:</b> {{$invoice->created_at->format('d-m-Y')}}<br><b>Account:</b> 000-12345</div>
+              <div class="col-4">
+                <b class="d-inline">Invoice #{{1000+$invoice->id}}</b>
+                <b class="d-inline">Payment Type:</b> {{$invoice->payment_type}}<br>
+                <b class="d-inline">Order ID:</b> 4F3S8J<br>
+                <b class="d-inline">Payment Due:</b> {{$invoice->created_at->format('d-m-Y')}}<br>
+                <b class="d-inline">Account:</b> 000-12345
+              </div>
             </div>
             <div class="row d-flex justify-content-center">
               <div class="col-12 table-responsive">
@@ -69,14 +75,14 @@
                         {{$sale->product->name}}
                       </td>
                       <td>{{ number_format($sale->qty, 2) }}</td>
-                      <td>€{{ number_format($sale->price, 2) }}</td>
+                      <td>£{{ number_format($sale->price, 2) }}</td>
                       <td class="text-left">
                         @if($sale->type == "sales")
                         <b></b>
                         @else
                         <b>(-)</b>
                         @endif
-                        €{{ number_format($sale->qty * $sale->price, 2) }}
+                        £{{ number_format($sale->qty * $sale->price, 2) }}
                       </td>
                       <div style="display: none">
                         {{$total }}
@@ -89,26 +95,26 @@
                       <td></td>
                       <td></td>
                       <td style="text-align: end;"><b>Total Amount</b></td>
-                      <td class="text-left"><b class="total"  >€{{ number_format($amount->total_amount, 2) }}</b></td>
+                      <td class="text-left"><b class="total"  >£{{ number_format($amount->total_amount, 2) }}</b></td>
                     </tr>
                     <tr>
                       <td></td>
                       <td></td>
                       <td style="text-align: end;"><b>Previous Balance Amount</b></td>
-                      <td class="text-left"><b class="total"  >€{{ number_format($amount->prev_balance_amt, 2) }}</b></td>
+                      <td class="text-left"><b class="total"  >£{{ number_format($amount->prev_balance_amt, 2) }}</b></td>
                     </tr>
                     <tr >
                       <td></td>
                       <td></td>
                       
                       <td style="text-align: end;"><b>Amount Paid</b></td>
-                      <td class="text-left"><b class="total">€{{ number_format($amount->received_amt, 2) }}</b></td>
+                      <td class="text-left"><b class="total">£{{ number_format($amount->received_amt, 2) }}</b></td>
                     </tr>
                     <tr>
                       <td></td>
                       <td></td>
                       <td style="text-align: end;"><b>Balance Amount</b></td>
-                      <td class="text-left"><b class="total">€{{ number_format($amount->balance_amt, 2) }}</b></td>
+                      <td class="text-left"><b class="total">£{{ number_format($amount->balance_amt, 2) }}</b></td>
                     </tr>
                   </tfoot>
                 </table>

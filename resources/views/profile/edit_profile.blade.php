@@ -6,7 +6,7 @@
     @include('partials.sidebar')
 
     <main class="app-content">
-        <div class="app-title">
+        <!-- <div class="app-title">
             <div>
                 <h1><i class="fa fa-edit"></i> Update Profile </h1>
             </div>
@@ -15,7 +15,7 @@
                 <li class="breadcrumb-item">Forms</li>
                 <li class="breadcrumb-item"><a href="#"> Profile Update </a></li>
             </ul>
-        </div>
+        </div> -->
         @if(session('success'))
     <div class="alert alert-success">
         {{ session('success') }}

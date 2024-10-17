@@ -26,7 +26,7 @@
                   <strong>{{$invoice->customer->name}}</strong>
                   <br>{{$invoice->customer->address}}
                   <br>Phone: {{$invoice->customer->mobile}}
-                  <br>Email: {{$invoice->customer->email}}
+                  <br>Email: <p style=" white-space: normal;word-wrap: break-word;overflow-wrap: break-word;">{{$invoice->customer->email}}</p>
                 </address>
               </div>
               <div class="col-4">
@@ -45,7 +45,7 @@
                       <th>Product</th>
                       <th>Qty</th>
                       <th >Price</th>
-                      <th class="text-left" >Amount</th>
+                      <th class="text-left" >Amt</th>
                     </tr>
                   </thead>
                   @php
@@ -94,26 +94,26 @@
                     <tr>
                       <td></td>
                       <td></td>
-                      <td style="text-align: end;"><b>Total Amount</b></td>
+                      <td style="text-align: end;"><b>Total Amt</b></td>
                       <td class="text-left"><b class="total"  >£{{ number_format($amount->total_amount, 2) }}</b></td>
                     </tr>
                     <tr>
                       <td></td>
                       <td></td>
-                      <td style="text-align: end;"><b>Previous Balance Amount</b></td>
+                      <td style="text-align: end;"><b>Prev Bal Amt</b></td>
                       <td class="text-left"><b class="total"  >£{{ number_format($amount->prev_balance_amt, 2) }}</b></td>
                     </tr>
                     <tr >
                       <td></td>
                       <td></td>
                       
-                      <td style="text-align: end;"><b>Amount Paid</b></td>
+                      <td style="text-align: end;"><b>Amt Paid</b></td>
                       <td class="text-left"><b class="total">£{{ number_format($amount->received_amt, 2) }}</b></td>
                     </tr>
                     <tr>
                       <td></td>
                       <td></td>
-                      <td style="text-align: end;"><b>Balance Amount</b></td>
+                      <td style="text-align: end;"><b>Bal Amt</b></td>
                       <td class="text-left"><b class="total">£{{ number_format($amount->balance_amt, 2) }}</b></td>
                     </tr>
                   </tfoot>

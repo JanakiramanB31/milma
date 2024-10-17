@@ -41,6 +41,7 @@ Route::group(['middleware' => 'App\Http\Middleware\SuperAdminMiddleware', 'prefi
   Route::resource('product', 'ProductController');
   Route::resource('invoice', 'InvoiceController');
   Route::post('invoice/getProducts/{id}', 'InvoiceController@getProducts')->name('invoice.getProducts');
+  Route::post('invoice/fetchProducts/{id}', 'InvoiceController@fetchProducts')->name('invoice.fetchProducts');
   Route::post('invoice/storeReturns', 'InvoiceController@storeReturns')->name('invoice.storeReturns');
   Route::resource('rate', 'RateController');
   Route::get('sales', [SalesController::class, 'index'])->name('sales');
@@ -53,6 +54,7 @@ Route::get('/', 'StockInTransitController@index')->name('home');
 Route::get('/home', 'StockInTransitController@index')->name('home');
 Route::resource('invoice', 'InvoiceController');
 Route::post('invoice/getProducts/{id}', 'InvoiceController@getProducts')->name('invoice.getProducts');
+Route::post('invoice/fetchProducts/{id}', 'InvoiceController@fetchProducts')->name('invoice.fetchProducts');
 Route::post('invoice/storeReturns', 'InvoiceController@storeReturns')->name('invoice.storeReturns');
 Route::resource('stockintransit','StockInTransitController');
 Route::post('stockintransit/check', 'StockInTransitController@checkExistence')->name('stockintransit.check');

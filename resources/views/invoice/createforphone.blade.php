@@ -227,7 +227,7 @@
                     </div>
                     <!-- Return Items Form Footer --> 
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                       <button id="return-entry-button" type="button" class="btn btn-primary">Save changes</button>
                     </div>
                   </div>
@@ -741,7 +741,7 @@
       function addProductMobileRow(productID, productName, productPrice) {
         var addProductRow = '<tr>\n' +
           '<td><input type="text" name="product_id[]" value="' +productID+'" hidden/><input type="text" value="' +productName+'" data-id="'+productID+'" data-toggle="tooltip" data-placement="top" title="'+ productName+'"  class="form-control p-1 fs-6 productname" readonly></td>\n' +
-          '<td><input type="text" name="qty[]" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
+          '<td><input type="text" name="qty[]" data-id="'+productID+'" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
           '<td hidden><input type="number" value="'+productPrice+'"  name="price[]" class="form-control p-1 fs-6 price" ></td>\n' +
           '<td><input type="text"  name="amount[]" class="form-control text-center p-1 fs-6 amount" ></td>\n' +
           '<td hidden><input type="hidden" name="reason[]" class="form-control p-1 fs-6 reason" ></td>\n' +
@@ -1021,6 +1021,57 @@
       //Back to Index Page Button
       $('#invoice-close-btn').on('click', function() {
         window.location.href = "{{ route('invoice.index') }}";
+      });
+
+      $(document).on('input','.qty' ,function (){
+        let qtyVal = $(this).val();
+        let productID = $(this).data('id');
+        console.log(productID)
+        if(productID) {
+          $('#product-table-error').hide();
+          $.ajax({
+            url: '{{ route("invoice.fetchProducts",":id") }}'.replace(':id', productID),
+            type: 'POST',
+            data: {
+              product_id: productID,
+              _token: '{{ csrf_token() }}' 
+            },
+            success: function(response) {
+              try {
+                console.log("Working",response);
+                let data = response.productIDsandQuantitites
+                let availableQty = data[productID];
+                //console.log(availableQty)
+
+                if (qtyVal < 0) {
+                  $('#product-form-data').attr("disabled", true);
+                  $('#alert-message').text("Please enter non-negative quantities.");
+                  $('#alert-message').show();
+                  setTimeout(()=> {
+                    $('#alert-message').hide();
+                  }, 3000);
+                } else if(qtyVal > availableQty){
+                  $('#product-form-data').attr("disabled", true);
+                  $('#alert-message').text("Quantity exceeds available stock of Available Quantity");
+                  $('#alert-message').show();
+                  setTimeout(()=> {
+                    $('#alert-message').hide();
+                  }, 3000);
+                } else {
+                  $('#product-form-data').attr("disabled", false);
+                }
+              } catch(error) {
+                console.log("Failed",error)
+              }
+            },
+            error: function(xhr) {
+              var errorMessage =  'An error occurred. Please try again.';
+              $('#error-message').html(errorMessage).show();
+            }
+          });
+        } else {
+          console.log("Failed")
+        }
       });
 
     });

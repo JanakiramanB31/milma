@@ -96,6 +96,15 @@ class InvoiceController extends Controller
       return response()->json(['returnProducts' => $returnProducts,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices' => $prodIDsAndPrices,'balance_amount' => $balAmt]);
       
     }
+
+    public function fetchProducts(Request $request, $id) {
+      $userId = Auth::id();
+      $prodID = $id;
+      $today = now()->toDateString();
+      $productIDsandQuantities = StockInTransit::where('product_id', $prodID)->where('user_id', $userId) ->whereDate('created_at', $today)->pluck('quantity', 'product_id')->toArray();      
+      return response()->json(['productIDsandQuantitites' => $productIDsandQuantities]);
+    }
+
     public function store(Request $request)
     {
       $request->validate([
@@ -108,6 +117,7 @@ class InvoiceController extends Controller
       
       $userId = Auth::id();
       $cusID = $request->customer_id;
+      $today = now()->toDateString();
       
       $oldInvoice = Invoice::where('customer_id', $cusID)->orderBy('created_at', 'desc')->first();
       if ($oldInvoice) {
@@ -124,6 +134,10 @@ class InvoiceController extends Controller
       $invoice->total_amount = $request->total;
       $invoice->save();
 
+      
+      //$this->pr($stockintransit);
+      //exit;
+      
       foreach ( $request->product_id as $key => $product_id){
         if ($product_id && isset($request->qty[$key]) && $request->qty[$key]) {
           $sale = new Sale();
@@ -136,6 +150,20 @@ class InvoiceController extends Controller
           $sale->product_id = $request->product_id[$key];
           $sale->invoice_id = $invoice->id;
           $sale->save();
+
+          $stockintransits = StockInTransit::where('user_id', $userId) ->whereDate('created_at', $today)->get();
+
+          if($request->type[$key] == "sales") {
+            foreach ($stockintransits as $stockintransit) {
+              $stockintransit->quantity -= $request->qty[$key];
+              $stockintransit->save(); 
+            }
+          } else {
+            foreach ($stockintransits as $stockintransit) {
+              $stockintransit->quantity += $request->qty[$key];
+              $stockintransit->save(); 
+            }
+          }
         }
       }
 

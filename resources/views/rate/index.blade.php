@@ -19,7 +19,7 @@
             </ul>
         </div>
         <div class="">
-            <a class="btn btn-primary" href="{{route('rate.create')}}"><i class="fa fa-plus"></i> Add Rates</a>
+            <a class="btn btn-primary" href="{{route('rate.create')}}"><i class="fa fa-plus"></i>New Rate</a>
         </div>
 
         <div class="row mt-2">
@@ -71,35 +71,41 @@
     <script type="text/javascript">$('#sampleTable').DataTable();</script>
     <script src="https://unpkg.com/sweetalert2@7.19.1/dist/sweetalert2.all.js"></script>
     <script type="text/javascript">
-        function deleteTag(id) {
-            swal({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#28a745',
-                cancelButtonColor: '#dc3545',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'No, cancel!',
-                confirmButtonClass: 'btn btn-success',
-                cancelButtonClass: 'btn btn-danger',
-                buttonsStyling: true,
-                reverseButtons: true
-            }).then((result) => {
-                if (result.value) {
-                    event.preventDefault();
-                    document.getElementById('delete-form-'+id).submit();
-                } else if (
-                    // Read more about handling dismissals
-                    result.dismiss === swal.DismissReason.cancel
-                ) {
-                    swal(
-                        'Cancelled',
-                        'Your data is safe :)',
-                        'error'
-                    )
-                }
-            })
+      function deleteTag(id) {
+      swal({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#dc3545',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, cancel!',
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        buttonsStyling: true,
+        reverseButtons: true
+      }).then((result) => {
+        if (result.value) {
+          event.preventDefault();
+          document.getElementById('delete-form-'+id).submit();
+        } else if (
+          // Read more about handling dismissals
+          result.dismiss === swal.DismissReason.cancel
+        ) {
+          swal({
+            title: 'Cancelled',
+            text: 'Your data is safe :)',
+            type: 'error',
+            showCancelButton: false,
+            confirmButtonColor: '#28a745',
+            confirmButtonText: 'Ok',
+            confirmButtonClass: 'btn btn-success',
+            buttonsStyling: true,
+            
+          });
         }
+      });
+    }
     </script>
 @endpush

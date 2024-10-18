@@ -72,7 +72,7 @@
               <div class="d-flex justify-content-end mb-3">
                 <button id="return-button-add" type="button" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#returnForm">
                   <i class="fa fa-plus"></i>
-                  <span>Return Items</span>
+                  <span>Return</span>
                 </button>
               </div>
           
@@ -85,11 +85,11 @@
                     <table class="d-table table table-striped ">
                       <thead>
                         <tr>
-                          <th scope="col">Product</th>
-                          <th scope="col">Quantity</th>
+                          <th scope="col" class="col-4">Product</th>
+                          <th scope="col" class="col-2">Qty</th>
                           <th scope="col" hidden>Price</th>
-                          <th scope="col">Amount</th>
-                          <th scope="col">Action</th>
+                          <th scope="col" class="col-4">Amt</th>
+                          <th scope="col" class="col-2">Action</th>
                         </tr>
                       </thead>
                       <tbody id="product-section" style="height: 270px;overflow-y: auto;">
@@ -131,16 +131,16 @@
 
                   <!-- Products List with Image -->
                   <div class="overflow-y p-1 border border-primary rounded" style="height: 300px;overflow-y: auto;">
-                    <div id="product-list" class="d-flex h-100 justify-content-between">
+                    <div id="product-list" class="d-flex flex-wrap h-100 " style="gap: 10px;">
                       @if(count($products) == 0)
                         <div class="d-flex w-100 h-100 justify-content-center align-items-center">
                           <p>No Products Found</p>
                         </div>  
                       @else
                         @foreach($products as $product)
-                          <figure>
-                            <image class="product-select" data-id="{{$product->id}}" data-name="{{$product->name}}" src={{asset('images/product/' . $product->image)}} width='100px' height='100px'/>
-                            <figcaption class="text-center">{{$product->name}}</figcaption>
+                          <figure class="flex-{grow|shrink}-1">
+                            <image class="product-select" data-id="{{$product->id}}" data-name="{{$product->name}}" src={{asset('images/product/' . $product->image)}} width='50px' height='50px'/>
+                            <figcaption style="width: 50px;"><p class="d-inline" style=" white-space: normal;word-wrap: break-word;overflow-wrap: break-word;">{{$product->name}}<p class="d-inline">-</p><b>{{$product->quantity}}</b></p></figcaption>
                           </figure>
                         @endforeach
                       @endif
@@ -165,11 +165,11 @@
                       <table  class="table table-bordered" >
                         <thead>
                           <tr>
-                            <th scope="col">Product</th>
-                            <th scope="col">Quantity</th>
+                            <th scope="col" class="col-4">Product</th>
+                            <th scope="col" class="col-2">Qty</th>
                             <th scope="col" hidden>Price</th>
-                            <th scope="col">Amount</th>
-                            <th scope="col">Actions</th>
+                            <th scope="col" class="col-4">Amt</th>
+                            <th scope="col" class="col-2">Actions</th>
                           </tr>
                         </thead>
                         <tbody id="return-product-body">
@@ -226,15 +226,16 @@
                       <div id="return-table-error" class="text-danger"></div>
                     </div>
                     <!-- Return Items Form Footer --> 
-                    <div class="modal-footer">
+                    <div class="modal-footer d-flex justify-content-center">
                       <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                      <button id="return-entry-button" type="button" class="btn btn-primary">Save changes</button>
+                      <button id="return-entry-button" type="button" class="btn btn-primary">Save</button>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class="d-flex justify-content-between">
+             <!--  Triggering Received Amt Form Button and Close Button  -->
+              <div class="d-flex justify-content-center" style="gap: 10px;">
                 <!-- Back to Index Page Button -->
                 <div>
                   <button id="invoice-close-btn" type="button" class="btn btn-danger">Close</button>
@@ -266,12 +267,12 @@
                     </div>
                     <!-- Received Amount PopUp Form Content -->
                     <div class="modal-body d-flex flex-column justify-content-center">
-                    <label class="form-label">Enter Amount</label>
+                    <label class="form-label">Amount</label>
                       <input id="received_amt" type="number"  name="received_amt" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
                       <div id="received-amt-error" class="text-danger"></div>
                     </div>
                     <!-- Received Amount PopUp Form Footer -->
-                    <div class="modal-footer">
+                    <div class="modal-footer d-flex justify-content-center">
                       <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                       <button id="submit-data" class="btn btn-primary" type="submit">Submit</button>
                     </div>
@@ -298,8 +299,8 @@
                   </div>
                 </div>
                 <!-- Return Reason PopUp Form Footer -->
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <div class="modal-footer  d-flex justify-content-center">
+                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                   <button id="return-reason-entry-button" type="button" class="btn btn-primary">Save</button>
                 </div>
               </div>
@@ -343,9 +344,9 @@
                   </table>
                 </div>
                 <!-- Product Details Popup Form Footer -->
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
+                <!-- <div class="modal-footer  d-flex justify-content-center">
+                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div> -->
               </div>
             </div>
           </div>
@@ -1083,10 +1084,8 @@
                   $('#product-form-data').attr("disabled", true);
                   $('#alert-message').text("Quantity exceeds available stock of Available Quantity");
                   $('#alert-message').show();
-                  setTimeout(()=> {
-                    $('#alert-message').hide();
-                  }, 3000);
                 } else {
+                  $('#alert-message').hide();
                   $('#product-form-data').attr("disabled", false);
                 }
               } catch(error) {

@@ -19,7 +19,7 @@
             </ul>
         </div> -->
         <div class="">
-            <a class="btn btn-primary" href="{{route('invoice.create')}}"><i class="fa fa-plus"></i> Create New Invoice</a>
+            <a class="btn btn-primary" href="{{route('invoice.create')}}"><i class="fa fa-plus"></i>Invoice</a>
         </div>
 
         <div class="row mt-2">
@@ -27,11 +27,11 @@
                 <div class="tile">
                     <div class="tile-body table-responsive">
                         <table class="table table-hover table-bordered" id="sampleTable">
-                            <thead>
+                          <thead>
                             <tr>
                                 <th>Invoice ID </th>
                                 <th>Customer Name </th>
-                                <th>Date </th>
+                                <!-- <th>Date </th> -->
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -41,7 +41,7 @@
                                  <tr>
                                      <td>{{1000+$invoice->id}}</td>
                                      <td>{{$invoice->customer->name}}</td>
-                                     <td>{{$invoice->created_at->format('d-m-Y')}}</td>
+                                     <!-- <td>{{$invoice->created_at->format('d-m-Y')}}</td> -->
                                      <td class="d-flex" style="gap: 10px;">
                                          <a class="btn btn-primary btn-sm" href="{{route('invoice.show', $invoice->id)}}"><i class="fa fa-eye" ></i></a>
                                          <!-- <a class="btn btn-info btn-sm" href="{{route('invoice.edit', $invoice->id)}}"><i class="fa fa-edit" ></i></a> -->

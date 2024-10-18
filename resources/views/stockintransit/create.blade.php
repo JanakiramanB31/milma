@@ -35,9 +35,9 @@
               @csrf
               <div id="route-vehicle-section" style="display: {{$routeDisplay}};">
                 <div class="form-group col-md-12">
-                  <label class="control-label">Route Number</label>
+                  <label class="control-label">Route</label>
                   <select name="route_id" id='route_id' class="form-control @error('route_id') is-invalid @enderror">
-                    <option value=''>Select Route Number</option>
+                    <option value=''>Select Route</option>
                     @foreach($routes as $route)
                     <option value="{{ $route['id'] }}" {{ old('route_id') == $route['id'] ? 'selected' : '' }}>
                       {{ $route['route_number'] }}
@@ -56,7 +56,7 @@
                   <select name="vehicle_id" id='vehicle_id' class="form-control @error('vehicle_id') is-invalid @enderror">
                     <option value=''>Select Vehicle Number</option>
                     @foreach($vehicles as $vehicle)
-                    <option value="{{ $vehicle['id'] }}" {{ old('vehicle_id') == $vehicle['id'] ? 'selected' : '' }}>
+                    <option data-type="{{$vehicle['vehicle_type_parent_id'] == 1 ? 'Van' : 'Car'}}" value="{{ $vehicle['id'] }}" {{ old('vehicle_id') == $vehicle['id'] ? 'selected' : '' }}>
                       {{ $vehicle['vehicle_number'] }}
                     </option>
                     @endforeach
@@ -83,7 +83,7 @@
                 @endif
                 <span id="error-message" class="invalid-feedback col-md-12" role="alert"></span>
 
-                <div class="form-group d-flex col-md-12 justify-content-start ">
+                <div class="form-group d-flex col-md-12 justify-content-center ">
                   <button type="button" id="nextButton" class="btn btn-success">Next</button>
                 </div>
               </div>
@@ -106,7 +106,7 @@
                       <label class="control-label">Product Name</label>
                     </div>
                     <div class="col-md-6">
-                      <label class="control-label">Quantity</label>
+                      <label class="control-label">Qty</label>
                     </div>
                   </div>
 
@@ -125,7 +125,7 @@
                         @enderror
                       </div>
                       <div class="form-group col-md-6">
-                        <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ old('quantity.' . $product->id) }}"  type="number" placeholder="Enter Quantity" data-available = "{{$prodMaxQuantity}}" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
+                        <input name="quantity[]" id="quantity-{{ $product->id }}" data-prodname="{{$product->name}}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ old('quantity.' . $product->id) }}"  type="number" placeholder="Enter Quantity" data-available = "{{$prodMaxQuantity}}" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
                         @error('quantity')
                         <span class="invalid-feedback" role="alert">
                           <strong>{{ $message }}</strong>
@@ -136,8 +136,8 @@
                   @endforeach
                 </div>
 
-                <div class="form-group mt-3 col-md-4 align-self-end">
-                  <button id="check-button" type="button" class="btn btn-success" ><i class="fa fa-fw fa-lg fa-check-circle"></i> Add Stock in Transit Details</button>
+                <div class="form-group mt-3 d-flex justify-content-center col-md-12 align-self-end">
+                  <button id="check-button" type="button" class="btn btn-success" ><i class="fa fa-fw fa-lg fa-check-circle"></i>Add</button>
                 </div>
               </div>
 
@@ -146,23 +146,22 @@
                 <div class="modal-dialog modal-sm" role="document">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title" id="sitDataLabel">Stock In Transit Form Data</h5>
+                      <h5 class="modal-title" id="sitDataLabel">Stock In Transit</h5>
                       <button type="button" class="btn-close btn btn-danger" data-dismiss="modal" aria-label="Close">
                         <i class="fa fa-remove"></i>
                       </button>
                     </div>
                     <div class="modal-body table-responsive">
+                      <div class="d-flex" style="font-size: 16px;">
+                        <strong>Route:</strong><p id="route-number" class="mx-2"></p>-<p id="vehicle-type" class="mx-2"></p>
+                      </div>
                       <table class="table table-hover" >
                         <thead>
-                          <tr>
-                            <td><strong>Route Number</strong><p id="route-number"></p></td>
-                            <td><strong>Vehicle Number</strong><p id="vehicle-number"></p></td>
-                          </tr>
                         </thead>
                         <tbody id="products-list">
                           <tr>
                             <td><strong>Product Name</strong></td>
-                            <td><strong>Quantity</strong></td>
+                            <td><strong>Qty</strong></td>
                           </tr>
                         </tbody>
                         <tfoot>
@@ -173,7 +172,7 @@
                         </tfoot>
                       </table>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer d-flex justify-content-center">
                       <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                       <button id="submit-sit-data" type="submit" class="btn btn-primary">Submit</button>
                     </div>
@@ -203,7 +202,7 @@
         if (routeSelect.val() && vehicleSelect.val() && (currentUserRole === "admin" ? userIDSelect.val() :true)) {
           var route_id = routeSelect.val();
           var vehicle_id = vehicleSelect.val();
-          console.log(route_id, vehicle_id);
+          //console.log(route_id, vehicle_id);
           $.ajax({
             url: '{{ route("stockintransit.check") }}',
             method: 'POST',
@@ -246,7 +245,11 @@
         $('#product-section1').show();
         $('#sku_code').text(sku);
         $('#barcode').text(barcode);
-        if (quantityValue < 0) {
+        if ( quantityValue && availableQuantity == 0) {
+          $('#quantity-error').text('Out of Stock').show();
+          $('#add_button').prop('disabled', true);
+          $('#check-button').attr('disabled', true);
+        } else if (quantityValue < 0) {
           $('#quantity-error').css("display", "block");
           $('#quantity-error').text('Please enter non-negative quantities.').show();
           $('#add_button').prop('disabled', true);
@@ -262,7 +265,7 @@
         } else if (quantityValue > availableQuantity) {
           $('#add_button').prop('disabled', true);
           $('#check-button').attr('disabled', true);
-          $('#quantity-error').text('Quantity exceeds available stock of Available Quantity').show();
+          $('#quantity-error').text('Quantity exceeds the available stock.').show();
         } else {
           $('#add_button').prop('disabled', false);
           $('#check-button').attr('disabled', false);
@@ -278,48 +281,83 @@
       });
 
       $('#check-button').on('click', function () {
+        checkQty();
+      });        
+
+      function checkQty() {
         var routeNumber = $('#route_id').find('option:selected').text();
-        var vehicleNumber = $('#vehicle_id').find('option:selected').text();
+        var vehicleType = $('#vehicle_id').find('option:selected').data('type');
         var products = [];
+        let allValidated = true;
 
-        $('.prod-name').each(function () {
-          var productName = $(this).val();
-          var quantity = $(this).closest('div').next().find('.quantity-input').val();
-          if(quantity > 0) {
-            products.push({
-              prodName:productName,
-              qty:quantity
-            });
+        $('.quantity-input').each(function() {
+          var quantityValue = $(this).val();
+          var productName = $(this).data('prodname');
+          var availableQuantity = $(this).data('available');
+
+          if (quantityValue < 0) {
+            $('#quantity-error').text(`Please enter non-negative quantities for ${productName}`).show();
+            allValidated = false;
+            return false;
+          } else if (quantityValue && availableQuantity == 0) {
+            $('#quantity-error').text(`${productName} is Out of Stock`).show();
+            allValidated = false;
+            return false;
+          } else if (quantityValue > availableQuantity) {
+            $('#quantity-error').text(`${productName} quantity exceeds available stock.`).show();
+            allValidated = false;
+            return false;
+          } else {
+            $('#quantity-error').hide();
+            allValidated = true;
+            return true;
           }
+
+          $('#add_button').prop('disabled', !allValidated);
+          $('#check-button').attr('disabled', !allValidated);
         });
 
-        //console.log(routeNumber,vehicleNumber,products);
-        $('#route-number').text(routeNumber);
-        $('#vehicle-number').text(vehicleNumber);
-        var existingProducts = {};
+        if (allValidated) {
+          updateProductQuantities();
+          $('.prod-name').each(function () {
+            var productName = $(this).val();
+            var quantity = $(this).closest('div').next().find('.quantity-input').val();
+            if(quantity > 0) {
+              products.push({
+                prodName:productName,
+                qty:quantity
+              });
+            }
+          });
+          $('#route-number').text(routeNumber);
+          $('#vehicle-type').text(vehicleType);  
 
-        $('#products-list').find('tr').each(function () {
-          var existingProductName = $(this).find('.product-name').text().trim();
-          existingProducts[existingProductName] = true;
-        });
-        
-        var productListHtml = '';
-        products.forEach(function(product) {
-          if (!existingProducts[product.prodName]) {
-            productListHtml += `
-            <tr class="product-row">
-              <td><p class = "product-name">${product.prodName}</p></td>
-              <td><p class="product-quantity">${product.qty}</p></td>
-            </tr>`
+          var existingProducts = {};
+
+          $('#products-list').find('tr').each(function () {
+            var existingProductName = $(this).find('.product-name').text().trim();
+            existingProducts[existingProductName] = true;
+          });
+
+          var productListHtml = '';
+          products.forEach(function(product) {
+            if (!existingProducts[product.prodName]) {
+              const quantity = parseFloat(product.qty).toFixed(2);
+              productListHtml += `
+              <tr class="product-row">
+                <td><p class = "product-name">${product.prodName}</p></td>
+                <td><p class="product-quantity">${quantity}</p></td>
+              </tr>`
+            }
+          });
+
+          if(productListHtml) {
+            $('#products-list').append(productListHtml);
+            updateTotalQuantity();
           }
-        });
-
-        if(productListHtml) {
-          $('#products-list').append(productListHtml);
-          updateTotalQuantity();
+          $('#sit-data').modal('show');
         }
-        $('#sit-data').modal('show');
-      });
+      }
 
       function updateProductQuantities () {
         $('#products-list .product-row').each(function() {
@@ -345,7 +383,7 @@
           totalQuantity += inputQty;
         });
 
-        $('.tot-qty').text(totalQuantity)
+        $('.tot-qty').text(parseFloat(totalQuantity).toFixed(2))
       }
 
       $('#product-section').on('focus', '.prod-name, .quantity-input', function () {

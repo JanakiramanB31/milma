@@ -32,7 +32,14 @@ class InvoiceController extends Controller
 
     public function index()
     {
-      $invoices = Invoice::all();
+      $userID = Auth::id();
+      $userRole = Auth::user()->role;
+      $today = now()->toDateString();
+      if ($userRole == 'admin') {
+        $invoices = Invoice::all();
+      } else {
+        $invoices = Invoice::where('user_id',$userID)->whereDate('created_at', $today)->get();
+      }
       return view('invoice.index', compact('invoices'));
     }
 
@@ -58,7 +65,13 @@ class InvoiceController extends Controller
         if ($routeData) {
           $products = Product::where('status',1)->whereIn('id', function ($query) use( $userID, $routeData) {
             $query->select('product_id')->where('user_id',$userID)->where('route_id',$routeData->route_id)->where('vehicle_id',$routeData->vehicle_id)->from('stock_in_transits');
-          })->get();         
+          })->get();
+          $quantities = StockInTransit::where('user_id', $userID) ->where('route_id', $routeData->route_id)->where('vehicle_id', $routeData->vehicle_id)->pluck('quantity', 'product_id');
+          foreach ($products as $product) {
+            $product->quantity = $quantities->get($product->id, 0);
+          }
+          //$this->pr($products);
+          //exit;         
         } else {
           $products =array();
           $returnProducts = array();
@@ -114,7 +127,8 @@ class InvoiceController extends Controller
         'price' => 'required',
         'amount' => 'required',
       ]);
-      
+
+     
       $userId = Auth::id();
       $cusID = $request->customer_id;
       $today = now()->toDateString();
@@ -151,18 +165,15 @@ class InvoiceController extends Controller
           $sale->invoice_id = $invoice->id;
           $sale->save();
 
-          $stockintransits = StockInTransit::where('user_id', $userId) ->whereDate('created_at', $today)->get();
+          $stockintransits = StockInTransit::where('user_id', $userId)->where('product_id',$product_id)->whereDate('created_at', $today)->get();
 
-          if($request->type[$key] == "sales") {
-            foreach ($stockintransits as $stockintransit) {
-              $stockintransit->quantity -= $request->qty[$key];
-              $stockintransit->save(); 
+          foreach ($stockintransits as $stockintransit) {
+            if ($request->type[$key] === "sales") {
+                $stockintransit->quantity -= $request->qty[$key];
+            } else {
+                $stockintransit->quantity += $request->qty[$key];
             }
-          } else {
-            foreach ($stockintransits as $stockintransit) {
-              $stockintransit->quantity += $request->qty[$key];
-              $stockintransit->save(); 
-            }
+            $stockintransit->save();
           }
         }
       }

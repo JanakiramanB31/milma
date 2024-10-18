@@ -22,14 +22,14 @@
         @if(Auth::user()->role == 'admin')
           <div class="">
             <a class="btn btn-primary" href="{{ route('stockintransit.create') }}">
-              <i class="fa fa-plus"></i>New Stock in Transit
+              <i class="fa fa-plus"></i>Stock in Transit
             </a>
           </div>
         @else
           @if(!$recordExists)
             <div class="">
               <a class="btn btn-primary" href="{{ route('stockintransit.create') }}">
-                <i class="fa fa-plus"></i>New Stock in Transit
+                <i class="fa fa-plus"></i>Stock in Transit
               </a>
             </div>
           @endif
@@ -107,7 +107,7 @@
                         <b>{{ $firstItem->vehicle->vehicle_number }}</b>
                       </div>
                       <div class="d-flex h-100 flex-column justify-content-center">
-                        <p class="mb-0 ">Route Number : </p>
+                        <p class="mb-0 ">Route : </p>
                         <b>{{ $firstItem->route->route_number }}</b>
                       </div>
                     </div>
@@ -132,7 +132,7 @@
                           <label class="control-label"><b>Product Name</b></label>
                         </div>
                         <div class="col-6">
-                          <label class="control-label"><b>Quantity</b></label>
+                          <label class="control-label"><b>Qty</b></label>
                         </div>
                       @foreach ($items as $item)
                         <div class="form-group col-6">
@@ -204,11 +204,10 @@
             confirmButtonText: 'Ok',
             confirmButtonClass: 'btn btn-success',
             buttonsStyling: true,
-            
           });
         }
       });
-      }
+    }
 
     $(document).ready(function(){
       $('#product-data').find('input').on('focus', function () {

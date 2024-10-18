@@ -188,6 +188,7 @@ class StockInTransitController extends Controller
       $newQuantities = $request->new_quantity;
      
       foreach ($productIDs as $key => $productID) {
+        $supplier = ProductSupplier::where('product_id', $productID)->first();
         if ($stockIDs[$key]) {
           $stockInTransit = StockInTransit::find($stockIDs[$key]);
           $stockInTransit->user_id = $request->user_id;
@@ -198,6 +199,9 @@ class StockInTransitController extends Controller
             $stockInTransit->product_id = $productID;
             $stockInTransit->quantity = $quantity;
             $stockInTransit->save();
+
+            $supplier->quantity -= $newQuantities[$key];
+            $supplier->save();
           }
         } else {
             if (isset($newQuantities[$key]) && !empty($newQuantities[$key]) ) {
@@ -207,6 +211,9 @@ class StockInTransitController extends Controller
               $stockInTransit->product_id = $productID;
               $stockInTransit->quantity = $oldQuantities[$key] + $newQuantities[$key];
               $stockInTransit->save();
+
+              $supplier->quantity -= $newQuantities[$key];
+              $supplier->save();
             }
         }
       }

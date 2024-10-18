@@ -19,7 +19,7 @@
             </ul>
         </div>
         <div class="">
-            <a class="btn btn-primary" href="{{route('invoice.create')}}"><i class="fa fa-plus"></i> Create New Invoice</a>
+            <a class="btn btn-primary" href="{{route('invoice.create')}}"><i class="fa fa-plus"></i>New Invoice</a>
         </div>
 
         <div class="row mt-2">

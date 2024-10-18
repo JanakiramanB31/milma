@@ -1080,7 +1080,7 @@
                   setTimeout(()=> {
                     $('#alert-message').hide();
                   }, 3000);
-                }else if (quantityValue && availableQuantity == 0) {
+                } else if (qtyVal && availableQty == 0) {
                   $('#alert-message').text('Out of Stock').show();
                   $('#product-form-data').attr("disabled", true);
                 } else if(qtyVal > availableQty){

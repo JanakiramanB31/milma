@@ -1069,8 +1069,8 @@
             success: function(response) {
               try {
                 console.log("Working",response);
-                let qtyData = response.productIDsandQuantitites;
-                let availableQty = qtyData[productID];
+                var qtyData = response.productIDsandQuantitites;
+                var availableQty = qtyData[productID];
                 console.log("Available Quantity",availableQty)
 
                 if (qtyVal < 0) {
@@ -1081,6 +1081,7 @@
                     $('#alert-message').hide();
                   }, 3000);
                 } else if(qtyVal > availableQty){
+                  console.log("QtyValue", qtyVal,"Available Qty",availableQty)
                   $('#product-form-data').attr("disabled", true);
                   $('#alert-message').text("Quantity exceeds available stock");
                   $('#alert-message').show();

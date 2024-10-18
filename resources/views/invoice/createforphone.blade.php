@@ -1069,9 +1069,9 @@
             success: function(response) {
               try {
                 console.log("Working",response);
-                let data = response.productIDsandQuantitites
-                let availableQty = data[productID];
-                //console.log(availableQty)
+                let qtyData = response.productIDsandQuantitites;
+                let availableQty = qtyData[productID];
+                console.log("Available Quantity",availableQty)
 
                 if (qtyVal < 0) {
                   $('#product-form-data').attr("disabled", true);
@@ -1082,7 +1082,7 @@
                   }, 3000);
                 } else if(qtyVal > availableQty){
                   $('#product-form-data').attr("disabled", true);
-                  $('#alert-message').text("Quantity exceeds available stock of Available Quantity");
+                  $('#alert-message').text("Quantity exceeds available stock");
                   $('#alert-message').show();
                 } else {
                   $('#alert-message').hide();

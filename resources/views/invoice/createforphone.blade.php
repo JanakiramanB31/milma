@@ -1056,7 +1056,7 @@
       $(document).on('input','.qty' ,function (){
         let qtyVal = $(this).val();
         let productID = $(this).data('id');
-        console.log(productID)
+        //console.log(productID)
         if(productID) {
           $('#product-table-error').hide();
           $.ajax({
@@ -1080,6 +1080,9 @@
                   setTimeout(()=> {
                     $('#alert-message').hide();
                   }, 3000);
+                }else if (quantityValue && availableQuantity == 0) {
+                  $('#alert-message').text('Out of Stock').show();
+                  $('#product-form-data').attr("disabled", true);
                 } else if(qtyVal > availableQty){
                   console.log("QtyValue", qtyVal,"Available Qty",availableQty)
                   $('#product-form-data').attr("disabled", true);

@@ -96,11 +96,16 @@
                     // Read more about handling dismissals
                     result.dismiss === swal.DismissReason.cancel
                 ) {
-                    swal(
-                        'Cancelled',
-                        'Your data is safe :)',
-                        'error'
-                    )
+                  swal({
+                    title: 'Cancelled',
+                    text: 'Your data is safe :)',
+                    type: 'error',
+                    showCancelButton: false,
+                    confirmButtonColor: '#28a745',
+                    confirmButtonText: 'Ok',
+                    confirmButtonClass: 'btn btn-success',
+                    buttonsStyling: true,
+                  });
                 }
             })
         }

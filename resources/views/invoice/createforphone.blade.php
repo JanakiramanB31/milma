@@ -189,7 +189,7 @@
                               </select>
                             </td>
                             <td>
-                              <input type="text" name="qty[]"  class="form-control text-center p-1 return-qty">
+                              <input type="number" name="qty[]"  class="form-control text-center p-1 return-qty">
                               <input type="hidden" name="type[]" value="returns" class="form-control" >
                             </td>
                             <td hidden>
@@ -376,6 +376,34 @@
       $('.select2').select2();
       $('#bal-amt-symbol').text("£");
       $('#bal-amt').text(parseFloat(0).toFixed(2));
+      $('[data-toggle="tooltip"]').tooltip();
+
+      //Product Name Showing in Tooltip
+      $(document).on('click','.productname', function() {
+        var toolTip = $(this);
+        //console.log(this)
+        toolTip.tooltip('show');
+        setTimeout(function() {
+          toolTip.tooltip('hide');
+        }, 3000); 
+      });
+
+      //Return Product Name Showing in Tooltip
+      $(document).on('click', ' .return-product-id', function() {
+        var toolTip = $(this);
+        //console.log(toolTip)
+        var selectedOption = toolTip.find('option:selected');
+        if (selectedOption.length && selectedOption.val() !== '') {
+          var value = selectedOption.text();
+          toolTip.attr('title', value);
+          toolTip.tooltip('show');
+          setTimeout(function() {
+            toolTip.tooltip('hide');
+          }, 3000);
+        } else {
+            console.log('No option selected.');
+        }
+      });
 
       // Return Items Form PopOver Section Contents
       $('[data-toggle="popover"]').popover({
@@ -407,7 +435,7 @@
         var qty = tr.find('.qty').val();
         var price = tr.find('.price').val();
         var amount = (qty * price);
-        tr.find('.amount').val(parseFloat(amount).toFixed(2));
+        tr.find('.amount').val(parseFloat(amount ? amount : 0).toFixed(2));
         total();
       });
 
@@ -439,8 +467,8 @@
         var total = salesTotal - returnsTotal;
         //console.log("total",total)
         $('.currency').html("£");
-        $('.total').html(parseFloat(total).toFixed(2));
-        $('#total').val(parseFloat(total).toFixed(2));
+        $('.total').html(parseFloat(total ? total : 0).toFixed(2));
+        $('#total').val(parseFloat(total ? total : 0).toFixed(2));
       }
 
       //Adding New Product Row
@@ -557,7 +585,7 @@
           total += amount;
         });
         $('.return-currency').html("£");
-        $('.return-total').html(parseFloat(total).toFixed(2));
+        $('.return-total').html(parseFloat(total ? total : 0).toFixed(2));
       }
 
       //Adding New Return Product Row
@@ -581,13 +609,13 @@
         var newRow = `
           <tr>
             <td class="d-flex align-items-center" style="gap: 10px;"><b class="return-symbol" style="color: red;" hidden>R</b>
-              <select id="return-product-id" name="product_id[]" class="form-control p-1 return-product-id" >
+              <select id="return-product-id" name="product_id[]" class="form-control p-1 return-product-id" data-toggle="tooltip" data-placement="top" aria-label="Select Return Product">
                 <option value =''>Select Return Product</option>
                 ${returnOptions}
               </select>
             </td>
             <td>
-              <input type="text"  name="qty[]" class="form-control text-center p-1 return-qty" />
+              <input type="number"  name="qty[]" class="form-control text-center p-1 return-qty" />
               <input type="hidden" name="type[]" value="returns" class="form-control" />
             </td>
             <td hidden>
@@ -697,7 +725,7 @@
 
       $('#received_amt').on('change', function (){
         let receivedAmount = $(this).val();
-        $(this).val(parseFloat(receivedAmount).toFixed(2));
+        $(this).val(parseFloat(receivedAmount ? receivedAmount : 0).toFixed(2));
       });
 
       //After Submitting Return Items to Invoice Make this to Non Editable
@@ -740,8 +768,8 @@
       //Adding New Invoice Product Row
       function addProductMobileRow(productID, productName, productPrice) {
         var addProductRow = '<tr>\n' +
-          '<td><input type="text" name="product_id[]" value="' +productID+'" hidden/><input type="text" value="' +productName+'" data-id="'+productID+'" data-toggle="tooltip" data-placement="top" title="'+ productName+'"  class="form-control p-1 fs-6 productname" readonly></td>\n' +
-          '<td><input type="text" name="qty[]" data-id="'+productID+'" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
+          '<td><input type="text" name="product_id[]" value="' +productID+'" hidden/><input type="text" value="' +productName+'" data-id="'+productID+'" data-toggle="tooltip" data-placement="top" title="'+ productName+'"  class="form-control p-1 productname" readonly></td>\n' +
+          '<td><input type="number" name="qty[]" data-id="'+productID+'" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
           '<td hidden><input type="number" value="'+productPrice+'"  name="price[]" class="form-control p-1 fs-6 price" ></td>\n' +
           '<td><input type="text"  name="amount[]" class="form-control text-center p-1 fs-6 amount" ></td>\n' +
           '<td hidden><input type="hidden" name="reason[]" class="form-control p-1 fs-6 reason" ></td>\n' +
@@ -878,7 +906,7 @@
             $('#prod-price').text(parseFloat(prodPrice).toFixed(2));
             $('#prod-rtn-reason').text(rtnReason);
             $('#return-view-tot-currency').text('£');
-            $('#prod-tot-amt').text(parseFloat(totalAmt).toFixed(2));
+            $('#prod-tot-amt').text(parseFloat(totalAmt ? totalAmt : 0).toFixed(2));
             $('#productDetailsModal').modal('show');
 
             setTimeout(()=> {
@@ -1023,6 +1051,7 @@
         window.location.href = "{{ route('invoice.index') }}";
       });
 
+      //Fetch Quantity
       $(document).on('input','.qty' ,function (){
         let qtyVal = $(this).val();
         let productID = $(this).data('id');

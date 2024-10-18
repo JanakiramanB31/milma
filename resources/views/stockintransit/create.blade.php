@@ -24,7 +24,7 @@
     <div class="">
       <a class="btn btn-primary" href="{{route('stockintransit.index')}}"><i class="fa fa-edit"> </i>Manage Stock in Transits</a>
     </div>
-    <div class="row mt-2" style="margin:-30px">
+    <div class="row mt-2" >
       <div class="clearix"></div>
       <div class="col-md-12">
         <div class="tile">

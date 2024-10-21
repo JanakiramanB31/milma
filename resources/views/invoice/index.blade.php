@@ -25,6 +25,10 @@
         <div class="row mt-2">
             <div class="col-md-12">
                 <div class="tile">
+                    <div class="mb-3">
+                      <label for="fetchDate">Search By Date :</label>
+                      <input id="fetchDate" name="fetchDate" type="date" class="form-control"/>
+                    </div>
                     <div class="tile-body table-responsive">
                         <table class="table table-hover table-bordered" id="sampleTable">
                           <thead>
@@ -44,7 +48,7 @@
                                      <!-- <td>{{$invoice->created_at->format('d-m-Y')}}</td> -->
                                      <td class="d-flex" style="gap: 10px;">
                                          <a class="btn btn-primary btn-sm" href="{{route('invoice.show', $invoice->id)}}"><i class="fa fa-eye" ></i></a>
-                                         <!-- <a class="btn btn-info btn-sm" href="{{route('invoice.edit', $invoice->id)}}"><i class="fa fa-edit" ></i></a> -->
+                                         <a class="btn btn-info btn-sm" href="{{route('invoice.edit', $invoice->id)}}"><i class="fa fa-edit" ></i></a>
 
                                          <button class="btn btn-danger btn-sm waves-effect" type="submit" onclick="deleteTag({{ $invoice->id }})">
                                              <i class="fa fa-trash"></i>
@@ -109,5 +113,64 @@
                 }
             })
         }
+
+      $(document).ready(function () {
+        $('#fetchDate').on('change', function () {
+          let selectedDate = $(this).val();
+          console.log(selectedDate);
+          fetchInvoiceByDate();
+        });
+
+        function fetchInvoiceByDate() {
+          let selectedDate = $('#fetchDate').val();
+          if(selectedDate) {
+            $.ajax({
+              url: '{{ route("invoice.fetchInvoiceByDate",":date") }}'.replace(':date', selectedDate),
+              type: 'POST',
+              data: {
+                customer_id: selectedDate,
+                _token: '{{ csrf_token() }}' 
+              },
+              success: function(response) {
+                try {
+                  console.log("Success",response);  
+                  $('#sampleTable tbody').empty();
+                  if (response.length > 0) {
+                    response.forEach(invoice => {
+                        $('#sampleTable tbody').append(`
+                          <tr>
+                            <td>${1000 + invoice.id}</td>
+                            <td>${invoice.customer.name}</td>
+                            <td class="d-flex" style="gap: 10px;">
+                              <a class="btn btn-primary btn-sm" href="/invoices/${invoice.id}"><i class="fa fa-eye"></i></a>
+                              <a class="btn btn-info btn-sm" href="/invoices/${invoice.id}/edit"><i class="fa fa-edit"></i></a>
+                              <button class="btn btn-danger btn-sm" type="button" onclick="confirmDelete(${invoice.id})">
+                                <i class="fa fa-trash"></i>
+                              </button>
+                              <form id="delete-form-${invoice.id}" action="/invoices/${invoice.id}" method="POST" style="display: none;">
+                                @csrf
+                                @method('DELETE')
+                              </form>
+                            </td>
+                          </tr>
+                      `);
+                    });
+                  } else {
+                    $('#sampleTable tbody').append('<tr><td colspan="3" class="text-center">No invoices found for this date.</td></tr>');
+                  }               
+                } catch(error) {
+                  console.log("Failed",error)
+                }
+              },
+              error: function(xhr) {
+                var errorMessage =  'An error occurred. Please try again.';
+                $('#error-message').html(errorMessage).show();
+              }
+            });
+          } else {
+            console.log("Failed")
+          }
+        }
+      });
     </script>
 @endpush

@@ -3,7 +3,7 @@
 @section('content')
 @include('partials.header')
 @include('partials.sidebar')
-  <main class="app-content" style="min-width: 100vw;">
+  <main class="app-content" >
     <!-- <div class="app-title">
       <div>
         <h1><i class="fa fa-edit"></i>Add Stock in Transit</h1>
@@ -21,7 +21,7 @@
       </div>
     @endif
 
-    <div class="">
+    <div >
       <a class="btn btn-primary" href="{{route('stockintransit.index')}}"><i class="fa fa-edit"> </i>Manage Stock in Transits</a>
     </div>
     <div class="row mt-2" >

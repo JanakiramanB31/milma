@@ -44,8 +44,10 @@
             </div>
           @endif
 
+          <!-- Alert Error Section -->
           <div id="alert-message" class="alert alert-danger" role="alert" hidden></div>
 
+          <!-- Form Section -->
           <div class="tile-body">
             <form  method="POST" action="{{route('invoice.store')}}">
               @csrf
@@ -217,7 +219,7 @@
                             <td></td>
                             <td></td>
                             <td><b>Total</b></td>
-                            <td><b class="return-currency"></b><b class="return-total"></b></td>
+                            <td><b class="return-currency"></b><b name="return-total" class="return-total"></b></td>
                             <td hidden></td>
                           </tr>
                         </tfoot> 
@@ -260,7 +262,7 @@
                       <select id="payment_type" name="payment_type" class="form-control">
                         <option value = ''>Select Payment Type</option>
                         @foreach($paymentMethods as $paymentMethod)
-                        <option name="payment_type"  value="{{$paymentMethod}}">{{$paymentMethod}}</option>
+                        <option name="payment_type"  value="{{$paymentMethod}}" @if($paymentMethod == 'Cash') selected @endif>{{$paymentMethod}}</option>
                         @endforeach
                       </select>
                       <div id="payment-type-error" class="text-danger"></div>
@@ -501,7 +503,7 @@
       //Fetch Return Products Function
       function fetchReturnProducts() {
         var customerID = $('#customer_name').val();
-        //console.log(customerID);
+        console.log(customerID);
         cusID = customerID;
         if(customerID) {
           $('#customer-name-error').hide();
@@ -514,9 +516,9 @@
             },
             success: function(response) {
               try {
-                //console.log("Working",response);
+                console.log("Working",response);
                 prodData= response;
-                //console.log("proddata",prodData);
+                console.log("proddata",prodData);
                 var balAmount = response.balance_amount.balance_amt ?? 0;
                 //console.log("Balance Amount", balAmount)
                 $('#bal-amt-symbol').text("£")
@@ -525,7 +527,7 @@
                 $('.return-product-id').empty().append('<option value="">Select Return Product</option>');
                 if (response.returnProducts.length > 0) {
                   returnProducts = response.returnProducts;
-                  //console.log("returnProducts",returnProducts);
+                  console.log("returnProducts",returnProducts);
                   $.each(response.returnProducts, function(index, returnProduct) {
                     $('.return-product-id').append('<option value="' + returnProduct.id + '">' + returnProduct.name + '</option>');
                   });
@@ -770,7 +772,7 @@
       function addProductMobileRow(productID, productName, productPrice) {
         var addProductRow = '<tr>\n' +
           '<td><input type="text" name="product_id[]" value="' +productID+'" hidden/><input type="text" value="' +productName+'" data-id="'+productID+'" data-toggle="tooltip" data-placement="top" title="'+ productName+'"  class="form-control p-1 productname" readonly></td>\n' +
-          '<td><input type="number" name="qty[]" data-id="'+productID+'" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
+          '<td><input type="number" name="qty[]" data-id="'+productID+'" data-prodname="' +productName+'" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
           '<td hidden><input type="number" value="'+productPrice+'"  name="price[]" class="form-control p-1 fs-6 price" ></td>\n' +
           '<td><input type="text"  name="amount[]" class="form-control text-center p-1 fs-6 amount" ></td>\n' +
           '<td hidden><input type="hidden" name="reason[]" class="form-control p-1 fs-6 reason" ></td>\n' +
@@ -974,6 +976,7 @@
         } else {
           var productTableBody = $('#product-section');
           let allFilled = true;
+          let allValid = true;
           let productsCount = productTableBody.find('tr').length;
           console.log(productsCount)
           if (productsCount == 0) {
@@ -1009,6 +1012,7 @@
                   $('#alert-message').hide();
                 }, 3000);
                 allFilled = false; 
+                allValid = false;
                 return false;
               } else if (productQty == "") {
                 $('#alert-message').text("Please enter the Quantity");
@@ -1023,24 +1027,160 @@
                   $('#alert-message').hide();
                 }, 3000);
                 allFilled = false; 
+                allValid = false;
                 return false;
               } else {
                 $('#alert-message').hide();
                 $('#product-table-error').hide();
                 allFilled = true; 
+                allValid = true;
                 return true;
               }
             });
-            
-
-            if(allFilled) {
+            if(allFilled && allValid) {
               $('#product-table-error').hide();
-              $('#amountForm').modal('show');
+              checkQty();
             }
           }
 
         }
       });
+      
+      //Check Available Qty Function
+      // async function checkQty() {
+      //   let allValidated = false;
+      //   $('#alert-message').hide();
+
+      //   const quantityChecks = $('.qty').map(async function() {
+      //     let qtyVal = $(this).val();
+      //     let productID = $(this).data('id');
+      //     //console.log(productID);
+
+      //     if (!productID) {
+      //       console.log("Failed: No product ID");
+      //       return;
+      //     }
+
+      //     if(productID) {
+      //       $('#product-table-error').hide();
+      //       $.ajax({
+      //         url: '{{ route("invoice.fetchProducts",":id") }}'.replace(':id', productID),
+      //         type: 'POST',
+      //         data: {
+      //           product_id: productID,
+      //           _token: '{{ csrf_token() }}' 
+      //         },
+      //         success: function(response) {
+      //           try {
+      //             console.log("Working",response);
+      //             var qtyData = response.productIDsandQuantitites;
+      //             var availableQty = qtyData[productID];
+      //             console.log("Available Quantity",availableQty);
+      //             if (qtyVal && availableQty == 0) {
+      //               $('#product-form-data').prop("disabled", true);
+      //               $('#alert-message').text('Out of Stock').show();
+      //               allValidated = false;
+      //               return false;
+      //             } else if(qtyVal > availableQty){
+      //               console.log("Check QtyValue", qtyVal,"Available Qty",availableQty)
+      //               $('#product-form-data').prop("disabled", true);
+      //               $('#alert-message').text("Quantity exceeds available stock");
+      //               $('#alert-message').show();
+      //               allValidated = false;
+      //               return false;
+      //             } else if(qtyVal < 0) {
+      //               $('#product-form-data').attr("disabled", true);
+      //               $('#alert-message').text("Please enter a valid non-negative quantity.").show();
+      //               allValidated = false;
+      //               return false;
+      //             } else {
+      //               $('#alert-message').hide();
+      //               $('#product-form-data').attr("disabled", false);
+      //               allValidated = true;
+      //               return true;
+      //             }
+      //           } catch(error) {
+      //             console.log("Failed",error)
+      //           }
+      //         },
+      //         error: function(xhr) {
+      //           var errorMessage =  'An error occurred. Please try again.';
+      //           $('#error-message').html(errorMessage).show();
+      //         }
+      //       });
+      //     } else {
+      //       console.log("Failed")
+      //     }
+      //   });
+
+      //   console.log(allValidated)
+      //   if(allValidated) {
+      //     console.log(allValidated)
+      //     $('#amountForm').modal('show');
+      //     $('#product-form-data').attr("disabled", false);
+      //   }
+        
+      // }
+
+      //Check Available Qty Function
+      async function checkQty() {
+        $('#alert-message').hide();
+        $('#product-table-error').hide();
+        let allValidated = true; 
+
+        const quantityChecks = $('.qty').map(async function() {
+          const qtyVal = $(this).val();
+          const productID = $(this).data('id');
+          const prodName = $(this).data('prodname');
+
+          if (!productID) {
+            console.log("Failed: No product ID");
+            allValidated = false;
+            return;
+          }
+
+          try {
+            const response = await $.ajax({
+              url: '{{ route("invoice.fetchProducts", ":id") }}'.replace(':id', productID),
+              type: 'POST',
+              data: {
+                product_id: productID,
+                _token: '{{ csrf_token() }}'
+              }
+            });
+
+            const availableQty = response.productIDsandQuantitites[productID];
+            console.log("Available Quantity", availableQty);
+
+            if (qtyVal && availableQty === 0) {
+              $('#alert-message').text(`${prodName} is Out of Stock`).show();
+              allValidated = false;
+            } else if (qtyVal > availableQty) {
+              $('#alert-message').text(`${prodName} Quantity exceeds available stock`).show();
+              allValidated = false;
+            } else if (qtyVal < 0) {
+              $('#alert-message').text(`Please enter a valid non-negative quantity for ${prodName}`).show();
+              allValidated = false;
+            } else {
+              $('#alert-message').hide();
+            }
+          } catch (error) {
+            console.log("Failed", error);
+            $('#error-message').html('An error occurred. Please try again.').show();
+            allValidated = false;
+          }
+        }).get(); 
+
+        await Promise.all(quantityChecks); 
+
+        if (allValidated) {
+          $('#amountForm').modal('show');
+          $('#product-form-data').attr("disabled", false);
+        } else {
+          $('#alert-message').show();
+          $('#product-form-data').prop("disabled", true);
+        }
+      }
 
       //Removing Input Highlighting Border Color
       $('#product-section').on('focus', '.return-qty, .return-amount', function () {
@@ -1056,7 +1196,19 @@
       $(document).on('input','.qty' ,function (){
         let qtyVal = $(this).val();
         let productID = $(this).data('id');
-        //console.log(productID)
+        //console.log(productID);
+
+        if (!productID) {
+          console.log("Failed: No product ID");
+          return;
+        }
+
+        /* if (!$.isNumeric(qtyVal) || qtyVal < 0) {
+          $('#product-form-data').attr("disabled", true);
+          $('#alert-message').text("Please enter a valid non-negative quantity.").show();
+          return;
+        } */
+
         if(productID) {
           $('#product-table-error').hide();
           $.ajax({
@@ -1071,23 +1223,25 @@
                 console.log("Working",response);
                 var qtyData = response.productIDsandQuantitites;
                 var availableQty = qtyData[productID];
-                console.log("Available Quantity",availableQty)
-
-                if (qtyVal < 0) {
+                console.log("Available Quantity",availableQty);
+                if (qtyVal && availableQty == 0) {
                   $('#product-form-data').attr("disabled", true);
-                  $('#alert-message').text("Please enter non-negative quantities.");
-                  $('#alert-message').show();
-                  setTimeout(()=> {
-                    $('#alert-message').hide();
-                  }, 3000);
+                  $('#alert-message').text('Out of Stock').show();
+                  return false;
                 } else if(qtyVal > availableQty){
                   console.log("QtyValue", qtyVal,"Available Qty",availableQty)
                   $('#product-form-data').attr("disabled", true);
                   $('#alert-message').text("Quantity exceeds available stock");
                   $('#alert-message').show();
+                  return false;
+                } else if(qtyVal < 0) {
+                  $('#product-form-data').attr("disabled", true);
+                  $('#alert-message').text("Please enter a valid non-negative quantity.").show();
+                  return false;
                 } else {
                   $('#alert-message').hide();
                   $('#product-form-data').attr("disabled", false);
+                  return true;
                 }
               } catch(error) {
                 console.log("Failed",error)

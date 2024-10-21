@@ -484,7 +484,7 @@
         $('#product-section .amount').each(function () {
           var salesAmount =$(this).val()-0;
           salesTotal += salesAmount;
-          console.log(salesAmount)
+          console.log("SalesAmount",salesAmount);
         });
 
         //Return Product Total Amount
@@ -509,10 +509,10 @@
 
       //Removing Selected Product Functionality 
       $(document).on('click', '.prod-remove', function () {
-        total();
         var length = $('#product-section').find('tr').length;
         //console.log(length)
         if (length == 1) {
+          total();
           $('#alert-message').text("You can't delete Last One");
           $('#alert-message').show();
           setTimeout(()=> {
@@ -521,6 +521,7 @@
           //alert(`You can't delete last one`)
         } else {
           $(this).closest('tr').remove();
+          total();
         }
       });
 

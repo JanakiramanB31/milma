@@ -1151,7 +1151,7 @@
         let allValidated = true; 
 
         const quantityChecks = $('.qty').map(async function() {
-          const qtyVal = $(this).val();
+          const qtyVal = parseInt((this).val());
           const productID = $(this).data('id');
           const prodName = $(this).data('prodname');
 
@@ -1171,7 +1171,7 @@
               }
             });
 
-            const availableQty = response.productIDsandQuantitites[productID];
+            const availableQty = parseInt(response.productIDsandQuantitites[productID]);
             console.log("Available Quantity", availableQty);
 
             if (qtyVal && availableQty === 0) {

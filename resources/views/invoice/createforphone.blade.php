@@ -1234,7 +1234,7 @@
 
       //Fetch Quantity
       $(document).on('input','.qty' ,function (){
-        let qtyVal = $(this).val();
+        let qtyVal = parseInt($(this).val());
         let productID = $(this).data('id');
         //console.log(productID);
 
@@ -1262,7 +1262,7 @@
               try {
                 console.log("Working",response);
                 var qtyData = response.productIDsandQuantitites;
-                var availableQty = qtyData[productID];
+                var availableQty = parseInt(qtyData[productID]);
                 console.log("Available Quantity",availableQty);
                 if (qtyVal && availableQty == 0) {
                   $('#product-form-data').attr("disabled", true);

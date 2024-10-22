@@ -19,7 +19,7 @@
             </ul>
         </div> -->
         <div class="">
-            <a class="btn btn-primary" href="{{route('invoice.create')}}"><i class="fa fa-plus"></i>Invoice</a>
+            <a class="btn btn-primary" href="{{route('invoice.create')}}"><i class="fa fa-plus"></i>Receipt</a>
         </div>
 
         <div class="row mt-2">
@@ -33,7 +33,7 @@
                         <table class="table table-hover table-bordered" id="sampleTable">
                           <thead>
                             <tr>
-                                <th>Invoice ID </th>
+                                <th>Receipt ID </th>
                                 <th>Customer Name </th>
                                 <!-- <th>Date </th> -->
                                 <th>Action</th>

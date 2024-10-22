@@ -105,7 +105,7 @@
             </ul> -->
         </li>
         @endif
-        <li><a class="app-menu__item {{ request()->is('invoice*') ? 'active' : ''}}" href="{{route('invoice.index')}}" ><i class="app-menu__icon fa fa-file"></i><span class="app-menu__label">Invoice</span></a>
+        <li><a class="app-menu__item {{ request()->is('invoice*') ? 'active' : ''}}" href="{{route('invoice.index')}}" ><i class="app-menu__icon fa fa-file"></i><span class="app-menu__label">Receipt</span></a>
             <!-- <ul class="treeview-menu">
                 <li><a class="treeview-item " href="{{route('invoice.create')}}"><i class="icon fa fa-plus"></i>Create Invoice </a></li>
                 <li><a class="treeview-item" href="{{route('invoice.index')}}"><i class="icon fa fa-edit"></i>Manage Invoices</a></li>

@@ -65,7 +65,7 @@ class InvoiceController extends Controller
         if ($routeData) {
           $products = Product::where('status',1)->whereIn('id', function ($query) use( $userID, $routeData) {
             $query->select('product_id')->where('user_id',$userID)->where('route_id',$routeData->route_id)->where('vehicle_id',$routeData->vehicle_id)->from('stock_in_transits');
-          })->get();
+          })->whereDate('created_at', $today)->get();
           $quantities = StockInTransit::where('user_id', $userID) ->where('route_id', $routeData->route_id)->where('vehicle_id', $routeData->vehicle_id)->pluck('quantity', 'product_id');
           foreach ($products as $product) {
             $product->quantity = $quantities->get($product->id, 0);
@@ -116,7 +116,7 @@ class InvoiceController extends Controller
       $userId = Auth::id();
       $prodID = $id;
       $today = now()->toDateString();
-      $productIDsandQuantities = StockInTransit::where('product_id', $prodID)->where('user_id', $userId) ->whereDate('created_at', $today)->pluck('quantity', 'product_id')->toArray();      
+      $productIDsandQuantities = StockInTransit::where('product_id', $prodID)->where('user_id', $userId)->whereDate('created_at', $today)->pluck('quantity', 'product_id')->toArray();      
       return response()->json(['productIDsandQuantitites' => $productIDsandQuantities]);
     }
 

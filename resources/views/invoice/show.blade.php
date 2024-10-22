@@ -9,12 +9,12 @@
       <div class="col-md-12">
         <div class="tile">
           <section class="invoice">
-            <div class="row mb-4">
+            <div class="row mb-3 d-flex justify-content-between align-items-center">
               <div class="col-6">
-                <h2 class="page-header"><i class="fa fa-file"></i> MILMA</h2>
+                <h2 class="page-header mb-0"><i class="fa fa-file"></i> MILMA</h2>
               </div>
               <div class="col-6">
-                <h5 class="text-right">Date: {{$invoice->created_at->format('d-m-Y')}}</h5>
+                <h5 class="mb-0" style="white-space: nowrap;">Date: {{$invoice->created_at->format('d-m-Y')}}</h5>
               </div>
             </div>
             <div class="row invoice-info">

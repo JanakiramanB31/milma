@@ -1102,6 +1102,7 @@
             if(allFilled && allValid) {
               $('#product-table-error').hide();
               checkQty();
+              //checkReturnQty();
             }
           }
 
@@ -1160,6 +1161,7 @@
         await Promise.all(quantityChecks); 
 
         if (allValidated) {
+          // checkReturnQty();
           $('#amountForm').modal('show');
           $('#product-form-data').attr("disabled", false);
         } else {
@@ -1167,6 +1169,37 @@
           $('#product-form-data').prop("disabled", true);
         }
       }
+
+      // //Check Return Qty Function
+      // async function checkReturnQty() {
+      //   console.log('coming return Qty')
+      //   $('#alert-message').hide();
+      //   $('#product-table-error').hide();
+      //   let allValidated = true; 
+
+      //   const returnQtyChecks = $('#product-secion').find('.return-qty').map(function(){
+      //     const returnQtyVal = $(this).val();
+      //     const prodName = $(this).data('prodname');
+      //     console.log("return Qty:", returnQtyVal)
+      //     console.log("Return Product Name",prodName)
+
+      //     if(isNaN(returnQtyVal) || returnQtyVal <= 0) {
+      //       console.log("return Qty:", returnQtyVal)
+      //       $('#alert-message').text(`Enter Quantity or Remove ${prodName} Product`).show();
+      //       allValidated = false;
+      //     } else {
+      //       $('#alert-message').hide();
+      //     }
+      //   }).get();
+      //   await Promise.all(returnQtyChecks); 
+      //   if (allValidated) {
+      //     $('#amountForm').modal('show');
+      //     $('#product-form-data').attr("disabled", false);
+      //   } else {
+      //     $('#alert-message').show();
+      //     $('#product-form-data').prop("disabled", true);
+      //   }
+      // }
 
       //Removing Input Highlighting Border Color
       $('#product-section').on('focus', '.return-qty, .return-amount', function () {

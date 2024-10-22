@@ -63,9 +63,9 @@ class InvoiceController extends Controller
         $routeData = StockInTransit::select('route_id', 'vehicle_id')->where('user_id',$userID)->whereDate('created_at', $today)->first();
 
         if ($routeData) {
-          $products = Product::where('status',1)->whereIn('id', function ($query) use( $userID, $routeData) {
-            $query->select('product_id')->where('user_id',$userID)->where('route_id',$routeData->route_id)->where('vehicle_id',$routeData->vehicle_id)->from('stock_in_transits');
-          })->whereDate('created_at', $today)->get();
+          $products = Product::where('status',1)->whereIn('id', function ($query) use( $userID, $routeData, $today) {
+            $query->select('product_id')->where('user_id',$userID)->where('route_id',$routeData->route_id)->where('vehicle_id',$routeData->vehicle_id)->whereDate('created_at', $today)->from('stock_in_transits');
+          })->get();
           $quantities = StockInTransit::where('user_id', $userID) ->where('route_id', $routeData->route_id)->where('vehicle_id', $routeData->vehicle_id)->pluck('quantity', 'product_id');
           foreach ($products as $product) {
             $product->quantity = $quantities->get($product->id, 0);

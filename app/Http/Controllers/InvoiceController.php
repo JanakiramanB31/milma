@@ -188,9 +188,11 @@ class InvoiceController extends Controller
 
           foreach ($stockintransits as $stockintransit) {
             if ($request->type[$key] === "sales") {
-                $stockintransit->quantity -= $request->qty[$key];
+              $stockintransit->sold_qty += $request->qty[$key];
+              $stockintransit->quantity -= $request->qty[$key];
             } else {
-                $stockintransit->quantity += $request->qty[$key];
+              $stockintransit->sold_qty -= $request->qty[$key];
+              $stockintransit->quantity += $request->qty[$key];
             }
             $stockintransit->save();
           }
@@ -355,9 +357,11 @@ class InvoiceController extends Controller
 
           foreach ($stockintransits as $stockintransit) {
             if ($request->type[$key] === "sales") {
-                $stockintransit->quantity -= $request->qty[$key];
+              $stockintransit->sold_qty += $request->qty[$key];
+              $stockintransit->quantity -= $request->qty[$key];
             } else {
-                $stockintransit->quantity += $request->qty[$key];
+              $stockintransit->sold_qty -= $request->qty[$key];
+              $stockintransit->quantity += $request->qty[$key];
             }
             $stockintransit->save();
           }

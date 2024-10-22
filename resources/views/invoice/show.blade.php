@@ -39,7 +39,7 @@
             </div>
             <div class="row d-flex justify-content-center">
               <div class="col-12 table-responsive">
-                <table class="table table-striped">
+                <table class="table table-striped col-12">
                   <thead>
                     <tr>
                       <th>Product</th>
@@ -74,9 +74,9 @@
                         @endif
                         {{$sale->product->name}}
                       </td>
-                      <td>{{ number_format($sale->qty, 2) }}</td>
-                      <td>£{{ number_format($sale->price, 2) }}</td>
-                      <td class="text-left">
+                      <td>{{ $sale->qty }}{{$sale->product->unit->name}}</td>
+                      <td class="text-right text-md-left ">£{{ number_format($sale->price, 2) }}</td>
+                      <td class="text-right text-md-left ">
                         @if($sale->type == "sales")
                         <b></b>
                         @else
@@ -95,44 +95,66 @@
                       <td></td>
                       <td></td>
                       <td style="text-align: end;"><b>Total Amt</b></td>
-                      <td class="text-left"><b class="total"  >£{{ number_format($amount->total_amount, 2) }}</b></td>
+                      <td class="text-right text-md-left"><b class="total"  >£{{ number_format($amount->total_amount, 2) }}</b></td>
                     </tr>
                     <tr>
                       <td></td>
                       <td></td>
                       <td style="text-align: end;"><b>Prev Bal Amt</b></td>
-                      <td class="text-left"><b class="total"  >£{{ number_format($amount->prev_balance_amt, 2) }}</b></td>
+                      <td class="text-right text-md-left"><b class="total"  >£{{ number_format($amount->prev_balance_amt, 2) }}</b></td>
                     </tr>
                     <tr >
                       <td></td>
                       <td></td>
                       
                       <td style="text-align: end;"><b>Amt Paid</b></td>
-                      <td class="text-left"><b class="total">£{{ number_format($amount->received_amt, 2) }}</b></td>
+                      <td class="text-right text-md-left"><b class="total">£{{ number_format($amount->received_amt, 2) }}</b></td>
                     </tr>
                     <tr>
                       <td></td>
                       <td></td>
                       <td style="text-align: end;"><b>Bal Amt</b></td>
-                      <td class="text-left"><b class="total">£{{ number_format($amount->balance_amt, 2) }}</b></td>
+                      <td class="text-right text-lg-left"><b class="total">£{{ number_format($amount->balance_amt, 2) }}</b></td>
                     </tr>
                   </tfoot>
                 </table>
               </div>
             </div>
-            <div class="row d-print-none mt-2">
+            <!-- <div class="row d-print-none mt-2">
               <div class="col-12 text-right"><a class="btn btn-primary" href="javascript:void(0);" onclick="printInvoice();"><i class="fa fa-print"></i> Print</a></div>
-            </div>
+            </div> -->
+
+             <!-- Close Button and Print Button -->
+             <div class="d-flex justify-content-center" style="gap: 10px;">
+                <!-- Back to Index Page Button -->
+                <div>
+                  <button id="invoice-close-btn" type="button" class="btn btn-danger">Close</button>
+                </div>
+
+                <!-- Print Button -->
+                <div >
+                  <a href="javascript:void(0);" class="btn btn-primary" onclick="printInvoice();"><i class="fa fa-print"></i> Print</a>
+                </div>
+              </div>
           </section>
         </div>
       </div>
     </div>
   </main>
 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script>
     function printInvoice() {
       window.print();
     }
+    $(document).ready(function(){
+
+      //Back to Index Page Button
+      $('#invoice-close-btn').on('click', function() {
+          window.location.href = "{{ route('invoice.index') }}";
+        });
+    });
   </script>
 
 @endsection

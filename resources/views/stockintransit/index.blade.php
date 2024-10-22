@@ -128,14 +128,17 @@
                     </div>
 
                     <div id="product-data" class="overflow-auto row" style="max-height: 330px; overflow-y: auto;">
-                        <div class="col-6">
+                        <div class="col-4">
                           <label class="control-label"><b>Product Name</b></label>
                         </div>
-                        <div class="col-6">
-                          <label class="control-label"><b>Qty</b></label>
+                        <div class="col-4">
+                          <label class="control-label"><b>Sold Qty</b></label>
+                        </div>
+                        <div class="col-4">
+                          <label class="control-label"><b>Bal Qty</b></label>
                         </div>
                       @foreach ($items as $item)
-                        <div class="form-group col-6">
+                        <div class="form-group col-4">
                           <input name="product_name[]" class="form-control @error('product_name') is-invalid @enderror" value="{{ $item->product->name }}" readonly>
                           <input type="hidden" name="product_id[]" value="{{ $item->product->id }}">
                           <input type="hidden" name="stock_in_transit_id[]" value="{{ $firstItem->id }}">
@@ -145,7 +148,15 @@
                           </span>
                           @enderror
                         </div>
-                        <div class="form-group col-6">
+                        <div class="form-group col-4">
+                          <input name="sold-quantity[]" id="sold-quantity-{{ $item->product->id }}" class="form-control sold-quantity-input @error('sold-quantity') is-invalid @enderror" value="{{ number_format($item->sold_qty, 2) }}"   type="number" readonly>
+                          @error('sold-quantity')
+                          <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                          </span>
+                          @enderror
+                        </div>
+                        <div class="form-group col-4">
                           <input name="quantity[]" id="quantity-{{ $item->product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ number_format($item->quantity, 2) }}"   type="number" readonly>
                           @error('quantity')
                           <span class="invalid-feedback" role="alert">

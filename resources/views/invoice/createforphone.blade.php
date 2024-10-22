@@ -84,14 +84,14 @@
                 <!-- Purchased Product Adding to Invoice Section --> 
                 <div class="col-md-5 mb-5">
                   <div class="table-responsive">
-                    <table class="d-table table table-striped ">
+                    <table class="d-table table table-striped " style="border-collapse: collapse;">
                       <thead>
                         <tr>
                           <th scope="col" class="col-4">Product</th>
                           <th scope="col" class="col-2">Qty</th>
                           <th scope="col" hidden>Price</th>
-                          <th scope="col" class="col-4">Amt</th>
-                          <th scope="col" class="col-2">Action</th>
+                          <th scope="col" class="col-5">Amt</th>
+                          <th scope="col" class="col-1">Action</th>
                         </tr>
                       </thead>
                       <tbody id="product-section" style="height: 270px;overflow-y: auto;">
@@ -142,7 +142,7 @@
                         @foreach($products as $product)
                           <figure class="flex-{grow|shrink}-1">
                             <image class="product-select" data-id="{{$product->id}}" data-name="{{$product->name}}" src={{asset('images/product/' . $product->image)}} width='50px' height='50px'/>
-                            <figcaption style="width: 50px;"><p class="d-inline" style=" white-space: normal;word-wrap: break-word;overflow-wrap: break-word;">{{$product->name}}<p class="d-inline">-</p><b>{{$product->quantity}}</b></p></figcaption>
+                            <figcaption style="width: 50px;"><p class="d-inline" style=" white-space: normal;word-wrap: break-word;overflow-wrap: break-word;">{{$product->name}}<p class="d-inline">-</p><b>{{$product->quantity}}</b><p class="d-inline">({{$product->unit->name}})</p></p></figcaption>
                           </figure>
                         @endforeach
                       @endif
@@ -164,19 +164,19 @@
                     </div>
                     <!-- Return Items Form Content --> 
                     <div class="modal-body table-responsive">
-                      <table  class="table table-bordered" >
+                      <table  class="table table-bordered" style="border-collapse: collapse;">
                         <thead>
                           <tr>
                             <th scope="col" class="col-4">Product</th>
                             <th scope="col" class="col-2">Qty</th>
                             <th scope="col" hidden>Price</th>
-                            <th scope="col" class="col-4">Amt</th>
-                            <th scope="col" class="col-2">Actions</th>
+                            <th scope="col" class="col-5">Amt</th>
+                            <th scope="col" class="col-1">Actions</th>
                           </tr>
                         </thead>
                         <tbody id="return-product-body">
                           <tr>
-                            <td class="d-flex align-items-center" style="gap: 10px;"><b class="return-symbol" style="color: red;" hidden>R</b>
+                            <td class="d-flex align-items-center p-1" style="gap: 10px;"><b class="return-symbol" style="color: red;" hidden>R</b>
                               <select id="return-product-id" name="product_id[]" class="form-control p-1 return-product-id" >
                                 <option value =''>Select Return Product</option>
                                 @if(session('routeEmptyError'))
@@ -190,14 +190,14 @@
                                 @endif
                               </select>
                             </td>
-                            <td>
+                            <td class="p-1">
                               <input type="text" name="qty[]"  class="form-control text-center p-1 return-qty">
                               <input type="hidden" name="type[]" value="returns" class="form-control" >
                             </td>
                             <td hidden>
                               <input type="number" name="price[]"  class="form-control p-2 return-price" readonly>
                             </td>
-                            <td>
+                            <td class="p-1">
                               <input type="text" name="amount[]"  class="form-control text-center p-1 return-amount" >
                             </td>
                             <td hidden >
@@ -207,7 +207,7 @@
                             <td hidden> 
                               <i class="fa fa-remove btn btn-danger btn-sm remove"></i>
                             </td>
-                            <td align="center">
+                            <td align="center" class="p-1">
                               <button type="button" class="btn btn-secondary popoverButton"  data-toggle="popover" data-bs-placement="top" data-html="true">
                                 <i class="fa fa-ellipsis-h"></i>
                               </button>
@@ -367,6 +367,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+  <script src="https://unpkg.com/sweetalert2@7.19.1/dist/sweetalert2.all.js"></script>
   <script type="text/javascript">
     var prodData= '';
     var cusID = '' ;
@@ -503,18 +504,13 @@
 
       //Removing Selected Product Functionality 
       $(document).on('click', '.prod-remove', function () {
-        var length = $('#product-section').find('tr').length;
-        //console.log(length)
-        if (length == 1) {
-          $('#alert-message').text("You can't delete Last One");
-          $('#alert-message').show();
-          setTimeout(()=> {
-            $('#alert-message').hide();
-          }, 3000);
-          //alert(`You can't delete last one`)
-        } else {
-          $(this).closest('tr').remove();
-        }
+        const row = $(this).closest('tr');
+        deleteProductRow(function(confirmDelete) {
+          if (confirmDelete) {
+            row.remove();
+            total();
+          }
+        });
       });
 
       //Fetching Customer Details Functionality
@@ -633,26 +629,26 @@
 
         var newRow = `
           <tr>
-            <td class="d-flex align-items-center" style="gap: 10px;"><b class="return-symbol" style="color: red;" hidden>R</b>
+            <td class="d-flex align-items-center p-1" style="gap: 10px;"><b class="return-symbol" style="color: red;" hidden>R</b>
               <select id="return-product-id" name="product_id[]" class="form-control p-1 return-product-id" data-toggle="tooltip" data-placement="top" aria-label="Select Return Product">
                 <option value =''>Select Return Product</option>
                 ${returnOptions}
               </select>
             </td>
-            <td>
+            <td class="p-1">
               <input type="text"  name="qty[]" class="form-control text-center p-1 return-qty" />
               <input type="hidden" name="type[]" value="returns" class="form-control" />
             </td>
             <td hidden>
               <input type="number"  name="price[]" class="form-control return-price" readonly/>
             </td>
-            <td>
+            <td class="p-1">
               <input type="text"  name="amount[]" class="form-control text-center p-1 return-amount" />
             </td>
             <td hidden>
               <input type="text" name="reason[]"  class="form-control return-reason" />
             </td>
-            <td align="center">
+            <td align="center" class="p-1">
               <button type="button" class="btn btn-secondary popoverButton"  data-toggle="popover" data-bs-placement="top" data-html="true">
                 <i class="fa fa-ellipsis-h"></i>
               </button>
@@ -670,6 +666,7 @@
       //Removing Return Product Row
       $('#return-product-body').on('click', '.remove', function() {
         $(this).closest('tr').remove();
+        returnTotal();
       });
 
       //Adding Return Items Details to Invoice Form Functionality
@@ -793,12 +790,12 @@
       //Adding New Invoice Product Row
       function addProductMobileRow(productID, productName, productPrice) {
         var addProductRow = '<tr>\n' +
-          '<td><input type="text" name="product_id[]" value="' +productID+'" hidden/><input type="text" value="' +productName+'" data-id="'+productID+'" data-toggle="tooltip" data-placement="top" title="'+ productName+'"  class="form-control p-1 productname" readonly></td>\n' +
-          '<td><input type="text" name="qty[]" style="-moz-appearance: textfield;" data-id="'+productID+'" data-prodname="' +productName+'" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
+          '<td class="p-1"><input type="text" name="product_id[]" value="' +productID+'" hidden/><input type="text" value="' +productName+'" data-id="'+productID+'" data-toggle="tooltip" data-placement="top" title="'+ productName+'"  class="form-control p-1 productname" readonly></td>\n' +
+          '<td class="p-1"><input type="text" name="qty[]" style="-moz-appearance: textfield;" data-id="'+productID+'" data-prodname="' +productName+'" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
           '<td hidden><input type="number" value="'+productPrice+'"  name="price[]" class="form-control p-1 fs-6 price" ></td>\n' +
-          '<td><input type="text"  name="amount[]" class="form-control text-center p-1 fs-6 amount" ></td>\n' +
+          '<td class="p-1"><input type="text"  name="amount[]" class="form-control text-center p-1 fs-6 amount" ></td>\n' +
           '<td hidden><input type="hidden" name="reason[]" class="form-control p-1 fs-6 reason" ></td>\n' +
-          '<td align="center"><i class="fa fa-trash-o fa-sm btn btn-danger prod-remove"></i></td>\n'+
+          '<td class="p-1" align="center"><i class="fa fa-trash-o fa-sm btn btn-danger prod-remove" data-id="' +productID+'" ></i></td>\n'+
           '</tr>';
         $('#product-section').append(addProductRow);
       };
@@ -945,9 +942,15 @@
       $(document).on('click', '[id^="remove-"]', function() {
         var productId = $(this).attr('id').split('-')[1];
         var parentRow = $('#return-product-body').find('tr').each(function () {
+          const row = $(this);
           var selectedValue = $(this).find('select').val();
           if (selectedValue == productId) {
-            $(this).remove();
+            deleteProductRow(function(confirmDelete) {
+              if (confirmDelete) {
+                row.remove();
+                returnTotal();
+              }
+            });            
             setTimeout(()=> {
               $(this).find('.popoverButton').popover('hide'); 
             }, 500);
@@ -1296,6 +1299,41 @@
           console.log("Failed")
         }
       });
+
+      //Delete Button Confirmation
+      function deleteProductRow(callback) {
+        swal({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#28a745',
+          cancelButtonColor: '#dc3545',
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'No, cancel!',
+          confirmButtonClass: 'btn btn-success',
+          cancelButtonClass: 'btn btn-danger',
+          buttonsStyling: true,
+          reverseButtons: true
+        }).then((result) => {
+          if (result.value) {
+            event.preventDefault();
+            callback(true);
+          } else if (result.dismiss === swal.DismissReason.cancel) {
+            swal({
+              title: 'Cancelled',
+              text: 'Your data is safe :)',
+              type: 'error',
+              showCancelButton: false,
+              confirmButtonColor: '#28a745',
+              confirmButtonText: 'Ok',
+              confirmButtonClass: 'btn btn-success',
+              buttonsStyling: true,
+            });
+            callback(false);
+          }
+        });
+      }
 
     });
   </script>

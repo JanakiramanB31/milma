@@ -123,6 +123,7 @@
 
         function fetchInvoiceByDate() {
           let selectedDate = $('#fetchDate').val();
+          console.log(selectedDate);
           if(selectedDate) {
             $.ajax({
               url: '{{ route("invoice.fetchInvoiceByDate",":date") }}'.replace(':date', selectedDate),

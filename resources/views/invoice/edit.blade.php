@@ -615,13 +615,22 @@
         }
       });
 
+      $(document).on('input','.return-qty', function () {
+        var tr = $(this).closest('tr');
+        var returnQtyVal = parseInt(tr.find('.return-qty').val());
+        var returnProdPrice = parseInt(tr.find('.return-price').val());
+        var returnAmt = (returnQtyVal * returnProdPrice);
+        tr.find('.return-amount').val(parseFloat(returnAmt ? returnAmt : 0).toFixed(2));
+        total();
+      });
+
       //Calculating Total Amount for Each Return Products
       $('#return-product-body').delegate('.return-qty,.return-price', 'keyup', function () {
         var tr = $(this).closest('tr');
         var qty = tr.find('.return-qty').val();
         var price = tr.find('.return-price').val();
         var amount = (qty * price);
-        tr.find('.return-amount').val(parseFloat(amount).toFixed(2));
+        tr.find('.return-amount').val(parseFloat(amount ? amount : 0).toFixed(2));
         returnTotal();
         $('#return-entry-button').on("click", function(){
           $('#return-product-name-entry').val();
@@ -1106,7 +1115,7 @@
         let allValidated = true; 
 
         const quantityChecks = $('.qty').map(async function() {
-          const qtyVal = $(this).val();
+          const qtyVal = parseInt($(this).val());
           const productID = $(this).data('id');
           const prodName = $(this).data('prodname');
 
@@ -1126,7 +1135,7 @@
               }
             });
 
-            const availableQty = response.productIDsandQuantitites[productID];
+            const availableQty = parseInt(response.productIDsandQuantitites[productID]);
             console.log("Available Quantity", availableQty);
 
             if (qtyVal && availableQty === 0) {
@@ -1171,7 +1180,7 @@
 
       //Fetch Quantity
       $(document).on('input','.qty' ,function (){
-        let qtyVal = $(this).val();
+        let qtyVal = parseInt($(this).val());
         let productID = $(this).data('id');
         //console.log(productID);
 
@@ -1199,7 +1208,7 @@
               try {
                 console.log("Working",response);
                 var qtyData = response.productIDsandQuantitites;
-                var availableQty = qtyData[productID];
+                var availableQty = parseInt(qtyData[productID]);
                 console.log("Available Quantity",availableQty);
                 if (qtyVal && availableQty == 0) {
                   $('#product-form-data').attr("disabled", true);

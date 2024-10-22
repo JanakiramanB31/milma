@@ -241,8 +241,11 @@ class InvoiceController extends Controller
       if ($userRole == 'admin') {
       $invoices = Invoice::with('customer')->whereDate('created_at', $selectedDate)->get();
       } else {
-        $invoices = Invoice::with('customer')->where('usrer_id',$userID)->whereDate('created_at', $selectedDate)->get();
+        $invoices = Invoice::with('customer')->where('user_id',$userID)->whereDate('created_at', $selectedDate)->get();
       }
+      // $this->pr($invoices);
+      // exit;
+
       return response()->json($invoices);
     }
 

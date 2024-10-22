@@ -191,7 +191,7 @@
                               </select>
                             </td>
                             <td>
-                              <input type="number" name="qty[]"  class="form-control text-center p-1 return-qty">
+                              <input type="text" name="qty[]"  class="form-control text-center p-1 return-qty">
                               <input type="hidden" name="type[]" value="returns" class="form-control" >
                             </td>
                             <td hidden>
@@ -380,6 +380,28 @@
       $('#bal-amt-symbol').text("£");
       $('#bal-amt').text(parseFloat(0).toFixed(2));
       $('[data-toggle="tooltip"]').tooltip();
+
+      //Number Input Field Up and Down Arrow Hiding Style
+      $('input[type=number]').css({
+        '-moz-appearance': 'textfield', 
+        '-webkit-appearance': 'none', 
+        'appearance': 'none' 
+      });
+
+      // For WebKit browsers to hide the spin buttons
+      $('input[type=number]').on('focus', function() {
+        $(this).css({
+          '-webkit-appearance': 'none',
+          'margin': '0'
+        });
+      });
+
+      //Accept Only Number Input In Quantity Field 
+      $(document).on('input','.return-qty, .qty, .amount, .return-amount', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+      });
+
+      
 
       //Product Name Showing in Tooltip
       $(document).on('click','.productname', function() {
@@ -618,7 +640,7 @@
               </select>
             </td>
             <td>
-              <input type="number"  name="qty[]" class="form-control text-center p-1 return-qty" />
+              <input type="text"  name="qty[]" class="form-control text-center p-1 return-qty" />
               <input type="hidden" name="type[]" value="returns" class="form-control" />
             </td>
             <td hidden>
@@ -772,7 +794,7 @@
       function addProductMobileRow(productID, productName, productPrice) {
         var addProductRow = '<tr>\n' +
           '<td><input type="text" name="product_id[]" value="' +productID+'" hidden/><input type="text" value="' +productName+'" data-id="'+productID+'" data-toggle="tooltip" data-placement="top" title="'+ productName+'"  class="form-control p-1 productname" readonly></td>\n' +
-          '<td><input type="number" name="qty[]" data-id="'+productID+'" data-prodname="' +productName+'" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
+          '<td><input type="text" name="qty[]" style="-moz-appearance: textfield;" data-id="'+productID+'" data-prodname="' +productName+'" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
           '<td hidden><input type="number" value="'+productPrice+'"  name="price[]" class="form-control p-1 fs-6 price" ></td>\n' +
           '<td><input type="text"  name="amount[]" class="form-control text-center p-1 fs-6 amount" ></td>\n' +
           '<td hidden><input type="hidden" name="reason[]" class="form-control p-1 fs-6 reason" ></td>\n' +
@@ -1154,12 +1176,30 @@
 
             if (qtyVal && availableQty === 0) {
               $('#alert-message').text(`${prodName} is Out of Stock`).show();
+              let isErr = $('#alert-message').text().length;
+              if (isErr > 0) {
+                $('html, body').animate({
+                    scrollTop: $('#alert-message').offset().top - 300
+                }, 500);
+              }
               allValidated = false;
             } else if (qtyVal > availableQty) {
               $('#alert-message').text(`${prodName} Quantity exceeds available stock`).show();
+              let isErr = $('#alert-message').text().length;
+                if (isErr > 0) {
+                $('html, body').animate({
+                  scrollTop: $('#alert-message').offset().top - 300
+                }, 500);
+              }
               allValidated = false;
             } else if (qtyVal < 0) {
               $('#alert-message').text(`Please enter a valid non-negative quantity for ${prodName}`).show();
+              let isErr = $('#alert-message').text().length;
+                if (isErr > 0) {
+                $('html, body').animate({
+                  scrollTop: $('#alert-message').offset().top - 300
+                }, 500);
+              }
               allValidated = false;
             } else {
               $('#alert-message').hide();

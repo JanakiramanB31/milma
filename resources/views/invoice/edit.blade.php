@@ -116,7 +116,7 @@
                             @endif
                           </td>
                           <td>
-                            <input type="number" name="qty[]" value="{{number_format($sale->qty,2)}}" data-id="{{$sale->product->id}}" data-prodname="{{$sale->product->name}}" class="form-control text-center p-1 fs-6 {{$sale->type == 'sales'? 'qty' :'return-qty'}}">
+                            <input type="text" name="qty[]" value="{{number_format($sale->qty,2)}}" data-id="{{$sale->product->id}}" data-prodname="{{$sale->product->name}}" class="form-control text-center p-1 fs-6 {{$sale->type == 'sales'? 'qty' :'return-qty'}}">
                             <input type="hidden" name="type[]" value="{{$sale->type == 'sales'? 'sales' : 'returns'}}" class="form-control" >
                           </td>
                           <td hidden><input type="number" value="{{$sale->price}}"  name="price[]" class="form-control p-1 fs-6 {{$sale->type == 'sales'? 'price' :'return-price'}} " ></td>
@@ -218,7 +218,7 @@
                               </select>
                             </td>
                             <td>
-                              <input type="number" name="qty[]"  class="form-control text-center p-1 return-qty">
+                              <input type="text" name="qty[]"  class="form-control text-center p-1 return-qty">
                               <input type="hidden" name="type[]" value="returns" class="form-control" >
                             </td>
                             <td hidden>
@@ -407,6 +407,26 @@
       total();
       fetchReturnProducts();
       $('[data-toggle="tooltip"]').tooltip();
+
+      //Number Input Field Up and Down Arrow Hiding Style
+      $('input[type=number]').css({
+        '-moz-appearance': 'textfield', 
+        '-webkit-appearance': 'none', 
+        'appearance': 'none' 
+      });
+
+      // For WebKit browsers to hide the spin buttons
+      $('input[type=number]').on('focus', function() {
+        $(this).css({
+          '-webkit-appearance': 'none',
+          'margin': '0'
+        });
+      });
+
+      //Accept Only Number Input In Quantity Field 
+      $(document).on('input','.return-qty, .qty, .amount, .return-amount', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+      });
 
       //Product Name Showing in Tooltip
       $(document).on('click','.productname', function() {
@@ -651,7 +671,7 @@
               </select>
             </td>
             <td>
-              <input type="number"  name="qty[]" class="form-control text-center p-1 return-qty" />
+              <input type="text"  name="qty[]" class="form-control text-center p-1 return-qty" />
               <input type="hidden" name="type[]" value="returns" class="form-control" />
             </td>
             <td hidden>
@@ -805,7 +825,7 @@
       function addProductMobileRow(productID, productName, productPrice) {
         var addProductRow = '<tr>\n' +
           '<td><input type="text" name="product_id[]" value="' +productID+'" hidden/><input type="text" value="' +productName+'" data-id="'+productID+'" data-toggle="tooltip" data-placement="top" title="'+ productName+'"  class="form-control p-1 productname" readonly></td>\n' +
-          '<td><input type="number" name="qty[]" data-id="'+productID+'" data-prodname="' +productName+'" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
+          '<td><input type="text" name="qty[]" data-id="'+productID+'" data-prodname="' +productName+'" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
           '<td hidden><input type="number" value="'+productPrice+'"  name="price[]" class="form-control p-1 fs-6 price" ></td>\n' +
           '<td><input type="text"  name="amount[]" class="form-control text-center p-1 fs-6 amount" ></td>\n' +
           '<td hidden><input type="hidden" name="reason[]" class="form-control p-1 fs-6 reason" ></td>\n' +

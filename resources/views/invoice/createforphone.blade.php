@@ -451,6 +451,7 @@
       $('#product-section').delegate('.productname', 'change', function () {
         var tr =$(this).parent().parent();
         var id = tr.find('.productname').val();
+        console.log(prodData)
         var prodPrices = prodData.productIdsAndPrices;
         tr.find('.price').val(parseFloat(prodPrices[id]).toFixed(2));
       });
@@ -459,7 +460,9 @@
       $('#product-section').delegate('.qty,.price', 'keyup', function () {
         var tr = $(this).parent().parent();
         var qty = tr.find('.qty').val();
-        var price = tr.find('.price').val();
+        var priceVal = tr.find('.price').val();
+        var price = parseInt(priceVal);
+        console.log("Checking Price",price)
         var amount = (qty * price);
         tr.find('.amount').val(parseFloat(amount ? amount : 0).toFixed(2));
         total();
@@ -832,6 +835,7 @@
           });
 
           if (!isProductExists) {
+            console.log("Error Checking",prodData)
           var prodPrices = prodData.productIdsAndPrices;
           var productPrice = parseFloat(prodPrices[productID]).toFixed(2);
           addProductMobileRow(productID, productName, productPrice);
@@ -1175,7 +1179,7 @@
             });
 
             const availableQty = parseInt(response.productIDsandQuantitites[productID]);
-            console.log("Available Quantity", availableQty);
+            console.log("Available Quantity Checking", availableQty);
 
             if (qtyVal && availableQty === 0) {
               $('#alert-message').text(`${prodName} is Out of Stock`).show();
@@ -1266,7 +1270,7 @@
                 console.log("Working",response);
                 var qtyData = response.productIDsandQuantitites;
                 var availableQty = parseInt(qtyData[productID]);
-                console.log("Available Quantity",availableQty);
+                console.log("Available Quantity Check",availableQty);
                 if (qtyVal && availableQty == 0) {
                   $('#product-form-data').attr("disabled", true);
                   $('#alert-message').text('Out of Stock').show();

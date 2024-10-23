@@ -832,7 +832,8 @@
           });
 
           if (!isProductExists) {
-          var prodPrices = prodData.productIdsAndPrices;
+          var prodPrices = parseInt(prodData.productIdsAndPrices);
+          console.log(prodPrices)
           var productPrice = parseFloat(prodPrices[productID]).toFixed(2);
           addProductMobileRow(productID, productName, productPrice);
           } else {

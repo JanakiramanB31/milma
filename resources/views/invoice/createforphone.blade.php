@@ -459,7 +459,7 @@
       $('#product-section').delegate('.qty,.price', 'keyup', function () {
         var tr = $(this).parent().parent();
         var qty = tr.find('.qty').val();
-        var price = tr.find('.price').val();
+        var price = parseInt(tr.find('.price').val());
         var amount = (qty * price);
         tr.find('.amount').val(parseFloat(amount ? amount : 0).toFixed(2));
         total();

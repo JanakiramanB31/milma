@@ -451,7 +451,7 @@
       $('#product-section').delegate('.productname', 'change', function () {
         var tr =$(this).parent().parent();
         var id = tr.find('.productname').val();
-        var prodPrices = prodData.productIdsAndPrices;
+        var prodPrices = parseInt(prodData.productIdsAndPrices);
         tr.find('.price').val(parseFloat(prodPrices[id]).toFixed(2));
       });
 

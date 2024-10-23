@@ -27,20 +27,25 @@
             <table class="table table-hover table-bordered" id="sampleTable">
               <thead>
                 <tr>
-                  <th>Customer </th>
-                  <th>Address </th>
+                  <th>Company Name </th>
+                  <th>Contact Person </th>
+                  <th>Contact Number </th>
                   <!-- <th>Contact</th> -->
                   <!-- <th>Details</th> -->
+                  @if($userRole == "admin")
                   <th>Action</th>
+                  @endif
                 </tr>
               </thead>
               <tbody>
                 @foreach( $customers as $customer)
                 <tr>
-                  <td>{{ $customer->name }} </td>
-                  <td>{{ $customer->address }} </td>
+                  <td>{{ $customer->company_name }} </td>
+                  <td>{{ $customer->contact_person }} </td>
+                  <td>{{ $customer->mobile }} </td>
                   <!-- <td>{{ $customer->mobile }} </td> -->
                   <!-- <td>{{ $customer->details }} </td> -->
+                  @if($userRole == "admin")
                   <td class="d-flex" style="gap: 10px;">
                     <a class="btn btn-primary btn-sm" href="{{route('customer.edit', $customer->id)}}"><i class="fa fa-edit" ></i></a>
                     <button class="btn btn-danger btn-sm waves-effect" type="submit" onclick="deleteTag({{ $customer->id }})">
@@ -51,6 +56,7 @@
                       @method('DELETE')
                     </form>
                   </td>
+                  @endif
                 </tr>
                 @endforeach
               </tbody>
@@ -66,7 +72,7 @@
 @push('js')
   <script type="text/javascript" src="{{asset('/')}}js/plugins/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="{{asset('/')}}js/plugins/dataTables.bootstrap.min.js"></script>
-  <script type="text/javascript">$('#sampleTable').DataTable();</script>
+  <!-- <script type="text/javascript">$('#sampleTable').DataTable();</script> -->
   <script src="https://unpkg.com/sweetalert2@7.19.1/dist/sweetalert2.all.js"></script>
   <script type="text/javascript">
     function deleteTag(id) {
@@ -105,5 +111,51 @@
         }
       });
     }
+
+    $(document).ready(function () {
+
+      var table = $('#sampleTable').DataTable({
+        dom: '<"top"f>rt<"bottom"l<"pagination"p><"clear">>',
+        pageLength: 10,     
+        lengthMenu: [10]     
+      });
+
+      // Make the label a block element
+      $('.dataTables_filter label').css({
+        'display': 'block',  
+      });
+
+      // Make the input take 100% width
+      $('.dataTables_filter input').css({
+        'width': '100%' ,
+        'margin':'0',
+        'display': 'block',   
+        'margin-bottom': '10px'   
+      });
+
+      //Disabled the Count of Entries
+      $('#sampleTable_info').css('display','none');
+
+      // Align the search box to the right
+      $('.dataTables_filter').css({
+          'text-align': 'right'
+      });
+
+      // Align entries dropdown to the left and pagination buttons to the right
+      $('.dataTables_length').css({
+        'float': 'left',
+        'margin-top': '5px'
+      });
+
+      $('.pagination').css({
+        'float': 'right'
+      });
+
+      // Clear float on wrapper
+      $('.dataTables_wrapper').css({
+        'overflow': 'hidden'
+      });
+
+    });
   </script>
 @endpush

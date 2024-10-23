@@ -149,7 +149,7 @@
                           @enderror
                         </div>
                         <div class="form-group col-4">
-                          <input name="sold-quantity[]" id="sold-quantity-{{ $item->product->id }}" class="form-control sold-quantity-input @error('sold-quantity') is-invalid @enderror" value="{{ number_format($item->sold_qty, 2) }}"   type="number" readonly>
+                          <input name="sold-quantity[]" id="sold-quantity-{{ $item->product->id }}" class="form-control sold-quantity-input @error('sold-quantity') is-invalid @enderror" value="{{ $item->sold_qty ?? 0 }}"   type="number" readonly>
                           @error('sold-quantity')
                           <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -157,7 +157,7 @@
                           @enderror
                         </div>
                         <div class="form-group col-4">
-                          <input name="quantity[]" id="quantity-{{ $item->product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ number_format($item->quantity, 2) }}"   type="number" readonly>
+                          <input name="quantity[]" id="quantity-{{ $item->product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ $item->quantity}}"   type="number" readonly>
                           @error('quantity')
                           <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>

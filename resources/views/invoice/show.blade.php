@@ -23,7 +23,7 @@
               </div>
               <div class="col-4">To
                 <address>
-                  <strong>{{$invoice->customer->name}}</strong>
+                  <strong>{{$invoice->customer->company_name}}</strong>
                   <br>{{$invoice->customer->address}}
                   <br>Phone: {{$invoice->customer->mobile}}
                   <br>Email: <p style=" white-space: normal;word-wrap: break-word;overflow-wrap: break-word;">{{$invoice->customer->email}}</p>

@@ -19,6 +19,7 @@ class CustomerController extends Controller
 
     public function index()
     {
+      $userRole = Auth::user()->role;
       $customers = Customer::where('status',1)->get();
       $customerTypes = [
         ['id' => 1, 'name' => 'WholeSale'],
@@ -31,7 +32,7 @@ class CustomerController extends Controller
       ];
       $rates = Rate::all();     
 
-      return view('customer.index', compact('customers','customerTypes','saleTypes','saleTypes'));
+      return view('customer.index', compact('customers','userRole','customerTypes','saleTypes','saleTypes'));
     }
 
     /**
@@ -67,18 +68,14 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
       $request->validate([
-        'name' => 'required|min:3|unique:customers|regex:/^[a-zA-Z ]+$/',
+        'name' => 'required|min:3|regex:/^[a-zA-Z ]+$/',
         'address' => 'required|min:3',
-        'mobile' => 'required|min:3|digits:11',
-        'address' => 'required|min:3',
+        'mobile' => 'required|min:3|unique:customers|digits:11',
         'email' => 'required|email|unique:customers',
-        'details' => 'required|min:3',
-        'previous_balance' => 'required',
         'company_name' => 'required|min:3',
         'contact_person' => 'required|min:3',
-        'post_code' => 'required|min:3|max:6',
+        'post_code' => 'required|min:3|max:7',
         'customer_type_parent_id' =>'required',
-        'sale_type_parent_id' =>'required',
         'rate_id' => 'required',
         'status' => 'required',
       ]);
@@ -91,7 +88,7 @@ class CustomerController extends Controller
       $customer->mobile = $request->mobile;
       $customer->email = $request->email;
       $customer->details = $request->details;
-      $customer->previous_balance = $request->previous_balance;
+      $customer->previous_balance = $request->previous_balance ?? 0;
       $customer->company_name = $request->company_name;
       $customer->contact_person = $request->contact_person;
       $customer->post_code = $request->post_code;

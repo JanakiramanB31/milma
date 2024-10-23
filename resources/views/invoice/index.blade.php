@@ -23,7 +23,7 @@
   <div class="row mt-2">
     <div class="col-md-12">
       <div class="tile">
-        <div class="mb-3">
+        <div class="mb-2">
           <label for="fetchDate">Search By Date :</label>
           <input id="fetchDate" name="fetchDate" type="date" class="form-control"/>
         </div>
@@ -110,26 +110,46 @@
 
     $(document).ready(function () {
 
-      $('#sampleTable').DataTable({
-        dom: '<"top"i>rt<"bottom"flp><"clear">'
+      var table = $('#sampleTable').DataTable({
+        dom: '<"top"f>rt<"bottom"l<"pagination"p><"clear">>',
+        pageLength: 10,     
+        lengthMenu: [10]     
       });
 
-      $('.dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter').css({
-        display: 'inline-block',
-        margin: '0 10px'
+      // Make the label a block element
+      $('.dataTables_filter label').css({
+        'display': 'block',  
       });
 
-      $('.dataTables_wrapper .dataTables_length label, .dataTables_wrapper .dataTables_filter label').css({
-        display: 'inline-block',
-        margin: '10px 10px'
-      });
-      $('.dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter').parent().css({
-        textAlign: 'center'
+      // Make the input take 100% width
+      $('.dataTables_filter input').css({
+        'width': '100%' ,
+        'margin':'0',
+        'display': 'block',   
+        'margin-bottom': '10px'   
       });
 
-      $('.dataTables_wrapper, .dataTables_info').css({
-        margin: '0px ',
-        padding: '0px '
+      //Disabled the Count of Entries
+      $('#sampleTable_info').css('display','none');
+
+      // Align the search box to the right
+      $('.dataTables_filter').css({
+          'text-align': 'right'
+      });
+
+      // Align entries dropdown to the left and pagination buttons to the right
+      $('.dataTables_length').css({
+        'float': 'left',
+        'margin-top': '5px'
+      });
+
+      $('.pagination').css({
+        'float': 'right'
+      });
+
+      // Clear float on wrapper
+      $('.dataTables_wrapper').css({
+        'overflow': 'hidden'
       });
 
       $('#fetchDate').on('change', function () {

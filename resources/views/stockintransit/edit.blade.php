@@ -131,7 +131,7 @@
                       @enderror
                     </div>
                     <div class="form-group col-md-2">
-                      <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ number_format($prdQuantity, 2) }}"   type="number" readonly>
+                      <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ $prdQuantity }}"   type="number" readonly>
                       @error('quantity')
                       <span class="invalid-feedback" role="alert">
                         <strong>{{ $message }}</strong>
@@ -317,8 +317,8 @@
         var productListHtml = '';
         products.forEach(function(product) {
           if (!existingProducts[product.prodName]) {
-            const existingQuantity = parseFloat(product.existingQty).toFixed(2);
-            const newQuantity = parseFloat(product.newQty).toFixed(2);
+            const existingQuantity = parseInt(product.existingQty);
+            const newQuantity = parseInt(product.newQty);
             productListHtml += `
             <tr class="product-row">
               <td><p class = "prod-name">${product.prodName}</p></td>
@@ -395,7 +395,7 @@
           totalQuantity += inputQty;
         });
 
-        $('.tot-qty').text(parseFloat(totalQuantity).toFixed(2))
+        $('.tot-qty').text(parseInt(totalQuantity))
       }
 
     $(document).on('click','#update_button', function () {

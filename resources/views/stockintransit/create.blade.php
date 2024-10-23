@@ -30,6 +30,10 @@
         <div class="tile">
           <div class="alert alert-danger" style="display: none;" id ="quantity-error"></div>
           <h3 class="tile-title">Stock in Transit</h3>
+
+          <!-- Alert Error Section -->
+          <div id="alert-message" class="alert alert-danger" role="alert" hidden></div>
+
           <div class="tile-body">
             <form method="POST" action="{{$submitURL}}">
               @csrf
@@ -153,7 +157,10 @@
                     </div>
                     <div class="modal-body table-responsive">
                       <div class="d-flex" style="font-size: 16px;">
-                        <strong>Route:</strong><p id="route-number" class="mx-2"></p>-<p id="vehicle-type" class="mx-2"></p>
+                        <strong>Route:</strong>
+                        <p id="route-number" class="mx-2"></p>-
+                        <p id="vehicle-type" class="mx-2"></p>-
+                        <p id="vehicle-number" class="mx-2"></p></p>
                       </div>
                       <table class="table table-hover" >
                         <thead>
@@ -193,6 +200,8 @@
   $(document).ready(function() {
       var currentUserRole = @if(Auth::check()) {!! json_encode(Auth::user()->role) !!} @else 'guest' @endif;
       $('#check-button').attr('disabled', true);
+      $('#alert-message').attr("hidden", false);
+      $('#alert-message').hide();
 
       $('#nextButton').on('click', function() {
         var routeSelect = $('#route_id');
@@ -229,9 +238,11 @@
           });
         } 
         else {
-          $('#error-message').html('Please select all fields.').show();
+          //$('#error-message').html('Please select all fields.').show();
+          $('#alert-message').text("Please select all fields.");
+          $('#alert-message').show();
           setTimeout(function() {
-            $('#error-message').hide(); 
+            $('#alert-message').hide(); 
           }, 3000);
         }
       });
@@ -287,6 +298,7 @@
       function checkQty() {
         var routeNumber = $('#route_id').find('option:selected').text();
         var vehicleType = $('#vehicle_id').find('option:selected').data('type');
+        var vehicleNumber = $('#vehicle_id').find('option:selected').text();
         var products = [];
         let allValidated = true;
 
@@ -330,7 +342,8 @@
             }
           });
           $('#route-number').text(routeNumber);
-          $('#vehicle-type').text(vehicleType);  
+          $('#vehicle-type').text(vehicleType);
+          $('#vehicle-number').text(vehicleNumber);  
 
           var existingProducts = {};
 
@@ -342,7 +355,7 @@
           var productListHtml = '';
           products.forEach(function(product) {
             if (!existingProducts[product.prodName]) {
-              const quantity = parseFloat(product.qty).toFixed(2);
+              const quantity = parseInt(product.qty);
               productListHtml += `
               <tr class="product-row">
                 <td><p class = "product-name">${product.prodName}</p></td>
@@ -383,7 +396,7 @@
           totalQuantity += inputQty;
         });
 
-        $('.tot-qty').text(parseFloat(totalQuantity).toFixed(2))
+        $('.tot-qty').text(parseInt(totalQuantity))
       }
 
       $('#product-section').on('focus', '.prod-name, .quantity-input', function () {

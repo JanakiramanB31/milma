@@ -112,6 +112,9 @@
 
       var table = $('#sampleTable').DataTable({
         dom: '<"top"f>rt<"bottom"l<"pagination"p><"clear">>',
+        language: {
+          emptyTable: "No stock available"
+        },
         pageLength: 10,     
         lengthMenu: [10]     
       });

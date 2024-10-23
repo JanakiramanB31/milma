@@ -451,7 +451,7 @@
       $('#product-section').delegate('.productname', 'change', function () {
         var tr =$(this).parent().parent();
         var id = tr.find('.productname').val();
-        var prodPrices = parseInt(prodData.productIdsAndPrices);
+        var prodPrices = prodData.productIdsAndPrices;
         tr.find('.price').val(parseFloat(prodPrices[id]).toFixed(2));
       });
 
@@ -459,7 +459,7 @@
       $('#product-section').delegate('.qty,.price', 'keyup', function () {
         var tr = $(this).parent().parent();
         var qty = tr.find('.qty').val();
-        var price = parseInt(tr.find('.price').val());
+        var price = tr.find('.price').val();
         var amount = (qty * price);
         tr.find('.amount').val(parseFloat(amount ? amount : 0).toFixed(2));
         total();
@@ -832,8 +832,7 @@
           });
 
           if (!isProductExists) {
-          var prodPrices = parseInt(prodData.productIdsAndPrices);
-          console.log(prodPrices)
+          var prodPrices = prodData.productIdsAndPrices;
           var productPrice = parseFloat(prodPrices[productID]).toFixed(2);
           addProductMobileRow(productID, productName, productPrice);
           } else {

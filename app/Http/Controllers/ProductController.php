@@ -304,9 +304,18 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $product = Product::find($id);
-        $product->delete();
-        return redirect()->back();
 
+      $product = Product::find($id);
+
+      if ($product) {
+        $supplier = ProductSupplier::where('product_id', $id)->first();
+
+        if ($supplier) {
+          $supplier->delete();
+        }
+
+        $product->delete();
+      }
+      return redirect()->back();
     }
 }

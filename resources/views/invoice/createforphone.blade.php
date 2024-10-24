@@ -23,7 +23,7 @@
           <div id="error-message"></div>
           <!-- Page Header Section -->
           <div class="d-flex justify-content-between align-items-center">
-            <h3 class="tile-title mb-0">Receipt</h3>
+            <h3 class="tile-title mb-0">{{$userRole == "admin" ? "Invoice" : "Receipt"}}</h3>
             <h5 class="mb-0">Date: {{now()->format('d-m-Y')}}</h5>
           </div>
           <div class="d-flex justify-content-end align-items-center mt-2">

@@ -76,10 +76,10 @@ class InvoiceController extends Controller
           $products =array();
           $returnProducts = array();
           $routeEmptyError = "Route Number or Vehicle Number Not Found";
-          return view('invoice.createforphone', compact('customers','returnProducts','paymentMethods','routeEmptyError','products'));
+          return view('invoice.createforphone', compact('customers','userRole','returnProducts','paymentMethods','routeEmptyError','products'));
         }
       }
-      return view('invoice.createforphone', compact('customers','returnProducts','paymentMethods','products','routeEmptyError'));
+      return view('invoice.createforphone', compact('customers','userRole','returnProducts','paymentMethods','products','routeEmptyError'));
     }
 
     /**
@@ -286,11 +286,11 @@ class InvoiceController extends Controller
           }        
         } else {
           $routeEmptyError = "Route Number or Vehicle Number Not Found";
-          return view('invoice.edit', compact('customers','returnProducts','invoice','sales','paymentMethods','routeEmptyError','products'));
+          return view('invoice.edit', compact('customers','userRole','returnProducts','invoice','sales','paymentMethods','routeEmptyError','products'));
         }
       }
       
-      return view('invoice.edit', compact('customers','returnProducts','invoice','sales','paymentMethods','routeEmptyError','products'));
+      return view('invoice.edit', compact('customers','userRole','returnProducts','invoice','sales','paymentMethods','routeEmptyError','products'));
     }
 
     /**

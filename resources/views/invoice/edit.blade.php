@@ -488,7 +488,7 @@
         var tr =$(this).parent().parent();
         var id = tr.find('.productname').val();
         var prodPrices = prodData.productIdsAndPrices;
-        tr.find('.price').val(parseFloat(prodPrices[id]).toFixed(2));
+        tr.find('.price').val(prodPrices[id]);
       });
 
       //Calculating the Total Amount for Selected Product
@@ -497,7 +497,7 @@
         var qty = tr.find('.qty').val();
         var price = tr.find('.price').val();
         var amount = (qty * price);
-        tr.find('.amount').val(parseFloat(amount ? amount : 0).toFixed(2));
+        tr.find('.amount').val(amount ? amount : 0);
         total();
       });
 
@@ -529,8 +529,8 @@
         var total = salesTotal - returnsTotal;
         console.log("total",total)
         $('.currency').html("£");
-        $('.total').html(parseFloat(total ? total : 0).toFixed(2));
-        $('#total').val(parseFloat(total ? total : 0).toFixed(2));
+        $('.total').html(total ? total : 0);
+        $('#total').val(total ? total : 0);
       }
 
       //Adding New Product Row
@@ -576,7 +576,7 @@
                 var balAmount = response.balance_amount.balance_amt ?? 0;
                 //console.log("Balance Amount", balAmount)
                 $('#bal-amt-symbol').text("£")
-                $('#bal-amt').text(parseFloat(balAmount).toFixed(2));
+                $('#bal-amt').text(balAmount);
                 $('#balance-amount').val(balAmount);
                 /* $('.return-product-id').empty().append('<option value="">Select Return Product</option>');
                 if (response.returnProducts.length > 0) {
@@ -622,9 +622,9 @@
       $(document).on('input','.return-qty', function () {
         var tr = $(this).closest('tr');
         var returnQtyVal = parseInt(tr.find('.return-qty').val());
-        var returnProdPrice = parseInt(tr.find('.return-price').val());
+        var returnProdPrice = tr.find('.return-price').val();
         var returnAmt = (returnQtyVal * returnProdPrice);
-        tr.find('.return-amount').val(parseFloat(returnAmt ? returnAmt : 0).toFixed(2));
+        tr.find('.return-amount').val(returnAmt ? returnAmt : 0);
         total();
       });
 
@@ -634,12 +634,12 @@
         var qty = tr.find('.return-qty').val();
         var price = tr.find('.return-price').val();
         var amount = (qty * price);
-        tr.find('.return-amount').val(parseFloat(amount ? amount : 0).toFixed(2));
+        tr.find('.return-amount').val(amount ? amount : 0);
         returnTotal();
         $('#return-entry-button').on("click", function(){
           $('#return-product-name-entry').val();
           $('#return-qty-entry').val(qty);
-          $('#return-price-entry').val(parseFloat(price).toFixed(2));
+          $('#return-price-entry').val(price);
         });
       });
 
@@ -651,7 +651,7 @@
           total += amount;
         });
         $('.return-currency').html("£");
-        $('.return-total').html(parseFloat(total ? total : 0).toFixed(2));
+        $('.return-total').html(total ? total : 0);
       }
 
       //Adding New Return Product Row
@@ -794,7 +794,7 @@
 
       $('#received_amt').on('change', function (){
         let receivedAmount = $(this).val();
-        $(this).val(parseFloat(receivedAmount ? receivedAmount : 0).toFixed(2));
+        $(this).val(receivedAmount ? receivedAmount : 0);
       });
 
       //After Submitting Return Items to Invoice Make this to Non Editable
@@ -880,7 +880,7 @@
 
           if (!isProductExists) {
           var prodPrices = prodData.productIdsAndPrices;
-          var productPrice = parseFloat(prodPrices[productID]).toFixed(2);
+          var productPrice = prodPrices[productID];
           addProductMobileRow(productID, productName, productPrice);
           } else {
             $('#alert-message').text("Already added the Product");
@@ -972,10 +972,10 @@
             $('#prod-name').text(prodName);
             $('#prod-qty').text(qtyValue);
             $('#return-view-price-currency').text('£');
-            $('#prod-price').text(parseFloat(prodPrice).toFixed(2));
+            $('#prod-price').text(prodPrice);
             $('#prod-rtn-reason').text(rtnReason);
             $('#return-view-tot-currency').text('£');
-            $('#prod-tot-amt').text(parseFloat(totalAmt ? totalAmt : 0).toFixed(2));
+            $('#prod-tot-amt').text(totalAmt ? totalAmt : 0);
             $('#productDetailsModal').modal('show');
 
             setTimeout(()=> {

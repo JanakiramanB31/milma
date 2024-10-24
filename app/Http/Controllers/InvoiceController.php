@@ -105,8 +105,9 @@ class InvoiceController extends Controller
       $productIDs = $returnProducts->pluck('id')->toArray();
       $invoiceIDs = Invoice::where('customer_id', $id)->pluck('id')->toArray();
       $quantityAndPrices = Sales::select('product_id','qty','price')->whereIn('product_id',$productIDs)->whereIn('invoice_id',$invoiceIDs)->get()->toArray();
-      // / $this->pr($request->all());
-      // // exit;
+       //$this->pr($productPricesAndIDs);
+      //  $this->pr($prodIDsAndPrices);
+      //  exit;
 
       return response()->json(['returnProducts' => $returnProducts,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices' => $prodIDsAndPrices,'balance_amount' => $balAmt]);
       

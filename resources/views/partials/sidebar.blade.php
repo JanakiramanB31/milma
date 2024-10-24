@@ -70,12 +70,12 @@
             </ul>
         </li> -->
 
-        <li ><a class="app-menu__item {{ request()->is('customer*') ? 'active' : ''}}" href="{{route('customer.index')}}" ><i class="app-menu__icon fa fa-users"></i><span class="app-menu__label">Customer</span></a>
-            <!-- <ul class="treeview-menu">
+        <!-- <li ><a class="app-menu__item {{ request()->is('customer*') ? 'active' : ''}}" href="{{route('customer.index')}}" ><i class="app-menu__icon fa fa-users"></i><span class="app-menu__label">Customer</span></a>
+            <ul class="treeview-menu">
                 <li><a class="treeview-item" href="{{route('customer.create')}}"><i class="icon fa fa-circle-o"></i> Add Customer</a></li>
                 <li><a class="treeview-item" href="{{route('customer.index')}}"><i class="icon fa fa-circle-o"></i> Manage Customers</a></li>
-            </ul> -->
-        </li>
+            </ul> 
+        </li> -->
 
         <li ><a class="app-menu__item {{ request()->is('vehicle*') ? 'active' : ''}}" href="{{route('vehicle.index')}}" ><i class="app-menu__icon fa fa-car"></i><span class="app-menu__label">Vehice</span></a>
             <!-- <ul class="treeview-menu">

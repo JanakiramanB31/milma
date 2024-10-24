@@ -8,7 +8,7 @@ class ProductPrice extends Model
 {
   protected $casts = [
     'product_id' => 'integer',
-    'price' => 'integer'  
+    'price' => 'float'  
   ];
   public function product(){
     return $this->belongsTo('App\Product');

@@ -195,7 +195,7 @@
                               <input type="hidden" name="type[]" value="returns" class="form-control" >
                             </td>
                             <td hidden>
-                              <input type="number" name="price[]"  class="form-control p-2 return-price" readonly>
+                              <input type="text" name="price[]"  class="form-control p-2 return-price" readonly>
                             </td>
                             <td class="p-1">
                               <input type="text" name="amount[]"  class="form-control text-center p-1 return-amount" >
@@ -270,7 +270,7 @@
                     <!-- Received Amount PopUp Form Content -->
                     <div class="modal-body d-flex flex-column justify-content-center">
                     <label class="form-label">Amount</label>
-                      <input id="received_amt" type="number"  name="received_amt" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
+                      <input id="received_amt" type="text"  name="received_amt" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
                       <div id="received-amt-error" class="text-danger"></div>
                     </div>
                     <!-- Received Amount PopUp Form Footer -->
@@ -398,11 +398,19 @@
       });
 
       //Accept Only Number Input In Quantity Field 
-      $(document).on('input','.return-qty, .qty, .amount, .return-amount', function() {
+      $(document).on('input','.return-qty, .qty', function() {
         this.value = this.value.replace(/[^0-9]/g, '');
       });
 
-      
+      //Accept Only Float Number Price In Quantity Field 
+      $(document).on('input', '.return-price, .price, .amount, .return-amount, #received_amt', function() {
+        this.value = this.value.replace(/[^0-9.]/g, '');
+        
+        const parts = this.value.split('.');
+        if (parts.length > 2) {
+          this.value = parts[0] + '.' + parts.slice(1).join('');
+        }
+      });
 
       //Product Name Showing in Tooltip
       $(document).on('click','.productname', function() {
@@ -643,7 +651,7 @@
               <input type="hidden" name="type[]" value="returns" class="form-control" />
             </td>
             <td hidden>
-              <input type="number"  name="price[]" class="form-control return-price" readonly/>
+              <input type="text"  name="price[]" class="form-control return-price" readonly/>
             </td>
             <td class="p-1">
               <input type="text"  name="amount[]" class="form-control text-center p-1 return-amount" />
@@ -705,7 +713,7 @@
               }, 3000);
               allFilled = false; 
               return false;
-            } else if (inputValue.length == 0) {
+            } else if (inputValue.length == 0 || inputValue == 0) {
               $('#return-table-error').html("Please Enter the Quantity");
               $('#return-table-error').show();
               setTimeout(()=> {
@@ -795,7 +803,7 @@
         var addProductRow = '<tr>\n' +
           '<td class="p-1"><input type="text" name="product_id[]" value="' +productID+'" hidden/><input type="text" value="' +productName+'" data-id="'+productID+'" data-toggle="tooltip" data-placement="top" title="'+ productName+'"  class="form-control p-1 productname" readonly></td>\n' +
           '<td class="p-1"><input type="text" name="qty[]" style="-moz-appearance: textfield;" data-id="'+productID+'" data-prodname="' +productName+'" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
-          '<td hidden><input type="number" value="'+productPrice+'"  name="price[]" class="form-control p-1 fs-6 price" ></td>\n' +
+          '<td hidden><input type="text" value="'+productPrice+'"  name="price[]" class="form-control p-1 fs-6 price" ></td>\n' +
           '<td class="p-1"><input type="text"  name="amount[]" class="form-control text-center p-1 fs-6 amount" ></td>\n' +
           '<td hidden><input type="hidden" name="reason[]" class="form-control p-1 fs-6 reason" ></td>\n' +
           '<td class="p-1" align="center"><i class="fa fa-trash-o fa-sm btn btn-danger prod-remove" data-id="' +productID+'" ></i></td>\n'+
@@ -1043,7 +1051,7 @@
                 allFilled = false; 
                 allValid = false;
                 return false;
-              } else if (productQty == "") {
+              } else if (productQty == "" || productQty == 0) {
                 $('#alert-message').text("Please enter the Quantity");
                 $('#alert-message').show();
                 let isErr = $('#alert-message').text().length;

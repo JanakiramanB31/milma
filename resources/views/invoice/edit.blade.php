@@ -119,7 +119,7 @@
                             <input type="text" name="qty[]" value="{{$sale->qty}}" data-id="{{$sale->product->id}}" data-prodname="{{$sale->product->name}}" class="form-control text-center p-1 fs-6 {{$sale->type == 'sales'? 'qty' :'return-qty'}}">
                             <input type="hidden" name="type[]" value="{{$sale->type == 'sales'? 'sales' : 'returns'}}" class="form-control" >
                           </td>
-                          <td hidden><input type="number" value="{{$sale->price}}"  name="price[]" class="form-control p-1 fs-6 {{$sale->type == 'sales'? 'price' :'return-price'}} " ></td>
+                          <td hidden><input type="text" value="{{$sale->price}}"  name="price[]" class="form-control p-1 fs-6 {{$sale->type == 'sales'? 'price' :'return-price'}} " ></td>
                           <td class="p-1"><input type="text" value="{{$sale->total_amount}}" name="amount[]" class="form-control text-center p-1 fs-6 {{$sale->type == 'sales'? 'amount' :'return-amount'}}" ></td>
                           <td hidden><input type="hidden" name="reason[]" class="form-control p-1 fs-6 {{$sale->type == 'sales'? 'reason' :'return-reason'}}" ></td>
                           <td align="center" class="p-1"><i class="fa fa-trash-o fa-sm btn btn-danger prod-remove"></i></td>
@@ -222,7 +222,7 @@
                               <input type="hidden" name="type[]" value="returns" class="form-control" >
                             </td>
                             <td hidden>
-                              <input type="number" name="price[]"  class="form-control p-2 return-price" readonly>
+                              <input type="text" name="price[]"  class="form-control p-2 return-price" readonly>
                             </td>
                             <td class="p-1">
                               <input type="text" name="amount[]"  class="form-control text-center p-1 return-amount" >
@@ -425,8 +425,18 @@
       });
 
       //Accept Only Number Input In Quantity Field 
-      $(document).on('input','.return-qty, .qty, .amount, .return-amount', function() {
+      $(document).on('input','.return-qty, .qty', function() {
         this.value = this.value.replace(/[^0-9]/g, '');
+      });
+
+      //Accept Only Float Number Price In Quantity Field 
+      $(document).on('input', '.return-price, .price, .amount, .return-amount, #received_amt', function() {
+        this.value = this.value.replace(/[^0-9.]/g, '');
+        
+        const parts = this.value.split('.');
+        if (parts.length > 2) {
+          this.value = parts[0] + '.' + parts.slice(1).join('');
+        }
       });
 
       //Product Name Showing in Tooltip
@@ -678,7 +688,7 @@
               <input type="hidden" name="type[]" value="returns" class="form-control" />
             </td>
             <td hidden>
-              <input type="number"  name="price[]" class="form-control return-price" readonly/>
+              <input type="text"  name="price[]" class="form-control return-price" readonly/>
             </td>
             <td>
               <input type="text"  name="amount[]" class="form-control text-center p-1 return-amount" />
@@ -829,7 +839,7 @@
         var addProductRow = '<tr>\n' +
           '<td class="p-1"><input type="text" name="product_id[]" value="' +productID+'" hidden/><input type="text" value="' +productName+'" data-id="'+productID+'" data-toggle="tooltip" data-placement="top" title="'+ productName+'"  class="form-control p-1 productname get-prod-id" readonly></td>\n' +
           '<td class="p-1"><input type="text" name="qty[]" data-id="'+productID+'" data-prodname="' +productName+'" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
-          '<td hidden><input type="number" value="'+productPrice+'"  name="price[]" class="form-control p-1 fs-6 price" ></td>\n' +
+          '<td hidden><input type="text" value="'+productPrice+'"  name="price[]" class="form-control p-1 fs-6 price" ></td>\n' +
           '<td class="p-1"><input type="text"  name="amount[]" class="form-control text-center p-1 fs-6 amount" ></td>\n' +
           '<td hidden><input type="hidden" name="reason[]" class="form-control p-1 fs-6 reason" ></td>\n' +
           '<td align="center" class="p-1"><i class="fa fa-trash-o fa-sm btn btn-danger prod-remove"></i></td>\n'+

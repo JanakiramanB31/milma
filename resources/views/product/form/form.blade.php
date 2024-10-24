@@ -189,7 +189,7 @@
           </select>
         </div>
         <div class="form-group col-md-4">
-          <input name="supplier_price[]" value="{{ $SupplierPrice }}" class="form-control @error('supplier_price') is-invalid @enderror" type="number" placeholder="Purchase Price">
+          <input name="supplier_price[]" value="{{ $SupplierPrice }}" class="form-control prod-rate-price @error('supplier_price') is-invalid @enderror" type="text" placeholder="Purchase Price">
           <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : '' }}</span>
         </div>
         <div class="form-group col-md-4">
@@ -227,7 +227,7 @@
           </select>
         </div>
         <div class="form-group col-md-5">
-          <input name="product_price[]" value="{{ $curProductPrice }}" class="form-control @error('product_price') is-invalid @enderror" type="number" placeholder="Product Price">
+          <input name="product_price[]" value="{{ $curProductPrice }}" class="form-control prod-sup-price @error('product_price') is-invalid @enderror" type="text" placeholder="Product Price">
           <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : ''  }}</span>
         </div>
         @endforeach
@@ -248,6 +248,17 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(function() {
+
+    //Accept Only Float Number Price In Quantity Field 
+    $(document).on('input', '.prod-sup-price, .prod-rate-price', function() {
+      this.value = this.value.replace(/[^0-9.]/g, '');
+      
+      const parts = this.value.split('.');
+      if (parts.length > 2) {
+        this.value = parts[0] + '.' + parts.slice(1).join('');
+      }
+    });
+
     $('#quantity').on('input', function() {
       var quantityValue = $(this).val();
 

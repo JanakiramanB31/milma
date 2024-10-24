@@ -52,7 +52,6 @@ class CustomerController extends Controller
         ['id' => 3, 'name' => 'Special Price'],
       ];
       $rates = Rate::all();
-
       $customer = new Customer();
       $submitURL = route('customer.store');
       $editPage =false;
@@ -74,9 +73,10 @@ class CustomerController extends Controller
         'email' => 'required|email|unique:customers',
         'company_name' => 'required|min:3',
         'contact_person' => 'required|min:3',
-        'post_code' => 'required|min:3|max:7',
+        'post_code' => 'required|min:3|max:8',
         'customer_type_parent_id' =>'required',
         'rate_id' => 'required',
+        'route_id' => 'required',
         'status' => 'required',
       ]);
         
@@ -87,14 +87,13 @@ class CustomerController extends Controller
       $customer->address = $request->address;
       $customer->mobile = $request->mobile;
       $customer->email = $request->email;
-      $customer->details = $request->details;
       $customer->previous_balance = $request->previous_balance ?? 0;
       $customer->company_name = $request->company_name;
       $customer->contact_person = $request->contact_person;
       $customer->post_code = $request->post_code;
       $customer->customer_type_parent_id = $request->customer_type_parent_id;
-      $customer->sale_type_parent_id = $request->sale_type_parent_id;
       $customer->rate_id = $request->rate_id;
+      $customer->route_id = $request->route_id;
       $customer->user_id = $userID;
       $customer->status = $request->status;
       $customer->save();
@@ -147,40 +146,37 @@ class CustomerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|min:3|regex:/^[a-zA-Z ]+$/',
-            'address' => 'required|min:3',
-            'mobile' => 'required|min:3|digits:11',
-            'details' => 'required|min:3',
-            'previous_balance' => 'required',
-            'company_name' => 'required|min:3',
-            'contact_person' => 'required|min:3',
-            'post_code' => 'required|min:3|max:6',
-            'customer_type_parent_id' =>'required',
-            'sale_type_parent_id' =>'required',
-            'rate_id' => 'required',
-            'status' => 'required',
-        ]);
+      $request->validate([
+        'name' => 'required|min:3|regex:/^[a-zA-Z ]+$/',
+        'address' => 'required|min:3',
+        'mobile' => 'required|min:3|unique:customers,name,' . $id . '|digits:11',
+        'company_name' => 'required|min:3',
+        'contact_person' => 'required|min:3',
+        'post_code' => 'required|min:3|max:8',
+        'customer_type_parent_id' =>'required',
+        'rate_id' => 'required',
+        'route_id' => 'required',
+        'status' => 'required',
+      ]);
 
-        $userID = Auth::id();
+      $userID = Auth::id();
 
-        $customer = Customer::findOrFail($id);
-        $customer->name = $request->name;
-        $customer->address = $request->address;
-        $customer->mobile = $request->mobile;
-        $customer->details = $request->details;
-        $customer->previous_balance = $request->previous_balance;
-        $customer->company_name = $request->company_name;
-        $customer->contact_person = $request->contact_person;
-        $customer->post_code = $request->post_code;
-        $customer->customer_type_parent_id = $request->customer_type_parent_id;
-        $customer->sale_type_parent_id = $request->sale_type_parent_id;
-        $customer->rate_id = $request->rate_id;
-        $customer->user_id = $userID;
-        $customer->status = $request->status;
-        $customer->save();
+      $customer = Customer::findOrFail($id);
+      $customer->name = $request->name;
+      $customer->address = $request->address;
+      $customer->mobile = $request->mobile;
+      $customer->previous_balance = $request->previous_balance;
+      $customer->company_name = $request->company_name;
+      $customer->contact_person = $request->contact_person;
+      $customer->post_code = $request->post_code;
+      $customer->customer_type_parent_id = $request->customer_type_parent_id;
+      $customer->rate_id = $request->rate_id;
+      $customer->route_id = $request->route_id;
+      $customer->user_id = $userID;
+      $customer->status = $request->status;
+      $customer->save();
 
-        return redirect()->back()->withInput()->with('message', 'Customer Updated Successfully');
+      return redirect()->back()->withInput()->with('message', 'Customer Updated Successfully');
     }
 
     /**
@@ -191,9 +187,8 @@ class CustomerController extends Controller
      */
     public function destroy($id)
     {
-        $customer = Customer::find($id);
-        $customer->delete();
-        return redirect()->back();
-
+      $customer = Customer::find($id);
+      $customer->delete();
+      return redirect()->back();
     }
 }

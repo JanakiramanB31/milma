@@ -111,6 +111,7 @@
     $(document).ready(function () {
 
       var table = $('#sampleTable').DataTable({
+        scrollX:'300px',
         dom: '<"top"f>rt<"bottom"l<"pagination"p><"clear">>',
         language: {
           emptyTable: "No stock available"

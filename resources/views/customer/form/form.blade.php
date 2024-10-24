@@ -125,6 +125,22 @@
       @enderror
     </div>
 
+     <!-- Customer Route -->
+     <div class="form-group col-md-12">
+      <label class="control-label">Customer Route</label>
+      <select name="route_id" class="form-control @error('route_id') is-invalid @enderror">
+        <option value =''>---Select Route---</option>
+        @foreach($routes as $route)
+        <option value="{{$route->id}}" {{ old('route_id', $customer->route_id) == $route->id ? 'selected' : '' }}>{{$route->name}}</option>
+        @endforeach
+      </select>
+      @error('route_id')
+      <span class="invalid-feedback" role="alert">
+        <strong>{{ $message }}</strong>
+      </span>
+      @enderror
+    </div>
+
     <!-- Sale Type -->
     <!-- <div class="form-group col-md-12">
       <label class="control-label">Sale Type</label>

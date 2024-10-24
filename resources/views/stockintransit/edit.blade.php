@@ -169,7 +169,10 @@
                     </div>
                     <div class="modal-body table-responsive">
                       <div class="d-flex" style="font-size: 16px;">
-                        <strong>Route:</strong><p id="route-number" class="mx-2"></p>-<p id="vehicle-type" class="mx-2"></p>
+                        <strong>Route:</strong>
+                        <p id="route-number" class="mx-2"></p>-
+                        <p id="vehicle-type" class="mx-2"></p>-
+                        <p id="vehicle-number" class="mx-2"></p>
                       </div>
                       <table class="table table-hover" >
                         <thead>
@@ -259,6 +262,7 @@
     function checkQty() {
       var routeNumber = $('#route_id').find('option:selected').text();
       var vehicleType = $('#vehicle_id').find('option:selected').data('type');
+      var vehicleNumber = $('#vehicle_id').find('option:selected').text();
       var products = [];
       let allValidated = true;
 
@@ -306,6 +310,7 @@
         });
         $('#route-number').text(routeNumber);
         $('#vehicle-type').text(vehicleType);  
+        $('#vehicle-number').text(vehicleNumber);  
 
         var existingProducts = {};
 

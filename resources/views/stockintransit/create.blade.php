@@ -160,7 +160,7 @@
                         <strong>Route:</strong>
                         <p id="route-number" class="mx-2"></p>-
                         <p id="vehicle-type" class="mx-2"></p>-
-                        <p id="vehicle-number" class="mx-2"></p></p>
+                        <p id="vehicle-number" class="mx-2"></p>
                       </div>
                       <table class="table table-hover" >
                         <thead>

@@ -23,10 +23,11 @@
     <div class="row mt-2">
       <div class="col-md-12">
         <div class="tile">
-          <div class="tile-body table-responsive">
-            <table class="table table-hover table-bordered" id="sampleTable">
+          <div class="tile-body table-responsive" >
+            <table class="table table-hover table-bordered" id="sampleTable" style="width: 100%;overflow-x:auto;">
               <thead>
                 <tr>
+                  <th>Sl no.</th>
                   <th>Company Name </th>
                   <th>Contact Person </th>
                   <th>Contact Number </th>
@@ -38,8 +39,12 @@
                 </tr>
               </thead>
               <tbody>
+                @php 
+                  $serialNo = 1; 
+                @endphp
                 @foreach( $customers as $customer)
                 <tr>
+                  <td>{{$serialNo++}}</td>
                   <td>{{ $customer->company_name }} </td>
                   <td>{{ $customer->contact_person }} </td>
                   <td>{{ $customer->mobile }} </td>
@@ -115,6 +120,7 @@
     $(document).ready(function () {
 
       var table = $('#sampleTable').DataTable({
+        scrollX:'300px',
         dom: '<"top"f>rt<"bottom"l<"pagination"p><"clear">>',
         pageLength: 10,     
         lengthMenu: [10]     

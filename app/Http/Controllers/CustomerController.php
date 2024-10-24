@@ -7,6 +7,7 @@ use App\Supplier;
 use App\Rate;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomerType;
+use App\Route;
 use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
@@ -52,10 +53,11 @@ class CustomerController extends Controller
         ['id' => 3, 'name' => 'Special Price'],
       ];
       $rates = Rate::all();
+      $routes = Route::all();
       $customer = new Customer();
       $submitURL = route('customer.store');
       $editPage =false;
-      return view('customer.create',compact('customerTypes','saleTypes','rates','customer','submitURL','editPage'));
+      return view('customer.create',compact('customerTypes','routes','saleTypes','rates','customer','submitURL','editPage'));
     }
 
     /**
@@ -130,11 +132,12 @@ class CustomerController extends Controller
         ['id' => 3, 'name' => 'Special Price'],
       ];
       $rates = Rate::all();
+      $routes = Route::all();
       $customer = Customer::findOrFail($id);
       $submitURL = route('customer.update', $customer->id);
       $editPage =true;
       
-      return view('customer.edit', compact('customer','customerTypes','saleTypes','rates','submitURL','editPage'));
+      return view('customer.edit', compact('customer','routes','customerTypes','saleTypes','rates','submitURL','editPage'));
     }
 
     /**

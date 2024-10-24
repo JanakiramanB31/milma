@@ -44,7 +44,7 @@
                 @endphp
                 @foreach( $customers as $customer)
                 <tr>
-                  <td>{{$serialNo++}}</td>
+                  <td>{{$serialNo++}}.</td>
                   <td>{{ $customer->company_name }} </td>
                   <td>{{ $customer->contact_person }} </td>
                   <td>{{ $customer->mobile }} </td>

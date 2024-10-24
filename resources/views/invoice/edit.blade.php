@@ -297,7 +297,7 @@
                   <!-- Received Amount PopUp Form Content -->
                   <div class="modal-body d-flex flex-column justify-content-center">
                     <label class="form-label">Amount</label>
-                    <input id="received_amt" type="number"  name="received_amt" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
+                    <input id="received_amt" type="text"  name="received_amt" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
                     <div id="received-amt-error" class="text-danger"></div>
                   </div>
                   <!-- Received Amount PopUp Form Footer -->

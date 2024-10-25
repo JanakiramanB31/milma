@@ -42,7 +42,7 @@
             <div class="d-flex flex-column" style="gap: 20px;" >
               @if($groupedStockInTransits->isEmpty())
                 <div class="mx-auto">
-                  <p>No stock-in-transit data available for this user today.</p>
+                  <p>No stock-in-transit data available.</p>
                 </div>
               @else
                 @foreach ($groupedStockInTransits as $date => $routeGroups)

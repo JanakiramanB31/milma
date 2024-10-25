@@ -124,7 +124,7 @@
     $(document).ready(function () {
 
       var table = $('#sampleTable').DataTable({
-        scrollX:'300px',
+        scrollX:true,
         dom: '<"top"f>rt<"bottom"l<"pagination"p><"clear">>',
         pageLength: 10,     
         lengthMenu: [10]     

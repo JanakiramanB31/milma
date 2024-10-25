@@ -116,7 +116,6 @@
     $(document).ready(function () {
 
       var table = $('#sampleTable').DataTable({
-        scrollX:'300px',
         dom: '<"top"f>rt<"bottom"l<"pagination"p><"clear">>',
         language: {
           emptyTable: "No stock available"
@@ -159,6 +158,24 @@
       // Clear float on wrapper
       $('.dataTables_wrapper').css({
         'overflow': 'hidden'
+      });
+
+      $('.dataTables_scrollHeadInner').css('width','100%');
+
+      function toggleScroll() {
+        if ($(window).width() <= 768) {
+          $('.dataTables_wrapper').css('overflow-x', 'auto');
+        } else {
+          $('.dataTables_wrapper').css('overflow-x', 'hidden');
+        }
+      }
+
+      // Initial check
+      toggleScroll();
+
+      // Check on resize
+      $(window).on('resize', function() {
+          toggleScroll();
       });
 
       $('#fetchDate').on('change', function () {

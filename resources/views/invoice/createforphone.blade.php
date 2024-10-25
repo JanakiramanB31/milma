@@ -54,11 +54,11 @@
               <!-- Gathering Customer Name and Date -->
               <div class="row" >
                 <div class="form-group col">
-                  <label class="control-label">Customer Name</label>
+                  <label class="control-label">Company Name</label>
                   <select name="customer_id" class="form-control select2" id="customer_name" data-live-search="true">
                     <option value = '0'>Select Customer</option>
                     @foreach($customers as $customer)
-                    <option name="customer_id" value="{{$customer->id}}">{{$customer->name}} </option>
+                    <option name="customer_id" value="{{$customer->id}}">{{$customer->company_name}} </option>
                     @endforeach
                   </select>
                   <div id="customer-name-error" class="text-danger"></div> 
@@ -459,14 +459,14 @@
       $('#product-section').delegate('.productname', 'change', function () {
         var tr =$(this).parent().parent();
         var id = tr.find('.productname').val();
-        console.log(prodData)
+        //console.log(prodData)
         var prodPrices = prodData.productIdsAndPrices;
         var productPrice = '';
         if(prodPrices[productID]) {
           productPrice = prodPrices[productID];
         } else {
           productPrice = prodData.prodIDsAndBasePrices[productID];
-          $('#alert-message').text("Selected Product Rate Not Available so Base Rate Added");
+          $('#alert-message').text("The selected product rate type price is not available, so the base rate has been applied instead.");
           $('#alert-message').show();
           setTimeout(()=> {
             $('#alert-message').hide();
@@ -481,7 +481,7 @@
         var qty = tr.find('.qty').val();
         var priceVal = tr.find('.price').val();
         var price = priceVal;
-        console.log("Checking Price",price)
+        //console.log("Checking Price",price)
         var amount = (qty * price);
         tr.find('.amount').val(amount ? amount : 0);
         total();
@@ -543,7 +543,7 @@
       //Fetch Return Products Function
       function fetchReturnProducts() {
         var customerID = $('#customer_name').val();
-        console.log(customerID);
+        //console.log(customerID);
         cusID = customerID;
         if(customerID) {
           $('#customer-name-error').hide();
@@ -556,7 +556,7 @@
             },
             success: function(response) {
               try {
-                console.log("Working",response);
+                //console.log("Working",response);
                 prodData= response;
                 console.log("proddata",prodData);
                 var balAmount = response.balance_amount.balance_amt ?? 0;
@@ -567,7 +567,7 @@
                 $('.return-product-id').empty().append('<option value="">Select Return Product</option>');
                 if (response.returnProducts.length > 0) {
                   returnProducts = response.returnProducts;
-                  console.log("returnProducts",returnProducts);
+                  //console.log("returnProducts",returnProducts);
                   $.each(response.returnProducts, function(index, returnProduct) {
                     $('.return-product-id').append('<option value="' + returnProduct.id + '">' + returnProduct.name + '</option>');
                   });
@@ -854,14 +854,14 @@
           });
 
           if (!isProductExists) {
-            console.log("Error Checking",prodData)
+            //console.log("Error Checking",prodData)
           var prodPrices = prodData.productIdsAndPrices;
           var productPrice = '';
           if(prodPrices[productID]) {
             productPrice = prodPrices[productID];
           } else {
             productPrice = prodData.prodIDsAndBasePrices[productID];
-            $('#alert-message').text("Selected Product Rate Not Available so Base Rate Added");
+            $('#alert-message').text("The selected product rate type price is not available, so the base rate has been applied instead.");
             $('#alert-message').show();
             setTimeout(()=> {
               $('#alert-message').hide();
@@ -891,7 +891,7 @@
       $(document).on("change", '.return-product-id', function () {
         var selectedValue = $(this).val();
         var parentRow = $(this).closest('tr');
-        console.log(selectedValue);
+        //console.log(selectedValue);
         var popoverContent = `
         <i id="remove-prodID" class="fa fa-remove btn btn-danger btn-sm action-icon remove" title="Remove"></i>
         <i id="edit-prodID" class="fa fa-edit btn btn-success btn-sm add-return-reason" title="Edit"></i>
@@ -1036,7 +1036,7 @@
           let allFilled = true;
           let allValid = true;
           let productsCount = productTableBody.find('tr').length;
-          console.log(productsCount)
+          //console.log(productsCount)
           if (productsCount == 0) {
             $('#alert-message').text("Please add minimum of 1 Product");
             $('#alert-message').show();
@@ -1053,11 +1053,11 @@
             productTableBody.find('tr').each(function () {
               $('#product-table-error').hide();
               let productID = $(this).find('.productname').data('id');
-              console.log("productID",productID)
+              //console.log("productID",productID)
               let productQty = $(this).find('.qty').val();
 
               if (productID == "") {
-                console.log("productID",productID);
+                //console.log("productID",productID);
                 $('#alert-message').text("Please select the Product");
                 $('#alert-message').show();
                 let isErr = $('#alert-message').text().length;
@@ -1208,7 +1208,7 @@
             });
 
             const availableQty = parseInt(response.productIDsandQuantitites[productID]);
-            console.log("Available Quantity Checking", availableQty);
+            //console.log("Available Quantity Checking", availableQty);
 
             if (qtyVal && availableQty === 0) {
               $('#alert-message').text(`${prodName} is Out of Stock`).show();
@@ -1296,16 +1296,16 @@
             },
             success: function(response) {
               try {
-                console.log("Working",response);
+                //console.log("Working",response);
                 var qtyData = response.productIDsandQuantitites;
                 var availableQty = parseInt(qtyData[productID]);
-                console.log("Available Quantity Check",availableQty);
+                //console.log("Available Quantity Check",availableQty);
                 if (qtyVal && availableQty == 0) {
                   $('#product-form-data').attr("disabled", true);
                   $('#alert-message').text('Out of Stock').show();
                   return false;
                 } else if(qtyVal > availableQty){
-                  console.log("QtyValue", qtyVal,"Available Qty",availableQty)
+                 // console.log("QtyValue", qtyVal,"Available Qty",availableQty)
                   $('#product-form-data').attr("disabled", true);
                   $('#alert-message').text("Quantity exceeds available stock");
                   $('#alert-message').show();

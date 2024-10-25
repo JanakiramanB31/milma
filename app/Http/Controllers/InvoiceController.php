@@ -291,6 +291,7 @@ class InvoiceController extends Controller
             $product->quantity = $quantities->get($product->id, 0);
           }        
         } else {
+          $products=array();
           $routeEmptyError = "Route Number or Vehicle Number Not Found";
           return view('invoice.edit', compact('customers','userRole','returnProducts','invoice','sales','paymentMethods','routeEmptyError','products'));
         }

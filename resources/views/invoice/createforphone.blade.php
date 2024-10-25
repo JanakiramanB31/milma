@@ -515,8 +515,8 @@
         var total = salesTotal - returnsTotal;
         //console.log("total",total)
         $('.currency').html("£");
-        $('.total').html(total ? total : 0);
-        $('#total').val(total ? total : 0);
+        $('.total').html(parseFloat(total ? total : 0).toFixed(2));
+        $('#total').val(parseFloat(total ? total : 0).toFixed(2));
       }
 
       //Adding New Product Row
@@ -628,7 +628,7 @@
           total += amount;
         });
         $('.return-currency').html("£");
-        $('.return-total').html(total ? total : 0);
+        $('.return-total').html(parseFloat(total ? total : 0).toFixed(2));
       }
 
       //Adding New Return Product Row
@@ -1375,6 +1375,22 @@
           }
         });
       }
+
+      $('#received_amt').on('input', function () {
+        var receivedAmtVal = $(this).val();
+        var prodTotal = $('.total').val();
+
+        if(receivedAmtVal > prodTotal) {
+          $('#received-amt-error').html("Please enter Amount below than Total Amount");
+          $('#received-amt-error').show();
+          setTimeout(()=> {
+            $('#received-amt-error').hide();
+          }, 3000);
+          $('#submit-data').attr("disabled", true);
+        } else {
+          $('#submit-data').attr("disabled", false);
+        }
+      });
 
     });
   </script>

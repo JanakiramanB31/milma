@@ -27,7 +27,7 @@
             <table class="table table-hover table-bordered" id="sampleTable" style="width: 100%;overflow-x:auto;">
               <thead>
                 <tr>
-                  <th>Sl no.</th>
+                  <th>S No.</th>
                   <th>Company Name </th>
                   <th>Contact Person </th>
                   <th>Contact Number </th>

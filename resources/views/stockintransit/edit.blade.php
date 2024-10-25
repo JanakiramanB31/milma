@@ -88,11 +88,11 @@
 
               <div id="product-section" style="display: {{$productDisplay}};">
                 <div id="product-section1" style="display: flex;">
-                  <div class="form-group col-md-6 ">
+                  <div class="form-group col-6 px-1">
                     <pre class="control-label">SKU Code : </pre>
                     <b id="sku_code" name="sku_code" >{{ old('sku_code') }}</b>
                   </div>
-                  <div class="form-group col-md-6">
+                  <div class="form-group col-6 px-1">
                     <pre class="control-label">Bar Code : </pre>
                     <b id="barcode" name="barcode" >{{ old('barcode') }}</b>
                   </div>
@@ -101,13 +101,13 @@
 
                 <div class="overflow-auto" style="max-height: 330px; overflow-y: auto;">
                   <div  style="display: flex;">
-                    <div class="col-md-5">
+                    <div class="col-4 px-1">
                       <label class="control-label">Product Name</label>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-3 px-1">
                       <label class="control-label">Existing Qty</label>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-5 px-2">
                       <label class="control-label">Add Qty</label>
                     </div>
                   </div>
@@ -120,7 +120,7 @@
                   @endphp
                   @if($prdQuantity != 0)
                   <div id="product-section2" style="display: flex;">
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-4 px-1">
                       <input name="product_name[]" class="form-control product-name @error('product_name') is-invalid @enderror" value="{{ old('product_name', $product->name) }}" readonly>
                       <input type="hidden" name="product_id[]" value="{{ $product->id }}">
                       <input type="hidden" name="stock_in_transit_id[]" value="{{$stockInTransitID }}">
@@ -130,8 +130,8 @@
                       </span>
                       @enderror
                     </div>
-                    <div class="form-group col-md-2">
-                      <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ $prdQuantity }}"   type="number" readonly>
+                    <div class="form-group col-3 px-1">
+                      <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input px-2 @error('quantity') is-invalid @enderror" value="{{ $prdQuantity }}"   type="number" readonly>
                       @error('quantity')
                       <span class="invalid-feedback" role="alert">
                         <strong>{{ $message }}</strong>
@@ -139,8 +139,8 @@
                       @enderror
                     </div>
 
-                    <div class="form-group col-md-5">
-                      <input name="new_quantity[]" id="new_quantity-{{ $product->id }}" data-prodname="{{$product->name}}" class="form-control new-quantity-input @error('new_quantity') is-invalid @enderror" value="{{ old('new_quantity.' . $product->id) }}"    type="number" placeholder="Enter Quantity" data-existing="{{$prdQuantity}}" data-available = "{{$prodMaxQuantity}}" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
+                    <div class="form-group col-5 px-1">
+                      <input name="new_quantity[]" id="new_quantity-{{ $product->id }}" data-prodname="{{$product->name}}" class="form-control new-quantity-input @error('new_quantity') is-invalid @enderror" value="{{ old('new_quantity.' . $product->id) }}"    type="text" placeholder="Enter Quantity" data-existing="{{$prdQuantity}}" data-available = "{{$prodMaxQuantity}}" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
                       @error('new_quantity')
                       <span class="invalid-feedback" role="alert">
                         <strong>{{ $message }}</strong>
@@ -232,6 +232,11 @@
 
     $('#sit-close-btn').on('click' , function () {
       window.location.href =  '{{ route("stockintransit.index") }}'
+    });
+    
+    //Accept Only Number Input In Quantity Field 
+    $(document).on('input','.new-quantity-input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
     });
 
     $('#nextButton').on('click', function() {

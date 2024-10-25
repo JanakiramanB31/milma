@@ -39,56 +39,6 @@
       <div class="row mt-2">
         <div class="col-md-12">
           <div class="tile " >
-            <!-- <div class="tile-body" style="max-width: 100vw;overflow-x: auto;">
-              <table class="table table-hover table-bordered" id="sampleTable">
-                <thead>
-                    <tr>
-                      <th>Serial No</th>
-                      <th>Route Number</th>
-                      <th>Vehicle Number</th>
-                      <th>Total Products</th>
-                      <th>Total Quantity</th>
-                      <th>Date</th>
-                      <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                  @php 
-                  $serialNo = 1; 
-                  @endphp
-                  @foreach ($groupedStockInTransits as $date => $routeGroups)
-                    @foreach ($routeGroups as $group => $items)
-                      @php
-                        $firstItem = $items->first();
-                        $totalProducts = $items->count();
-                        $totalQuantity = $items->sum('quantity');
-                      @endphp
-                      <tr>
-                        <td>{{ $serialNo++ }}</td>
-                        <td>{{ $firstItem->route->route_number }}</td>
-                        <td>{{ $firstItem->vehicle->vehicle_number }}</td>
-                        <td>{{ $totalProducts }}</td>
-                        <td>{{ $totalQuantity }}</td>
-                        <td>{{ $date }}</td>
-                        <td>
-                          <a class="btn btn-primary btn-sm" href="{{ route('stockintransit.edit', $firstItem->id) }}">
-                            <i class="fa fa-edit"></i>
-                          </a>
-                          <button class="btn btn-danger btn-sm waves-effect" type="submit" onclick="deleteTag({{ $firstItem->id }})">
-                            <i class="fa fa-trash"></i>
-                          </button>
-                          <form id="delete-form-{{ $firstItem->id }}" action="{{ route('stockintransit.destroy', $firstItem->id) }}" method="POST" style="display: none;">
-                            @csrf
-                            @method('DELETE')
-                          </form>
-                        </td>
-                      </tr>
-                    @endforeach
-                  @endforeach
-                </tbody>
-              </table>
-            </div> -->
-
             <div class="d-flex flex-column" style="gap: 20px;" >
               @if($groupedStockInTransits->isEmpty())
                 <div class="mx-auto">
@@ -102,11 +52,11 @@
                     @endphp
 
                     <div class="d-flex justify-content-between align-items-center">
-                      <div class="d-flex h-100 flex-column justify-content-center">
-                        <p class="mb-0 ">Vehicle Number : </p>
-                        <b>{{ $firstItem->vehicle->vehicle_number }}</b>
+                      <div class="d-flex h-100 flex-row justify-content-center">
+                        <p class="mb-0 ">Vehicle : </p>
+                        <b>{{ $firstItem->vehicle->vehicle_type_parent_id == 1 ? 'Van' : 'Car' }}</b>
                       </div>
-                      <div class="d-flex h-100 flex-column justify-content-center">
+                      <div class="d-flex h-100 flex-row justify-content-center">
                         <p class="mb-0 ">Route : </p>
                         <b>{{ $firstItem->route->route_number }}</b>
                       </div>

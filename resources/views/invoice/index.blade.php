@@ -118,11 +118,22 @@
       var table = $('#sampleTable').DataTable({
         dom: '<"top"f>rt<"bottom"l<"pagination"p><"clear">>',
         language: {
-          emptyTable: "No stock available"
+          emptyTable: "No stock available",
+          lengthMenu: "Show _MENU_ rows"
         },
         pageLength: 10,     
-        lengthMenu: [10]     
+        lengthMenu: [10, 20, 50, 100],
       });
+
+      //Pagination Select Styles
+      $('.dataTables_length').find('select').css({
+        'width': '50px',
+        'padding':'0',
+        'font-size': '12px'
+      });
+
+      //Bottom Section Margin
+      $('.bottom').css('margin-top','10px');
 
       // Make the label a block element
       $('.dataTables_filter label').css({

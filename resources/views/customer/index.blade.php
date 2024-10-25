@@ -127,8 +127,21 @@
         scrollX:true,
         dom: '<"top"f>rt<"bottom"l<"pagination"p><"clear">>',
         pageLength: 10,     
-        lengthMenu: [10]     
+        lengthMenu: [10, 20, 50, 100],
+        language: {
+          lengthMenu: "Show _MENU_ rows"
+        },  
       });
+
+      //Pagination Select Styles
+      $('.dataTables_length').find('select').css({
+        'width': '50px',
+        'padding':'0',
+        'font-size': '12px'
+      });
+
+      //Bottom Section Margin
+      $('.bottom').css('margin-top','10px');
 
       // Make the label a block element
       $('.dataTables_filter label').css({

@@ -1376,7 +1376,7 @@
         });
       }
 
-      $('#received_amt').on('input', function () {
+      /* $('#received_amt').on('input', function () {
         var receivedAmtVal = $(this).val();
         var prodTotal = $('.total').val();
 
@@ -1390,7 +1390,7 @@
         } else {
           $('#submit-data').attr("disabled", false);
         }
-      });
+      }); */
 
     });
   </script>

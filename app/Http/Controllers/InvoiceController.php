@@ -147,19 +147,27 @@ class InvoiceController extends Controller
           $returnTotal += $data['amount'][$index] ?? 0;
         }
       }
+
       
       $oldInvoice = Invoice::where('customer_id', $cusID)->orderBy('created_at', 'desc')->first();
       if ($oldInvoice) {
         $oldInvoice->balance_amt = 0;
         $oldInvoice->save();
       }
+
+      $balAmt = ($request->total) + ($request->prev_balance_amt) - ($request->received_amt);
+
       $invoice = new Invoice();
       $invoice->customer_id = $request->customer_id;
       $invoice->user_id = $userId;
       $invoice->payment_type = $request->payment_type;
       $invoice->received_amt = $request->received_amt;
       $invoice->prev_balance_amt = $request->prev_balance_amt;
-      $invoice->balance_amt = (($request->total) + ($request->prev_balance_amt))- ($request->received_amt);
+      if (($request->total + $request->prev_balance_amt) > $request->received_amt) {
+        $invoice->balance_amt = $balAmt; 
+      } else {
+        $invoice->balance_amt = 0.00; 
+      }
       $invoice->total_amount = $request->total;
       $invoice->save();
 
@@ -324,13 +332,19 @@ class InvoiceController extends Controller
       $cusID = $request->customer_id;
       $today = now()->toDateString();
 
+      $balAmt = ($request->total) + ($request->prev_balance_amt) - ($request->received_amt);
+
       $invoice = Invoice::findOrFail($id);
       $invoice->customer_id = $request->customer_id;
       $invoice->user_id = $userId;
       $invoice->payment_type = $request->payment_type;
       $invoice->received_amt = $request->received_amt;
       $invoice->prev_balance_amt = $request->prev_balance_amt;
-      $invoice->balance_amt = (($request->total) + ($request->prev_balance_amt))- ($request->received_amt);
+      if (($request->total + $request->prev_balance_amt) > $request->received_amt) {
+        $invoice->balance_amt = $balAmt; 
+      } else {
+        $invoice->balance_amt = 0.00; 
+      }
       $invoice->total_amount = $request->total;
       $invoice->save();
 

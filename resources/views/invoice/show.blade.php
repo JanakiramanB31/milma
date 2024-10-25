@@ -97,25 +97,34 @@
                       <td style="text-align: end;"><b>Total Amt</b></td>
                       <td class="text-right text-md-left"><b class="total"  >£{{ number_format($amount->total_amount, 2) }}</b></td>
                     </tr>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td style="text-align: end;"><b>Prev Bal Amt</b></td>
-                      <td class="text-right text-md-left"><b class="total"  >£{{ number_format($amount->prev_balance_amt, 2) }}</b></td>
-                    </tr>
                     <tr >
                       <td></td>
                       <td></td>
-                      
                       <td style="text-align: end;"><b>Amt Paid</b></td>
                       <td class="text-right text-md-left"><b class="total">£{{ number_format($amount->received_amt, 2) }}</b></td>
                     </tr>
+                    @php
+                      $currentBalAmt = $amount->total_amount - $amount->received_amt;
+                    @endphp
+                    @if($amount->prev_balance_amt + $currentBalAmt  > 0)
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td style="text-align: end;"><b>Acc Bal Amt</b></td>
+                      <td class="text-right text-md-left"><b class="total"  >£{{ number_format($amount->prev_balance_amt + $currentBalAmt , 2) }}</b></td>
+                    </tr>
+                    @endif
+                    @php
+                       $totAmt = $amount->total_amount + $amount->prev_balance_amt;
+                    @endphp
+                    @if(($amount->received_amt - $totAmt ) > 0)
                     <tr>
                       <td></td>
                       <td></td>
                       <td style="text-align: end;"><b>Bal Amt</b></td>
-                      <td class="text-right text-lg-left"><b class="total">£{{ number_format($amount->balance_amt, 2) }}</b></td>
+                      <td class="text-right text-lg-left"><b class="total">£{{ number_format($amount->received_amt - $totAmt , 2) }}</b></td>
                     </tr>
+                    @endif
                   </tfoot>
                 </table>
               </div>

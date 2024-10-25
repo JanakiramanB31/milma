@@ -1308,22 +1308,6 @@
         }
       });
 
-      $('#received_amt').on('input', function () {
-        var receivedAmtVal = $(this).val();
-        var prodTotal = $('.total').val();
-
-        if(receivedAmtVal > prodTotal) {
-          $('#received-amt-error').html("Please enter Amount below than Total Amount");
-          $('#received-amt-error').show();
-          setTimeout(()=> {
-            $('#received-amt-error').hide();
-          }, 3000);
-          $('#submit-data').attr("disabled", true);
-        } else {
-          $('#submit-data').attr("disabled", false);
-        }
-      });
-
       //Delete Button Confirmation
       function deleteProductRow(callback) {
         const swalWithBootstrapButtons = Swal.mixin({

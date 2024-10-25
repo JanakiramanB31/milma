@@ -54,7 +54,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                       <div class="d-flex h-100 flex-row justify-content-center">
                         <p class="mb-0 ">Vehicle : </p>
-                        <b>{{ $firstItem->vehicle->vehicle_type_parent_id == 1 ? 'Van' : 'Car' }}</b>
+                        <b>{{ $firstItem->vehicle->vehicle_type_parent_id == 1 ? 'Van' : 'Car' }}<p class="d-inline mx-2">-</p>{{$firstItem->vehicle->vehicle_number}}</b>
                       </div>
                       <div class="d-flex h-100 flex-row justify-content-center">
                         <p class="mb-0 ">Route : </p>

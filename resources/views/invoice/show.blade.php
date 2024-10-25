@@ -30,7 +30,7 @@
                 </address>
               </div>
               <div class="col-4">
-                <b class="d-inline">Invoice ID: #{{1000+$invoice->id}}</b><br>
+                <b class="d-inline">Receipt ID: #{{1000+$invoice->id}}</b><br>
                 <b class="d-inline">Payment Type:</b> {{$invoice->payment_type}}<br>
                 <!-- <b class="d-inline">Order ID:</b> 4F3S8J<br> -->
                 <b class="d-inline">Payment Due:</b> {{$invoice->created_at->format('d-m-Y')}}<br>

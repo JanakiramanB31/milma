@@ -190,8 +190,30 @@
       </div>
     </div>
 
-    <div class="form-group col-md-4 align-self-end">
+    <!-- <div class="form-group col-md-4 align-self-end">
       <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>{{$editPage ? "Update" : "Add"}}</button>
+    </div> -->
+
+    <!--  Close Button and Submit Button  -->
+    <div class="d-flex justify-content-center" style="gap: 10px;">
+      <!-- Back to Index Page Button -->
+      <div>
+        <button id="customer-close-btn" type="button" class="btn btn-danger">Close</button>
+      </div>
+
+      <!-- Submiiting Form Data Button -->
+      <div >
+        <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>{{$editPage ? "Update" : "Add"}}</button>
+      </div>
     </div>
-  </form>
+  </form> 
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#customer-close-btn').on('click' , function () {
+      window.location.href =  '{{ route("customer.index") }}'
+    });
+  });
+</script>

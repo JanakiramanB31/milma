@@ -217,7 +217,8 @@ class StockInTransitController extends Controller
             }
         }
       }
-      return redirect()->back()->with('message', 'Stock In Transit Details Updated Successfully');
+      return redirect()->route('stockintransit.index')->with('message', 'Stock In Transit Details Updated Successfully');
+
     }
 
 

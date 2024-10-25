@@ -20,8 +20,17 @@ class CustomerController extends Controller
 
     public function index()
     {
+      $userID = Auth::id();
       $userRole = Auth::user()->role;
-      $customers = Customer::where('status',1)->get();
+      $today = now()->toDateString();
+      if ($userRole == 'admin') {
+        $customers = Customer::where('status',1)->get();
+      } else {
+        $customers = Customer::where('user_id', $userID)->where('status',1)->get();
+      }
+      foreach ($customers as $customer) {
+        $customer->created_today = $customer->created_at->isToday();
+      }
       $customerTypes = [
         ['id' => 1, 'name' => 'WholeSale'],
         ['id' => 2, 'name' => 'Retailer'],
@@ -31,7 +40,7 @@ class CustomerController extends Controller
         ['id' => 2, 'name' => 'Discount'],
         ['id' => 3, 'name' => 'Special Price'],
       ];
-      $rates = Rate::all();     
+      $rates = Rate::all();
 
       return view('customer.index', compact('customers','userRole','customerTypes','saleTypes','saleTypes'));
     }

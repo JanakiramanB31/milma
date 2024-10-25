@@ -97,11 +97,16 @@ class InvoiceController extends Controller
           $subQuery->select('id')->from('invoices') ->where('customer_id', $cusID);
         });
       })->get();
+
       $productPricesAndIDs = ProductPrice::select('product_id','price')->whereIn('rate_id', function($query) use($cusID) {
         $query->select('rate_id')->from('customers')->where('id', $cusID);
       })->get();
       
       $prodIDsAndPrices= $productPricesAndIDs->pluck('price', 'product_id')->toArray();
+
+      $productBasePricesAndIDs = Product::select('id','base_rate')->get();
+      $prodIDsAndBasePrices= $productBasePricesAndIDs->pluck('base_rate', 'id')->toArray();
+
       $productIDs = $returnProducts->pluck('id')->toArray();
       $invoiceIDs = Invoice::where('customer_id', $id)->pluck('id')->toArray();
       $quantityAndPrices = Sales::select('product_id','qty','price')->whereIn('product_id',$productIDs)->whereIn('invoice_id',$invoiceIDs)->get()->toArray();
@@ -109,7 +114,7 @@ class InvoiceController extends Controller
       //  $this->pr($prodIDsAndPrices);
       //  exit;
 
-      return response()->json(['returnProducts' => $returnProducts,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices' => $prodIDsAndPrices,'balance_amount' => $balAmt]);
+      return response()->json(['returnProducts' => $returnProducts,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices' => $prodIDsAndPrices,'prodIDsAndBasePrices' => $prodIDsAndBasePrices,'balance_amount' => $balAmt]);
       
     }
 

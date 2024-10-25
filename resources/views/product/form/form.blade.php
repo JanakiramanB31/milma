@@ -122,7 +122,27 @@
       @enderror
     </div>
 
-    <div class="form-group col-md-4">
+    <div class="form-group col-md-6">
+      <label class="control-label">Base Rate</label>
+      <input name="base_rate" value="{{old('base_rate', $product->base_rate)}}"  class="form-control @error('base_rate') is-invalid @enderror" type="text" placeholder="Enter Base Rate">
+      @error('base_rate')
+      <span class="invalid-feedback" role="alert">
+        <strong>{{ $message }}</strong>
+      </span>
+      @enderror
+    </div>
+
+    <div class="form-group col-md-6">
+      <label class="control-label">MOQ Number</label>
+      <input name="moq_number" value="{{old('moq_number', $product->moq_number)}}"  class="form-control @error('moq_number') is-invalid @enderror" type="number" placeholder="Enter MOQ">
+      @error('moq_number')
+      <span class="invalid-feedback" role="alert">
+        <strong>{{ $message }}</strong>
+      </span>
+      @enderror
+    </div>
+
+    <div class="form-group col-md-6">
       <label class="radio control-label">Stock in Transit Display</label>
       <div class="controls">
         <div class="custom-control custom-radio custom-control-inline">
@@ -140,7 +160,7 @@
       </span>
       @enderror
     </div>
-    <div class="form-group col-md-4">
+    <div class="form-group col-md-6">
       <label class="radio control-label">Status</label>
       <div class="controls">
         <div class="custom-control custom-radio custom-control-inline">
@@ -158,15 +178,7 @@
       </span>
       @enderror
     </div>
-    <div class="form-group col-md-4">
-      <label class="control-label">MOQ Number</label>
-      <input name="moq_number" value="{{old('moq_number', $product->moq_number)}}"  class="form-control @error('moq_number') is-invalid @enderror" type="number" placeholder="Enter MOQ">
-      @error('moq_number')
-      <span class="invalid-feedback" role="alert">
-        <strong>{{ $message }}</strong>
-      </span>
-      @enderror
-    </div>
+    
   </div>
 
   <div class="tile">
@@ -250,7 +262,7 @@
   $(document).ready(function() {
 
     //Accept Only Float Number Price In Quantity Field 
-    $(document).on('input', '.prod-sup-price, .prod-rate-price', function() {
+    $(document).on('input', '.prod-sup-price, .prod-rate-price , .base_rate', function() {
       this.value = this.value.replace(/[^0-9.]/g, '');
       
       const parts = this.value.split('.');

@@ -33,9 +33,7 @@
                   <th>Contact Number </th>
                   <!-- <th>Contact</th> -->
                   <!-- <th>Details</th> -->
-                  @if($userRole == "admin")
                   <th>Action</th>
-                  @endif
                 </tr>
               </thead>
               <tbody>
@@ -46,11 +44,11 @@
                 <tr>
                   <td>{{$serialNo++}}.</td>
                   <td>{{ $customer->company_name }} </td>
-                  <td>{{ $customer->contact_person }} </td>
-                  <td>{{ $customer->mobile }} </td>
+                  <td>{{ $customer->contact_person[0] . (strlen($customer->contact_person) > 2 ? str_repeat('*', strlen($customer->contact_person) - 2) : '') . $customer->contact_person[-1] }}</td>
+                  <td>{{ str_repeat('*', strlen($customer->mobile) - 4) . substr($customer->mobile, -4) }}</td>
                   <!-- <td>{{ $customer->mobile }} </td> -->
                   <!-- <td>{{ $customer->details }} </td> -->
-                  @if($userRole == "admin")
+                  @if($userRole == "admin" || ($userRole == "sales" && $customer->created_today ))
                   <td class="d-flex" style="gap: 10px;">
                     <a class="btn btn-primary btn-sm" href="{{route('customer.edit', $customer->id)}}"><i class="fa fa-edit" ></i></a>
                     <button class="btn btn-danger btn-sm waves-effect" type="submit" onclick="deleteTag({{ $customer->id }})">
@@ -61,6 +59,8 @@
                       @method('DELETE')
                     </form>
                   </td>
+                  @else
+                  <td></td>
                   @endif
                 </tr>
                 @endforeach

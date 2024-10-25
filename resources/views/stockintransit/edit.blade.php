@@ -152,8 +152,21 @@
                   @endforeach
                 </div>
 
-                <div class="form-group d-flex mt-3 col-md-12 justify-content-center align-self-end">
+                <!-- <div class="form-group d-flex mt-3 col-md-12 justify-content-center align-self-end">
                   <button id="update_button" class="btn btn-success" type="button"><i class="fa fa-fw fa-lg fa-check-circle"></i>Update</button>
+                </div> -->
+
+                <!--  Close Button and Submit Button  -->
+                <div class="d-flex justify-content-center" style="gap: 10px;">
+                  <!-- Back to Index Page Button -->
+                  <div>
+                    <button id="sit-close-btn" type="button" class="btn btn-danger">Close</button>
+                  </div>
+
+                  <!-- Submiting Form Data Button -->
+                  <div >
+                    <button id="update_button" class="btn btn-success" type="button"><i class="fa fa-fw fa-lg fa-check-circle"></i>Update</button>
+                  </div>
                 </div>
               </div>
 
@@ -216,6 +229,10 @@
 
   $(document).ready(function() {
     $('#update_button').attr('disabled', true);
+
+    $('#sit-close-btn').on('click' , function () {
+      window.location.href =  '{{ route("stockintransit.index") }}'
+    });
 
     $('#nextButton').on('click', function() {
       var routeSelect = $('#route_id');

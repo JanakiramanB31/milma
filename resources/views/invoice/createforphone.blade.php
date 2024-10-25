@@ -461,7 +461,18 @@
         var id = tr.find('.productname').val();
         console.log(prodData)
         var prodPrices = prodData.productIdsAndPrices;
-        tr.find('.price').val(prodPrices[id]);
+        var productPrice = '';
+        if(prodPrices[productID]) {
+          productPrice = prodPrices[productID];
+        } else {
+          productPrice = prodData.prodIDsAndBasePrices[productID];
+          $('#alert-message').text("Selected Product Rate Not Available so Base Rate Added");
+          $('#alert-message').show();
+          setTimeout(()=> {
+            $('#alert-message').hide();
+          }, 3000);
+        }
+        tr.find('.price').val(productPrice);
       });
 
       //Calculating the Total Amount for Selected Product
@@ -845,7 +856,17 @@
           if (!isProductExists) {
             console.log("Error Checking",prodData)
           var prodPrices = prodData.productIdsAndPrices;
-          var productPrice = prodPrices[productID];
+          var productPrice = '';
+          if(prodPrices[productID]) {
+            productPrice = prodPrices[productID];
+          } else {
+            productPrice = prodData.prodIDsAndBasePrices[productID];
+            $('#alert-message').text("Selected Product Rate Not Available so Base Rate Added");
+            $('#alert-message').show();
+            setTimeout(()=> {
+              $('#alert-message').hide();
+            }, 3000);
+          }
           addProductMobileRow(productID, productName, productPrice);
           } else {
             $('#alert-message').text("Already added the Product");

@@ -87,8 +87,21 @@
                 @endif
                 <span id="error-message" class="invalid-feedback col-md-12" role="alert"></span>
 
-                <div class="form-group d-flex col-md-12 justify-content-center ">
+               <!--  <div class="form-group d-flex col-md-12 justify-content-center ">
                   <button type="button" id="nextButton" class="btn btn-success">Next</button>
+                </div> -->
+
+                <!--  Close Button and Submit Button  -->
+                <div class="d-flex justify-content-center" style="gap: 10px;">
+                  <!-- Back to Index Page Button -->
+                  <div>
+                    <button type="button" class="btn btn-danger sit-close-btn">Close</button>
+                  </div>
+
+                  <!-- Submiting Route Form Data Button -->
+                  <div >
+                    <button type="button" id="nextButton" class="btn btn-success">Next</button>
+                  </div>
                 </div>
               </div>
 
@@ -140,8 +153,21 @@
                   @endforeach
                 </div>
 
-                <div class="form-group mt-3 d-flex justify-content-center col-md-12 align-self-end">
+                <!-- <div class="form-group mt-3 d-flex justify-content-center col-md-12 align-self-end">
                   <button id="check-button" type="button" class="btn btn-success" ><i class="fa fa-fw fa-lg fa-check-circle"></i>Add</button>
+                </div> -->
+
+                <!--  Close Button and Submit Button  -->
+                <div class="d-flex justify-content-center" style="gap: 10px;">
+                  <!-- Back to Index Page Button -->
+                  <div>
+                    <button type="button" class="btn btn-danger sit-close-btn">Close</button>
+                  </div>
+
+                  <!-- Submiting Form Data Button -->
+                  <div >
+                    <button id="check-button" type="button" class="btn btn-success" ><i class="fa fa-fw fa-lg fa-check-circle"></i>Add</button>
+                  </div>
                 </div>
               </div>
 
@@ -202,6 +228,10 @@
       $('#check-button').attr('disabled', true);
       $('#alert-message').attr("hidden", false);
       $('#alert-message').hide();
+
+      $('.sit-close-btn').on('click' , function () {
+        window.location.href =  '{{ route("stockintransit.index") }}'
+      });
 
       $('#nextButton').on('click', function() {
         var routeSelect = $('#route_id');

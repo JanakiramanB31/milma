@@ -86,6 +86,7 @@ class ProductController extends Controller
             'image' => 'file|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'tax_id' => 'required',
             'moq_number' => 'required|numeric|min:1',
+            'base_rate' => 'required',
             'rate_id' => 'required',
             'sit_status'=> 'required',
             'status' => 'required'
@@ -128,6 +129,7 @@ class ProductController extends Controller
         $product->unit_id = $request->unit_id;
         $product->tax_id = $request->tax_id;
         $product->moq_number = $request->moq_number;
+        $product->base_rate = $request->base_rate;
 
 
         // if ($request->hasFile('image')){
@@ -247,6 +249,7 @@ class ProductController extends Controller
         'image' => 'file|mimes:jpeg,png,jpg,gif,svg|max:2048',
         'tax_id' => 'required',
         'moq_number' => 'required|numeric|min:1',
+        'base_rate' => 'required'
       ]);
       // $this->pr($request->all());
       // exit;
@@ -265,6 +268,7 @@ class ProductController extends Controller
       $product->unit_id = $request->unit_id;
       $product->tax_id = $request->tax_id;
       $product->moq_number = $request->moq_number;
+      $product->base_rate = $request->base_rate;
       // $this->pr($product);
       // exit;
       if ($request->hasFile('image')) {

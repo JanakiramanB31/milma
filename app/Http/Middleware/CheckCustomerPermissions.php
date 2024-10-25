@@ -24,7 +24,7 @@ class CheckCustomerPermissions
 
       if($customer) {
         if($userRole == "sales" && !$customer->created_at->isToday()) {
-          return redirect()->route('customer.index')->with('error', 'Unauthorized Access');
+          abort(403, 'Unauthorized action.');
         }
       }
     }

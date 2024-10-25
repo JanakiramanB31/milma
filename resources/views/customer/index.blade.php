@@ -78,40 +78,44 @@
   <script type="text/javascript" src="{{asset('/')}}js/plugins/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="{{asset('/')}}js/plugins/dataTables.bootstrap.min.js"></script>
   <!-- <script type="text/javascript">$('#sampleTable').DataTable();</script> -->
-  <script src="https://unpkg.com/sweetalert2@7.19.1/dist/sweetalert2.all.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script type="text/javascript">
     function deleteTag(id) {
-      swal({
-        title: 'Are you sure?',
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success mx-2",
+          cancelButton: "btn btn-danger"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "Are you sure?",
         text: "You won't be able to revert this!",
-        type: 'warning',
+        icon: "warning",
         showCancelButton: true,
         confirmButtonColor: '#28a745',
         cancelButtonColor: '#dc3545',
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'No, cancel!',
-        confirmButtonClass: 'btn btn-success',
-        cancelButtonClass: 'btn btn-danger',
-        buttonsStyling: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "No, cancel!",
         reverseButtons: true
       }).then((result) => {
         if (result.value) {
           event.preventDefault();
           document.getElementById('delete-form-'+id).submit();
-        } else if (
-          // Read more about handling dismissals
-          result.dismiss === swal.DismissReason.cancel
-        ) {
-          swal({
+          swalWithBootstrapButtons.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success"
+          });
+        } else if (result.dismiss === swal.DismissReason.cancel) {
+          swalWithBootstrapButtons.fire({
             title: 'Cancelled',
             text: 'Your data is safe :)',
-            type: 'error',
+            icon: 'error',
             showCancelButton: false,
             confirmButtonColor: '#28a745',
             confirmButtonText: 'Ok',
-            confirmButtonClass: 'btn btn-success',
             buttonsStyling: true,
-            
           });
         }
       });

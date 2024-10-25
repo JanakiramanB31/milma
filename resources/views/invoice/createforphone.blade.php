@@ -24,11 +24,11 @@
           <!-- Page Header Section -->
           <div class="d-flex justify-content-between align-items-center">
             <h3 class="tile-title mb-0">{{$userRole == "admin" ? "Invoice" : "Receipt"}}</h3>
-            <h5 class="mb-0">Date: {{now()->format('d-m-Y')}}</h5>
+            <h5 class="mb-0">Date: <p class="mx-1 mb-0 d-inline"></p>{{now()->format('d-m-Y')}}</h5>
           </div>
           <div class="d-flex justify-content-end align-items-center mt-2">
             <div class="d-flex h-100 justify-content-center align-items-center">
-              <p class="mb-0 ">Bal Amt</p><p class="mb-0 mx-2">:</p>
+              <p class="mb-0 ">Bal Amt:</p><p class="mb-0 mx-1 d-inline"></p>
               <b id="bal-amt-symbol" class="h5 mb-0 mr-1"></b><b id="bal-amt" class="h5 mb-0"></b>
             </div>
           </div>
@@ -562,8 +562,8 @@
                 var balAmount = response.balance_amount.balance_amt ?? 0;
                 //console.log("Balance Amount", balAmount)
                 $('#bal-amt-symbol').text("£")
-                $('#bal-amt').text(balAmount);
-                $('#balance-amount').val(balAmount);
+                $('#bal-amt').text(parseFloat(balAmount).toFixed(2));
+                $('#balance-amount').val(parseFloat(balAmount).toFixed(2));
                 $('.return-product-id').empty().append('<option value="">Select Return Product</option>');
                 if (response.returnProducts.length > 0) {
                   returnProducts = response.returnProducts;

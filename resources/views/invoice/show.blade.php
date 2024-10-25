@@ -14,7 +14,7 @@
                 <h2 class="page-header mb-0"><i class="fa fa-file"></i> MILMA</h2>
               </div>
               <div>
-                <h5 class="mb-0" style="white-space: nowrap;">Date: {{$invoice->created_at->format('d-m-Y')}}</h5>
+                <h5 class="mb-0" style="white-space: nowrap;">Date:<p class="mx-1 mb-0 d-inline"></p>{{$invoice->created_at->format('d-m-Y')}}</h5>
               </div>
             </div>
             <div class="row invoice-info">
@@ -26,14 +26,14 @@
                   <strong>{{$invoice->customer->company_name}}</strong>
                   <br>{{$invoice->customer->address}}
                   <br>Phone: {{$invoice->customer->mobile}}
-                  <br>Email: <p style=" white-space: normal;word-wrap: break-word;overflow-wrap: break-word;">{{$invoice->customer->email}}</p>
+                  <br>Email:<p class="mx-1 mb-0 d-inline"></p><p style=" white-space: normal;word-wrap: break-word;overflow-wrap: break-word;">{{$invoice->customer->email}}</p>
                 </address>
               </div>
               <div class="col-4">
-                <b class="d-inline">Receipt ID: #{{1000+$invoice->id}}</b><br>
-                <b class="d-inline">Payment Type:</b> {{$invoice->payment_type}}<br>
+                <b class="d-inline">Receipt ID:<p class="mx-1 mb-0 d-inline"></p> #{{1000+$invoice->id}}</b><br>
+                <b class="d-inline">Payment Type:<p class="mx-1 mb-0 d-inline"></p></b> {{$invoice->payment_type}}<br>
                 <!-- <b class="d-inline">Order ID:</b> 4F3S8J<br> -->
-                <b class="d-inline">Payment Due:</b> {{$invoice->created_at->format('d-m-Y')}}<br>
+                <b class="d-inline">Payment Due:<p class="mx-1 mb-0 d-inline"></p></b> {{$invoice->created_at->format('d-m-Y')}}<br>
                 <!-- <b class="d-inline">Account:</b> 000-12345 -->
               </div>
             </div>

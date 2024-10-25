@@ -52,13 +52,12 @@
                     @endphp
 
                     <div class="d-flex justify-content-between align-items-center">
-                      <div class="d-flex h-100 flex-row justify-content-center">
-                        <p class="mb-0 ">Vehicle : </p>
-                        <b>{{ $firstItem->vehicle->vehicle_type_parent_id == 1 ? 'Van' : 'Car' }}<p class="d-inline mx-2">-</p>{{$firstItem->vehicle->vehicle_number}}</b>
+                      <div class="d-flex h-100 flex-row justify-content-center align-items-center">
+                        <p class="mb-0 ">{{ $firstItem->vehicle->vehicle_type_parent_id == 1 ? 'Van' : 'Car' }}<p class="d-inline mb-0 mx-2">-</p>{{$firstItem->vehicle->vehicle_number}}</p>
                       </div>
                       <div class="d-flex h-100 flex-row justify-content-center">
-                        <p class="mb-0 ">Route : </p>
-                        <b>{{ $firstItem->route->route_number }}</b>
+                        <p class="mb-0 ">Route:</p>
+                        <b class="mb-0 mx-2">{{ $firstItem->route->route_number }}</b>
                       </div>
                     </div>
 

@@ -108,11 +108,11 @@
               <div id="product-section" style="display: {{$productDisplay}};">
                 <div id="product-section1" style="display: flex;">
                   <div class="form-group col-md-6 ">
-                    <pre class="control-label">SKU Code : </pre>
+                    <pre class="control-label">SKU Code:</pre>
                     <b id="sku_code" name="sku_code" >{{ old('sku_code') }}</b>
                   </div>
                   <div class="form-group col-md-6">
-                    <pre class="control-label">Bar Code : </pre>
+                    <pre class="control-label">Bar Code:</pre>
                     <b id="barcode" name="barcode" >{{ old('barcode') }}</b>
                   </div>
                 </div>

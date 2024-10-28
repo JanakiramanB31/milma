@@ -142,7 +142,7 @@
                         @enderror
                       </div>
                       <div class="form-group col-md-6">
-                        <input name="quantity[]" id="quantity-{{ $product->id }}" data-prodname="{{$product->name}}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ old('quantity.' . $product->id) }}"  type="number" placeholder="Enter Quantity" data-available = "{{$prodMaxQuantity}}" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
+                        <input name="quantity[]" id="quantity-{{ $product->id }}" data-prodname="{{$product->name}}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ old('quantity.' . $product->id) }}"  type="text" placeholder="Enter Quantity" data-available = "{{$prodMaxQuantity}}" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
                         @error('quantity')
                         <span class="invalid-feedback" role="alert">
                           <strong>{{ $message }}</strong>
@@ -228,6 +228,11 @@
       $('#check-button').attr('disabled', true);
       $('#alert-message').attr("hidden", false);
       $('#alert-message').hide();
+
+      //Accept Only Number Input In Quantity Field 
+      $(document).on('input','.quantity-input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+      });
 
       $('.sit-close-btn').on('click' , function () {
         window.location.href =  '{{ route("stockintransit.index") }}'

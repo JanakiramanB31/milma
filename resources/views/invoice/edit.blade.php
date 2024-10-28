@@ -31,7 +31,7 @@
           <div class="d-flex justify-content-end align-items-center mt-2">
             <div class="d-flex h-100 justify-content-center align-items-center">
               <p class="mb-0 ">Bal Amt:</p><p class="mb-0 mx-1 d-inline"></p>
-              <b id="bal-amt-symbol" class="h5 mb-0 mr-1"></b><b id="bal-amt" class="h5 mb-0">{{$invoice->prev_balance_amount}}</b>
+              <b id="bal-amt-symbol" class="h5 mb-0 mr-1"></b><b id="bal-amt" class="h5 mb-0">{{$invoice->prev_acc_bal_amt}}</b>
             </div>
           </div>
 
@@ -134,7 +134,7 @@
                       </tbody>
                       <tfoot>
                         <tr>
-                          <td><input type="hidden" name="prev_balance_amt" id="balance-amount" class="form-control balance-amount" /></td>
+                          <td><input type="hidden" name="acc_bal_amt" id="balance-amount" class="form-control balance-amount" /></td>
                           <td hidden></td>
                           <td><input type="hidden" name="total" id="total" class="form-control total" /></td>
                           <td><b>Total</b></td>
@@ -289,7 +289,7 @@
                     <select id="payment_type" name="payment_type" class="form-control">
                       <option value = ''>Select Payment Type</option>
                       @foreach($paymentMethods as $paymentMethod)
-                      <option name="payment_type"  value="{{$paymentMethod}}" @if($paymentMethod == 'Cash') selected @endif>{{$paymentMethod}}</option>
+                      <option name="payment_type"  value="{{$paymentMethod}}" {{ old('payment_type', $invoice->payment_type) == $paymentMethod ? 'selected' : '' }}>{{$paymentMethod}}</option>
                       @endforeach
                     </select>
                     <div id="payment-type-error" class="text-danger"></div>
@@ -297,7 +297,7 @@
                   <!-- Received Amount PopUp Form Content -->
                   <div class="modal-body d-flex flex-column justify-content-center">
                     <label class="form-label">Amount</label>
-                    <input id="received_amt" type="text"  name="received_amt" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
+                    <input id="received_amt" type="text"  name="received_amt" value="{{($invoice->received_amt - $invoice->returned_amt)}}" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
                     <div id="received-amt-error" class="text-danger"></div>
                   </div>
                   <!-- Received Amount PopUp Form Footer -->
@@ -584,11 +584,11 @@
                 //console.log("Working",response);
                 prodData= response;
                 //console.log("proddata",prodData);
-                var balAmount = response.balance_amount.balance_amt ?? 0;
+                var PrevbalAmt = response.prev_acc_bal_amt.prev_acc_bal_amt ?? 0;
                 //console.log("Balance Amount", balAmount)
                 $('#bal-amt-symbol').text("£")
-                $('#bal-amt').text(parseFloat(balAmount).toFixed(2));
-                $('#balance-amount').val(parseFloat(balAmount).toFixed(2));
+                $('#bal-amt').text(parseFloat(PrevbalAmt).toFixed(2));
+                $('#balance-amount').val(parseFloat(PrevbalAmt).toFixed(2));
                 /* $('.return-product-id').empty().append('<option value="">Select Return Product</option>');
                 if (response.returnProducts.length > 0) {
                   returnProducts = response.returnProducts;
@@ -1333,7 +1333,7 @@
             callback(true);
             swalWithBootstrapButtons.fire({
               title: "Deleted!",
-              text: "Your file has been deleted.",
+              text: "Product has been deleted.",
               icon: "success"
             });
           } else if (result.dismiss === swal.DismissReason.cancel) {

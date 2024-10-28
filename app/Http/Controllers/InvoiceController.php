@@ -92,6 +92,7 @@ class InvoiceController extends Controller
       $userID = Auth::id();
       $cusID = $id;
       $balAmt = Invoice::select('balance_amt')->where('customer_id', $cusID)->orderBy('created_at', 'desc')->first() ?? 0;
+      $PrevbalAmt = Invoice::select('prev_acc_bal_amt')->where('customer_id', $cusID)->orderBy('created_at', 'desc')->first() ?? 0;
       $returnProducts = Product::select('id','name')->where('status',1)->whereIn('id', function($query) use ($cusID) {
         $query->select('product_id')->from('sales')->whereIn('invoice_id', function($subQuery) use ($cusID) {
           $subQuery->select('id')->from('invoices') ->where('customer_id', $cusID);
@@ -114,7 +115,7 @@ class InvoiceController extends Controller
       //  $this->pr($prodIDsAndPrices);
       //  exit;
 
-      return response()->json(['returnProducts' => $returnProducts,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices' => $prodIDsAndPrices,'prodIDsAndBasePrices' => $prodIDsAndBasePrices,'balance_amount' => $balAmt]);
+      return response()->json(['returnProducts' => $returnProducts,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices' => $prodIDsAndPrices,'prodIDsAndBasePrices' => $prodIDsAndBasePrices,'balance_amount' => $balAmt, 'prev_acc_bal_amt' => $PrevbalAmt]);
       
     }
 
@@ -155,20 +156,27 @@ class InvoiceController extends Controller
         $oldInvoice->save();
       }
 
-      $balAmt = ($request->total) + ($request->prev_balance_amt) - ($request->received_amt);
+      $balAmt = ($request->total) + ($request->acc_bal_amt) - ($request->received_amt);
+      $returnedAmt =  ($request->received_amt) - (($request->total) + ($request->acc_bal_amt));
 
       $invoice = new Invoice();
       $invoice->customer_id = $request->customer_id;
       $invoice->user_id = $userId;
       $invoice->payment_type = $request->payment_type;
       $invoice->received_amt = $request->received_amt;
-      $invoice->prev_balance_amt = $request->prev_balance_amt;
-      if (($request->total + $request->prev_balance_amt) > $request->received_amt) {
+      $invoice->acc_bal_amt = $request->acc_bal_amt;
+      if (($request->total + $request->acc_bal_amt) > $request->received_amt) {
         $invoice->balance_amt = $balAmt; 
       } else {
         $invoice->balance_amt = 0.00; 
       }
       $invoice->total_amount = $request->total;
+      if($returnedAmt > 0 ) {
+        $invoice->returned_amt = $returnedAmt;
+      } else {
+        $invoice->returned_amt = 0;
+      }
+      $invoice->prev_acc_bal_amt = $request->acc_bal_amt;
       $invoice->save();
 
       
@@ -246,7 +254,7 @@ class InvoiceController extends Controller
     {
       $invoice = Invoice::findOrFail($id);
       $sales = Sale::where('invoice_id', $id)->get();
-      $amount = Invoice::select('total_amount','received_amt','prev_balance_amt','balance_amt')->where('id', $id)->first();
+      $amount = Invoice::select('total_amount','received_amt','prev_acc_bal_amt','acc_bal_amt','balance_amt')->where('id', $id)->first();
       return view('invoice.show', compact('invoice','sales','amount'));
     }
 
@@ -332,20 +340,27 @@ class InvoiceController extends Controller
       $cusID = $request->customer_id;
       $today = now()->toDateString();
 
-      $balAmt = ($request->total) + ($request->prev_balance_amt) - ($request->received_amt);
+      $balAmt = ($request->total) + ($request->acc_bal_amt) - ($request->received_amt);
+      $returnedAmt =  ($request->received_amt) - (($request->total) + ($request->acc_bal_amt));
 
       $invoice = Invoice::findOrFail($id);
       $invoice->customer_id = $request->customer_id;
       $invoice->user_id = $userId;
       $invoice->payment_type = $request->payment_type;
       $invoice->received_amt = $request->received_amt;
-      $invoice->prev_balance_amt = $request->prev_balance_amt;
-      if (($request->total + $request->prev_balance_amt) > $request->received_amt) {
+      $invoice->acc_bal_amt = $request->acc_bal_amt;
+      if (($request->total + $request->acc_bal_amt) > $request->received_amt) {
         $invoice->balance_amt = $balAmt; 
       } else {
         $invoice->balance_amt = 0.00; 
       }
       $invoice->total_amount = $request->total;
+      if($returnedAmt > 0 ) {
+        $invoice->returned_amt = $returnedAmt;
+      } else {
+        $invoice->returned_amt = 0;
+      }
+      $invoice->prev_acc_bal_amt = $request->acc_bal_amt;
       $invoice->save();
 
       Sale::where('invoice_id', $id)->delete();

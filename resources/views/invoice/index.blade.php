@@ -96,7 +96,7 @@
           document.getElementById('delete-form-'+id).submit();
           swalWithBootstrapButtons.fire({
             title: "Deleted!",
-            text: "Your file has been deleted.",
+            text: "Your Invoice has been deleted.",
             icon: "success"
           });
         } else if (result.dismiss === swal.DismissReason.cancel) {

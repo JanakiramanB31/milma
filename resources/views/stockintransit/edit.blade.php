@@ -131,7 +131,7 @@
                       @enderror
                     </div>
                     <div class="form-group col-3 px-1">
-                      <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input px-2 @error('quantity') is-invalid @enderror" value="{{ $prdQuantity }}"   type="number" readonly>
+                      <input name="quantity[]" id="quantity-{{ $product->id }}" class="form-control quantity-input px-2 @error('quantity') is-invalid @enderror" value="{{ $prdQuantity }}"   type="text" readonly>
                       @error('quantity')
                       <span class="invalid-feedback" role="alert">
                         <strong>{{ $message }}</strong>

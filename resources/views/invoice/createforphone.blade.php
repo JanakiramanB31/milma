@@ -98,7 +98,7 @@
                       </tbody>
                       <tfoot>
                         <tr>
-                          <td><input type="hidden" name="prev_balance_amt" id="balance-amount" class="form-control balance-amount" /></td>
+                          <td><input type="hidden" name="acc_bal_amt" id="balance-amount" class="form-control balance-amount" /></td>
                           <td hidden></td>
                           <td><input type="hidden" name="total" id="total" class="form-control total" /></td>
                           <td><b>Total</b></td>
@@ -1358,7 +1358,7 @@
             callback(true);
             swalWithBootstrapButtons.fire({
               title: "Deleted!",
-              text: "Your file has been deleted.",
+              text: "Product has been deleted.",
               icon: "success"
             });
           } else if (result.dismiss === swal.DismissReason.cancel) {

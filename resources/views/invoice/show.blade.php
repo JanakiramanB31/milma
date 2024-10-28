@@ -103,19 +103,28 @@
                       <td style="text-align: end;"><b>Amt Paid</b></td>
                       <td class="text-right text-md-left"><b class="total">£{{ number_format($amount->received_amt, 2) }}</b></td>
                     </tr>
+                    @if(number_format($amount->prev_acc_bal_amt)  > 0)
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td style="text-align: end;"><b>Prev Acc Bal Amt</b></td>
+                      <td class="text-right text-md-left"><b class="total"  >£{{ number_format($amount->prev_acc_bal_amt, 2) }}</b></td>
+                    </tr>
+                    @endif
                     @php
-                      $currentBalAmt = $amount->total_amount - $amount->received_amt;
+                        $currentBalAmt = $amount->total_amount - $amount->received_amt;
+                        $amount->acc_bal_amt + number_format($currentBalAmt);
                     @endphp
-                    @if($amount->prev_balance_amt + $currentBalAmt  > 0)
+                    @if((number_format($amount->acc_bal_amt,2) + number_format($currentBalAmt, 2))  > 0)
                     <tr>
                       <td></td>
                       <td></td>
                       <td style="text-align: end;"><b>Acc Bal Amt</b></td>
-                      <td class="text-right text-md-left"><b class="total"  >£{{ number_format($amount->prev_balance_amt + $currentBalAmt , 2) }}</b></td>
+                      <td class="text-right text-md-left"><b class="total"  >£{{number_format( $amount->acc_bal_amt + $currentBalAmt,2) }}</b></td>
                     </tr>
                     @endif
                     @php
-                       $totAmt = $amount->total_amount + $amount->prev_balance_amt;
+                       $totAmt = $amount->total_amount + $amount->acc_bal_amt;
                     @endphp
                     @if(($amount->received_amt - $totAmt ) > 0)
                     <tr>

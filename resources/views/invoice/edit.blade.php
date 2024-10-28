@@ -495,9 +495,6 @@
           productPrice = prodData.prodIDsAndBasePrices[productID];
           $('#alert-message').text("The selected product rate type price is not available, so the base rate has been applied instead.");
           $('#alert-message').show();
-          setTimeout(()=> {
-            $('#alert-message').hide();
-          }, 3000);
         }
         tr.find('.price').val(prodPrices[id]);
       });
@@ -899,9 +896,6 @@
             productPrice = prodData.prodIDsAndBasePrices[productID];
             $('#alert-message').text("The selected product rate type price is not available, so the base rate has been applied instead.");
             $('#alert-message').show();
-            setTimeout(()=> {
-              $('#alert-message').hide();
-            }, 3000);
           }
           addProductMobileRow(productID, productName, productPrice);
           } else {

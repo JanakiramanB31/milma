@@ -103,7 +103,7 @@
                       <td style="text-align: end;"><b>Amt Paid</b></td>
                       <td class="text-right text-md-left"><b class="total">£{{ number_format($amount->received_amt, 2) }}</b></td>
                     </tr>
-                    @if(number_format($amount->prev_acc_bal_amt)  > 0)
+                    @if(number_format($amount->prev_acc_bal_amt, 2)  > 0)
                     <tr>
                       <td></td>
                       <td></td>

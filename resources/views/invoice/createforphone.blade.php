@@ -45,7 +45,12 @@
           @endif
 
           <!-- Alert Error Section -->
-          <div id="alert-message" class="alert alert-danger" role="alert" hidden></div>
+          <div id="alert-container" class="alert alert-danger alert-dismissible fade show" role="alert" hidden>
+            <strong id="alert-message" ></strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
 
           <!-- Form Section -->
           <div class="tile-body">
@@ -375,8 +380,8 @@
     var selectedReturnProductIDs = [];
     //console.log("Data",prodData)
     $(document).ready(function(){
-      $('#alert-message').attr("hidden", false);
-      $('#alert-message').hide();
+      $('#alert-container').attr("hidden", false);
+      $('#alert-container').hide();
       $('.select2').select2();
       $('#bal-amt-symbol').text("£");
       $('#bal-amt').text(parseFloat(0).toFixed(2));
@@ -467,10 +472,7 @@
         } else {
           productPrice = prodData.prodIDsAndBasePrices[productID];
           $('#alert-message').text("The selected product rate type price is not available, so the base rate has been applied instead.");
-          $('#alert-message').show();
-          setTimeout(()=> {
-            $('#alert-message').hide();
-          }, 3000);
+          $('#alert-container').show();
         }
         tr.find('.price').val(productPrice);
       });
@@ -862,15 +864,12 @@
           } else {
             productPrice = prodData.prodIDsAndBasePrices[productID];
             $('#alert-message').text("The selected product rate type price is not available, so the base rate has been applied instead.");
-            $('#alert-message').show();
-            setTimeout(()=> {
-              $('#alert-message').hide();
-            }, 3000);
+            $('#alert-container').show();
           }
           addProductMobileRow(productID, productName, productPrice);
           } else {
             $('#alert-message').text("Already added the Product");
-            $('#alert-message').show();
+            $('#alert-container').show();
             let isErr = $('#alert-message').text().length;
             if (isErr > 0) {
               $('html, body').animate({
@@ -878,7 +877,7 @@
               }, 500);
             }
             setTimeout(()=> {
-              $('#alert-message').hide();
+              $('#alert-container').hide();
             }, 3000);
             //alert('Already added the Product');
             $('.toast-body').text("Already added the Product");
@@ -1039,7 +1038,7 @@
           //console.log(productsCount)
           if (productsCount == 0) {
             $('#alert-message').text("Please add minimum of 1 Product");
-            $('#alert-message').show();
+            $('#alert-container').show();
             let isErr = $('#alert-message').text().length;
             if (isErr > 0) {
               $('html, body').animate({
@@ -1047,7 +1046,7 @@
               }, 500);
             }
             setTimeout(()=> {
-              $('#alert-message').hide();
+              $('#alert-container').hide();
             }, 3000);
           } else {
             productTableBody.find('tr').each(function () {
@@ -1059,7 +1058,7 @@
               if (productID == "") {
                 //console.log("productID",productID);
                 $('#alert-message').text("Please select the Product");
-                $('#alert-message').show();
+                $('#alert-container').show();
                 let isErr = $('#alert-message').text().length;
                   if (isErr > 0) {
                   $('html, body').animate({
@@ -1067,14 +1066,14 @@
                   }, 500);
                 }
                 setTimeout(()=> {
-                  $('#alert-message').hide();
+                  $('#alert-container').hide();
                 }, 3000);
                 allFilled = false; 
                 allValid = false;
                 return false;
               } else if (productQty == "" || productQty == 0) {
                 $('#alert-message').text("Please enter the Quantity");
-                $('#alert-message').show();
+                $('#alert-container').show();
                 let isErr = $('#alert-message').text().length;
                   if (isErr > 0) {
                   $('html, body').animate({
@@ -1082,13 +1081,13 @@
                   }, 500);
                 }
                 setTimeout(()=> {
-                  $('#alert-message').hide();
+                  $('#alert-container').hide();
                 }, 3000);
                 allFilled = false; 
                 allValid = false;
                 return false;
               } else {
-                $('#alert-message').hide();
+                $('#alert-container').hide();
                 $('#product-table-error').hide();
                 allFilled = true; 
                 allValid = true;
@@ -1105,84 +1104,8 @@
       });
       
       //Check Available Qty Function
-      // async function checkQty() {
-      //   let allValidated = false;
-      //   $('#alert-message').hide();
-
-      //   const quantityChecks = $('.qty').map(async function() {
-      //     let qtyVal = $(this).val();
-      //     let productID = $(this).data('id');
-      //     //console.log(productID);
-
-      //     if (!productID) {
-      //       console.log("Failed: No product ID");
-      //       return;
-      //     }
-
-      //     if(productID) {
-      //       $('#product-table-error').hide();
-      //       $.ajax({
-      //         url: '{{ route("invoice.fetchProducts",":id") }}'.replace(':id', productID),
-      //         type: 'POST',
-      //         data: {
-      //           product_id: productID,
-      //           _token: '{{ csrf_token() }}' 
-      //         },
-      //         success: function(response) {
-      //           try {
-      //             console.log("Working",response);
-      //             var qtyData = response.productIDsandQuantitites;
-      //             var availableQty = qtyData[productID];
-      //             console.log("Available Quantity",availableQty);
-      //             if (qtyVal && availableQty == 0) {
-      //               $('#product-form-data').prop("disabled", true);
-      //               $('#alert-message').text('Out of Stock').show();
-      //               allValidated = false;
-      //               return false;
-      //             } else if(qtyVal > availableQty){
-      //               console.log("Check QtyValue", qtyVal,"Available Qty",availableQty)
-      //               $('#product-form-data').prop("disabled", true);
-      //               $('#alert-message').text("Quantity exceeds available stock");
-      //               $('#alert-message').show();
-      //               allValidated = false;
-      //               return false;
-      //             } else if(qtyVal < 0) {
-      //               $('#product-form-data').attr("disabled", true);
-      //               $('#alert-message').text("Please enter a valid non-negative quantity.").show();
-      //               allValidated = false;
-      //               return false;
-      //             } else {
-      //               $('#alert-message').hide();
-      //               $('#product-form-data').attr("disabled", false);
-      //               allValidated = true;
-      //               return true;
-      //             }
-      //           } catch(error) {
-      //             console.log("Failed",error)
-      //           }
-      //         },
-      //         error: function(xhr) {
-      //           var errorMessage =  'An error occurred. Please try again.';
-      //           $('#error-message').html(errorMessage).show();
-      //         }
-      //       });
-      //     } else {
-      //       console.log("Failed")
-      //     }
-      //   });
-
-      //   console.log(allValidated)
-      //   if(allValidated) {
-      //     console.log(allValidated)
-      //     $('#amountForm').modal('show');
-      //     $('#product-form-data').attr("disabled", false);
-      //   }
-        
-      // }
-
-      //Check Available Qty Function
       async function checkQty() {
-        $('#alert-message').hide();
+        $('#alert-container').hide();
         $('#product-table-error').hide();
         let allValidated = true; 
 
@@ -1211,7 +1134,8 @@
             //console.log("Available Quantity Checking", availableQty);
 
             if (qtyVal && availableQty === 0) {
-              $('#alert-message').text(`${prodName} is Out of Stock`).show();
+              $('#alert-message').text(`${prodName} is Out of Stock`);
+              $('#alert-container').show();
               let isErr = $('#alert-message').text().length;
               if (isErr > 0) {
                 $('html, body').animate({
@@ -1220,7 +1144,8 @@
               }
               allValidated = false;
             } else if (qtyVal > availableQty) {
-              $('#alert-message').text(`${prodName} Quantity exceeds available stock`).show();
+              $('#alert-message').text(`${prodName} Quantity exceeds available stock`);
+              $('#alert-container').show();
               let isErr = $('#alert-message').text().length;
                 if (isErr > 0) {
                 $('html, body').animate({
@@ -1229,7 +1154,8 @@
               }
               allValidated = false;
             } else if (qtyVal < 0) {
-              $('#alert-message').text(`Please enter a valid non-negative quantity for ${prodName}`).show();
+              $('#alert-message').text(`Please enter a valid non-negative quantity for ${prodName}`);
+              $('#alert-container').show();
               let isErr = $('#alert-message').text().length;
                 if (isErr > 0) {
                 $('html, body').animate({
@@ -1238,11 +1164,12 @@
               }
               allValidated = false;
             } else {
-              $('#alert-message').hide();
+              $('#alert-container').hide();
             }
           } catch (error) {
             console.log("Failed", error);
-            $('#error-message').html('An error occurred. Please try again.').show();
+            $('#error-message').html('An error occurred. Please try again.');
+            $('#alert-container').show();
             allValidated = false;
           }
         }).get(); 
@@ -1253,7 +1180,7 @@
           $('#amountForm').modal('show');
           $('#product-form-data').attr("disabled", false);
         } else {
-          $('#alert-message').show();
+          $('#alert-container').show();
           $('#product-form-data').prop("disabled", true);
         }
       }
@@ -1302,20 +1229,22 @@
                 //console.log("Available Quantity Check",availableQty);
                 if (qtyVal && availableQty == 0) {
                   $('#product-form-data').attr("disabled", true);
-                  $('#alert-message').text('Out of Stock').show();
+                  $('#alert-message').text('Out of Stock');
+                  $('#alert-container').show();
                   return false;
                 } else if(qtyVal > availableQty){
                  // console.log("QtyValue", qtyVal,"Available Qty",availableQty)
                   $('#product-form-data').attr("disabled", true);
                   $('#alert-message').text("Quantity exceeds available stock");
-                  $('#alert-message').show();
+                  $('#alert-container').show();
                   return false;
                 } else if(qtyVal < 0) {
                   $('#product-form-data').attr("disabled", true);
-                  $('#alert-message').text("Please enter a valid non-negative quantity.").show();
+                  $('#alert-message').text("Please enter a valid non-negative quantity.");
+                  $('#alert-container').show();
                   return false;
                 } else {
-                  $('#alert-message').hide();
+                  $('#alert-container').hide();
                   $('#product-form-data').attr("disabled", false);
                   return true;
                 }

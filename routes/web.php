@@ -25,6 +25,11 @@ Route::group(['middleware' => 'App\Http\Middleware\SuperAdminMiddleware', 'prefi
   Route::get('/', 'HomeController@index')->name('adminhome');
   Route::get('/home', 'HomeController@index')->name('adminhome');
 
+  Route::get('/report/x_report/{date?}', 'ReportController@x_index')->name('x_report');
+  Route::post('/report/x_report/print/{data?}', 'ReportController@x_report_print')->name('x_report_print');
+  Route::post('report/x_report/fetchByDate/{date}', 'ReportController@fetchByDate')->name('x_report.fetchByDate');
+  Route::get('/report/y_report', 'ReportController@y_index')->name('z_report');
+
   Route::resource('category', 'CategoryController');
   Route::resource('subcategory', 'SubcategoryController');
   Route::resource('tax', 'TaxController');

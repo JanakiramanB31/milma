@@ -12,6 +12,20 @@
     @if(Auth::user()->role == 'admin')
 
         <li><a class="app-menu__item {{ request()->is('/') ? 'active' : ''}}" href="{{route('adminhome')}}"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Dashboard</span></a></li>        
+        <!-- <li><a class="app-menu__item {{ request()->is('/report') ? 'active' : ''}}"  ><i class="app-menu__icon fa fa-file-text-o"></i><span class="app-menu__label">Reports</span></a>
+            <ul class="treeview-menu">
+                <li><a class="treeview-item" href="{{route('x_report')}}"><i class="icon fa fa-circle-o"></i>X-Report</a></li>
+                <li><a class="treeview-item" href="{{route('z_report')}}"><i class="icon fa fa-circle-o"></i>Z-Report</a></li>
+            </ul>
+        </li>       -->  
+
+        <li class="treeview"><a class="app-menu__item {{ request()->is('/report') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-file-text-o"></i><span class="app-menu__label">Reports</span><i class="treeview-indicator fa fa-angle-right"></i></a>
+            <ul class="treeview-menu">
+              <li><a class="treeview-item" href="{{route('x_report')}}"><i class="icon fa fa-circle-o"></i>X-Report</a></li>
+              <li><a class="treeview-item" href="{{route('z_report')}}"><i class="icon fa fa-circle-o"></i>Z-Report</a></li>
+            </ul>
+        </li>
+
         <li><a class="app-menu__item {{ request()->is('tax*') ? 'active' : ''}}" href="{{route('tax.index')}}"><i class="app-menu__icon fa fa-percent"></i><span class="app-menu__label">Tax</span></a>
            <!--  <ul class="treeview-menu">
                 <li><a class="treeview-item" href="{{route('tax.create')}}"><i class="icon fa fa-circle-o"></i> Add Tax</a></li>

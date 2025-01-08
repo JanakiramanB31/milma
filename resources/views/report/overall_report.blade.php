@@ -272,16 +272,16 @@
                 invoiceData.forEach(invoice => {
                   $('#sampleTable tbody').append(`
                       <tr>
-                        <td class="text-center">${1000+invoice.id}</td>
+                        <td class="text-center">${1000+(invoice.id)}</td>
                         <td class="text-center">${new Date(invoice.created_at).toLocaleDateString('en-GB')}</td>
                         <td class="text-center">${invoice.customer.name}</td>
                         <td class="text-center">${invoice.payment_type}</td>
-                        <td class="text-center">${currency +invoice.total_amount.toFixed(decimalLength)}</td>
-                        <td class="text-center">${currency +invoice.received_amt.toFixed(decimalLength)}</td>
-                        <td class="text-center">${currency +invoice.acc_bal_amt.toFixed(decimalLength)}</td>
-                        <td class="text-center">${currency +invoice.balance_amt.toFixed(decimalLength)}</td>
+                        <td class="text-center">${currency +parseInt(invoice.total_amount).toFixed(decimalLength)}</td>
+                        <td class="text-center">${currency +parseInt(invoice.received_amt).toFixed(decimalLength)}</td>
+                        <td class="text-center">${currency +parseInt(invoice.acc_bal_amt).toFixed(decimalLength)}</td>
+                        <td class="text-center">${currency +parseInt(invoice.balance_amt).toFixed(decimalLength)}</td>
                         <td class="d-flex justify-content-center" style="gap: 10px;">
-                          <a class="btn btn-info btn-sm" href="{{ route('invoice.show', '') }}/${invoice.id}"><i class="fa fa-eye" ></i></a>
+                          <a class="btn btn-info btn-sm" href="{{ route('invoice.show', '') }}/${parseInt(invoice.id)}"><i class="fa fa-eye" ></i></a>
                         </td>
                       </tr>
                   `);

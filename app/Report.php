@@ -23,5 +23,12 @@ class Report extends Model
         return $this->belongsTo('App\Invoice');
     }
 
+    public function customer(){
+      return $this->belongsTo('App\Customer');
+  }
+  public function stockintransit(){
+    return $this->belongsTo('App\StockInTransit');
+}
+
 
 }

@@ -7,5 +7,7 @@ return [
         'DS' => array('name'=>'Damage Stock', 'short_name'=>'DS'),
         'ES' => array('name'=>'Expired Stock', 'short_name'=>'ES'),
         'RS' => array('name'=>'Returned Stock', 'short_name'=>'RS'),
-    ]
+    ],
+    'CURRENCY_SYMBOL' => '£',
+    'DECIMAL_LENGTH' => '2'
 ];

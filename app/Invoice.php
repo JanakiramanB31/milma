@@ -15,6 +15,10 @@ class Invoice extends Model
         return $this->belongsTo('App\Customer');
     }
 
+    public function stockintransit(){
+      return $this->belongsTo('App\StockInTransit');
+  }
+
 
 
 

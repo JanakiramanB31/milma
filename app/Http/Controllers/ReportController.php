@@ -7,6 +7,7 @@ use App\Product;
 use App\Route;
 use App\Sale;
 use App\Sales;
+use App\StockInTransit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,7 +30,8 @@ class ReportController extends Controller
       } else {
         $selectedDate = now()->toDateString();
       }
-     
+      $currency = config('constants.CURRENCY_SYMBOL');
+      $decimalLength = config('constants.DECIMAL_LENGTH');
       $routes = Route::all();
       $saleTypesandTotalAmounts = Sale::select('type', 'qty', 'total_amount')->whereDate('created_at', $selectedDate)->get();
       //  echo '<pre>'; print_r($saleTypesandTotalAmounts); echo '</pre>';exit;
@@ -68,12 +70,14 @@ class ReportController extends Controller
 
       // echo '<pre>'; print_r($totalAmt); echo '</pre>';exit;
      
-      return view('report.x_index', compact('cashPayments', 'bankPayments', 'saleType', 'returnType','routes','totalCreditAmount', 'creditTransactionCount'));
+      return view('report.x_index', compact('cashPayments', 'bankPayments', 'saleType', 'returnType','routes','totalCreditAmount', 'creditTransactionCount','currency','decimalLength'));
     }
 
     public function fetchByDate(Request $request, $date){
       $data = $request->input('date'); 
       $fromDate = $data['fromDate'];
+      $currency = config('constants.CURRENCY_SYMBOL');
+      $decimalLength = config('constants.DECIMAL_LENGTH');
       $toDate = $data['toDate'];
       if ($fromDate && $toDate) {
         $fromDate = \Carbon\Carbon::parse($fromDate)->format('Y-m-d');
@@ -118,6 +122,8 @@ class ReportController extends Controller
       $bankPayments = $saleProductspaymentTypesandAmounts->get('Bank Transfer', ['total_received_amt' => 0, 'transaction_count' => 0]);
 
       $filteredData = [
+        'currency'=> $currency,
+        "decimalLength" => $decimalLength,
         "saleType" => $saleType,
         "returnType" => $returnType,
         "cashPayments" => $cashPayments,
@@ -129,10 +135,11 @@ class ReportController extends Controller
       return response()->json( $filteredData );
     }
 
-    public function x_report_print(Request $request) {
-      $data = $request->input('data'); 
-      print_r($data);
-      return view('report.x_report_print', $data);
+    public function x_report_print($data) {
+      $salesData = json_decode($data, true);
+      $currency = config('constants.CURRENCY_SYMBOL');
+      $decimalLength = config('constants.DECIMAL_LENGTH');
+      return view('report.x_report_print', compact('salesData','currency','decimalLength'));
     }
 
     public function y_index()
@@ -182,6 +189,94 @@ class ReportController extends Controller
     public function create()
     {
         //
+    }
+
+    public function overall_report()
+    {
+      $currency = config('constants.CURRENCY_SYMBOL');
+      $decimalLength = config('constants.DECIMAL_LENGTH');
+      $formattedDate = now()->toDateString();
+      $routes = Route::all();
+      $invoiceWithCustomer = Invoice::with('Customer')->get(); 
+
+      $customerInfo = $invoiceWithCustomer->map(function ($invoice) {
+          return $invoice->Customer->company_name; 
+      });
+      $groupedInvoices = $invoiceWithCustomer->groupBy(function ($invoice) {
+        return $invoice->Customer ? $invoice->Customer->company_name : 'Unknown Company';
+      });
+
+      // Now map the grouped invoices to just include the invoice data
+      $invoiceData = $groupedInvoices->map(function ($invoices, $companyName) {
+        return $invoices->map(function ($invoice) {
+            // Return only the desired fields for each invoice
+            return [
+              $invoice
+            ];
+        });
+        
+      });
+      $filteredInvoices = Invoice::with('Customer')->whereDate('created_at', $formattedDate)->get();
+   
+      return view('report.overall_report', compact('routes', 'filteredInvoices','groupedInvoices','currency','decimalLength'));
+    }
+
+    public function fetchCompanyInvoices(Request $request)
+    {
+      $currency = config('constants.CURRENCY_SYMBOL');
+      $decimalLength = config('constants.DECIMAL_LENGTH');
+      $data = json_decode($request->input('data'), true);
+      $data['companyName'] = trim($data['companyName']);
+      $data['routeID'] = trim($data['routeID']);
+
+      if (empty($data['selectedDate'])) {
+        $data['selectedDate'] = date('Y-m-d');
+      }
+      $selectedDate = $data['selectedDate'];
+      $companyName = $data['companyName'];
+      $routeID = $data['routeID'];
+      if ($data) {
+        $formattedDate = \Carbon\Carbon::parse($selectedDate)->format('Y-m-d');
+      } else {
+        $formattedDate = now()->toDateString();
+      }
+      $routes = Route::all();
+      $invoiceWithCustomer = Invoice::with('Customer')->get(); 
+
+      $routeIDData = StockInTransit::select('user_id')->where('route_id', $routeID)->whereDate('created_at', $formattedDate)->get()->pluck('user_id');
+      
+      if( $companyName != "Select Company" && !$routeID == "") {
+        $filteredInvoices = Invoice::with('Customer')->whereHas('Customer', function ($query) use ($companyName) {
+          $query->where('company_name', $companyName);
+        })->whereDate('created_at', $formattedDate)->whereIn('user_id', $routeIDData) ->get();
+      } else if ($routeID == "" ) {
+        $filteredInvoices = Invoice::with('Customer')->whereHas('Customer', function ($query) use ($companyName) {
+          $query->where('company_name', $companyName);
+        })->whereDate('created_at', $formattedDate)->get();
+      } else {
+        $filteredInvoices = Invoice::with('Customer')->whereDate('created_at', $formattedDate)->whereIn('user_id', $routeIDData) ->get();
+      }
+
+      // foreach ($filteredInvoices as $invoice) {
+      //   if ($invoice->routeID == $routeID) {
+      //     $userID = $invoice->user_id;
+      //     $stockInTransit = StockInTransit::where('user_id', $userID)->where('route_id', $routeID)->first();
+  
+      //     if ($stockInTransit) {
+      //       return response()->json( $stockInTransit);
+      //     } else {
+      //       return response()->json(['message' => 'No stock in transit found for this route and user.'], 404);
+      //     }
+      //   }
+      // }
+
+      $data = [
+        "filteredInvoices" => $filteredInvoices,
+        "currency" =>$currency,
+        "decimalLength"=> $decimalLength
+      ];
+   
+      return response()->json( $data );
     }
 
     /**

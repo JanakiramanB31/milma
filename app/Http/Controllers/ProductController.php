@@ -23,9 +23,9 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::where('status',1)->get();
-        $additional = ProductSupplier::all();
-        //$this->pr($additional->toArray());
-        //$this->pr($additional->products->toArray());
+        $additional = ProductSupplier::with('product')->get();
+        // $this->pr($additional->toArray());
+        // // $this->pr($additional->products->toArray());
         // exit;
         $rates = Rate::all();
         return view('product.index', compact('products','additional', 'rates'));
@@ -293,6 +293,7 @@ class ProductController extends Controller
             ->where('supplier_id', $supplierID)
             ->first();
         $supplier->price = $request->supplier_price[$key];
+        $supplier->quantity = $request->quantity[$key];
         $supplier->save();
     }
 

@@ -1,7 +1,7 @@
 
 
 @php
-$paperWidth = "400px";
+$paperWidth = "500px";
   $salesTotal = 0;
   $returnsTotal = 0;
 

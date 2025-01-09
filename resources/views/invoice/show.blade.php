@@ -1,3 +1,22 @@
+
+
+@php
+$paperWidth = "290px";
+  $salesTotal = 0;
+  $returnsTotal = 0;
+
+  foreach ($sales as $sale) {
+  if ($sale->type == "sales") {
+  $salesTotal += $sale->amount; 
+  } else { 
+  $returnsTotal += $sale->amount;
+  }
+  }
+  $total = $salesTotal - $returnsTotal; 
+  $currentBalAmt = $amount->total_amount - $amount->received_amt;
+  $amount->acc_bal_amt + number_format($currentBalAmt);
+  $totAmt = $amount->total_amount + $amount->acc_bal_amt;
+@endphp
 @extends('layouts.master')
 
 @section('title', 'Invoice | ')
@@ -48,19 +67,7 @@
                       <th class="text-left" >Amt</th>
                     </tr>
                   </thead>
-                  @php
-                    $salesTotal = 0;
-                    $returnsTotal = 0;
-                    
-                    foreach ($sales as $sale) {
-                      if ($sale->type == "sales") {
-                        $salesTotal += $sale->amount; 
-                      } else { 
-                        $returnsTotal += $sale->amount;
-                      }
-                    }
-                    $total = $salesTotal - $returnsTotal; 
-                  @endphp
+                  
                   <tbody>
                     <div style="display: none">
                       {{$total}}
@@ -75,14 +82,14 @@
                         {{$sale->product->name}}
                       </td>
                       <td>{{ $sale->qty }}{{$sale->product->unit->name}}</td>
-                      <td class="text-right text-md-left ">£{{ number_format($sale->price, 2) }}</td>
+                      <td class="text-right text-md-left ">{{$currency}} {{ number_format($sale->price, $decimalLength) }}</td>
                       <td class="text-right text-md-left ">
                         @if($sale->type == "sales")
                         <b></b>
                         @else
                         <b>(-)</b>
                         @endif
-                        £{{ number_format($sale->qty * $sale->price, 2) }}
+                        {{$currency}} {{ number_format($sale->qty * $sale->price, $decimalLength) }}
                       </td>
                       <div style="display: none">
                         {{$total }}
@@ -95,43 +102,37 @@
                       <td></td>
                       <td></td>
                       <td style="text-align: end;"><b>Total Amt</b></td>
-                      <td class="text-right text-md-left"><b class="total"  >£{{ number_format($amount->total_amount, 2) }}</b></td>
+                      <td class="text-right text-md-left"><b class="total"  >{{$currency}} {{ number_format($amount->total_amount, $decimalLength) }}</b></td>
                     </tr>
                     <tr >
                       <td></td>
                       <td></td>
                       <td style="text-align: end;"><b>Amt Paid</b></td>
-                      <td class="text-right text-md-left"><b class="total">£{{ number_format($amount->received_amt, 2) }}</b></td>
+                      <td class="text-right text-md-left"><b class="total">{{$currency}} {{ number_format($amount->received_amt, $decimalLength) }}</b></td>
                     </tr>
-                    @if(number_format($amount->prev_acc_bal_amt, 2)  > 0)
+                    @if(number_format($amount->prev_acc_bal_amt, $decimalLength)  > 0)
                     <tr>
                       <td></td>
                       <td></td>
                       <td style="text-align: end;"><b>Prev Acc Bal Amt</b></td>
-                      <td class="text-right text-md-left"><b class="total"  >£{{ number_format($amount->prev_acc_bal_amt, 2) }}</b></td>
+                      <td class="text-right text-md-left"><b class="total"  >{{$currency}} {{ number_format($amount->prev_acc_bal_amt, $decimalLength) }}</b></td>
                     </tr>
                     @endif
-                    @php
-                        $currentBalAmt = $amount->total_amount - $amount->received_amt;
-                        $amount->acc_bal_amt + number_format($currentBalAmt);
-                    @endphp
-                    @if((number_format($amount->acc_bal_amt,2) + number_format($currentBalAmt, 2))  > 0)
+                    @if((number_format($amount->acc_bal_amt, $decimalLength) + number_format($currentBalAmt, $decimalLength))  > 0)
                     <tr>
                       <td></td>
                       <td></td>
                       <td style="text-align: end;"><b>Acc Bal Amt</b></td>
-                      <td class="text-right text-md-left"><b class="total"  >£{{number_format( $amount->acc_bal_amt + $currentBalAmt,2) }}</b></td>
+                      <td class="text-right text-md-left"><b class="total"  >{{$currency}} {{number_format( $amount->acc_bal_amt + $currentBalAmt, $decimalLength) }}</b></td>
                     </tr>
                     @endif
-                    @php
-                       $totAmt = $amount->total_amount + $amount->acc_bal_amt;
-                    @endphp
+
                     @if(($amount->received_amt - $totAmt ) > 0)
                     <tr>
                       <td></td>
                       <td></td>
                       <td style="text-align: end;"><b>Bal Amt</b></td>
-                      <td class="text-right text-lg-left"><b class="total">£{{ number_format($amount->received_amt - $totAmt , 2) }}</b></td>
+                      <td class="text-right text-lg-left"><b class="total">{{$currency}} {{ number_format($amount->received_amt - $totAmt , $decimalLength) }}</b></td>
                     </tr>
                     @endif
                   </tfoot>
@@ -159,12 +160,184 @@
       </div>
     </div>
   </main>
+@endsection
 
+
+<div class="wrapper wrapper-content animated fadeInRight" hidden>
+  <div class="row" id="xReport">
+    <style>
+      .currency {
+        margin-right: 5px;
+        float: right;
+      }
+    </style>
+    <div class="col-lg-12" style="margin: 10px 10px 10px 20px; width: {{ $paperWidth }}; text-align:center;">
+      <div class="ibox float-e-margins">
+        <div class="ibox-content">
+          <div class="hr-line-dashed"></div>
+          <div class="pos-report">
+            <h3 style="text-align: center;"><span style="text-align: center;">MILMA FOODS UK LIMITED</span></h3>
+            <h4><span style="text-align: center;">Invoice</span></h4>
+            <h5 style="font-size: 14px;">Taken: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5>
+            <hr style="margin: 10px 20px; width: {{ $paperWidth }};"/>
+            
+            <div style="margin: 10px 20px; width: {{ $paperWidth }}; text-align: left;">
+              <hr/>
+            </div>
+            <div class="hr-line-dashed"></div>
+
+            <table class="table" style="margin: 10px 10px 10px 20px; width: {{ $paperWidth }}; text-align: left;">
+              <tr>
+                <td colspan="2">ReceiptID: <b style="font-size: 14px;">#{{1000+$invoice->id}}</b></td>
+                <td colspan="2" style="text-align: end;">PaymentType: <b style="font-size: 14px;">{{$invoice->payment_type}}</b></td>
+              </tr>
+              <tr>
+                <td colspan="2">Date: <b style="font-size: 14px;">{{$invoice->created_at->format('d-m-Y')}}</b></td>
+                <td colspan="2" style="text-align: end;">Due Date: <b style="font-size: 14px;">{{$invoice->created_at->format('d-m-Y')}}</b></td>
+              </tr>    
+              <tr>
+                <td colspan="4"><hr/><hr/></td>
+              </tr>
+
+              <tr>
+                <td>From</td>
+                <td colspan="3">MILMA FOODS UK LIMITED</td>
+              </tr>
+              <tr>
+                <td colspan="4"><hr/></td>
+              </tr>
+
+              <tr>
+                <td>To</td>
+                <td colspan="3">{{$invoice->customer->company_name}}</td>
+              </tr>
+              <tr>
+                <td>Address</td>
+                <td colspan="3">{{$invoice->customer->address}}</td>
+              </tr>
+              <tr>
+                <td>Phone No.</td>
+                <td colspan="3">{{$invoice->customer->mobile}}</td>
+              </tr>
+              <tr>
+                <td>Email</td>
+                <td colspan="3">{{$invoice->customer->email}}</td>
+              </tr>
+
+              <tr>
+                <td colspan="4"><hr/><hr/></td>
+              </tr>
+            
+              <tr>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th style="text-align: end;">Amt</th>
+              </tr>
+              <tr>
+                <td colspan="4"><hr/></td>
+              </tr>
+              @foreach($sales as $sale)
+                <tr>
+                  <td >
+                    @if($sale->type == "sales")
+                    @else
+                    <b style="color: red;">R</b>
+                    @endif
+                    {{$sale->product->name}}
+                  </td>
+                  <td>{{ $sale->qty }}{{$sale->product->unit->name}}</td>
+                  <td class="text-right text-md-left ">{{$currency}} {{ number_format($sale->price, $decimalLength) }}</td>
+                  <td class="text-right text-md-left " style="text-align: end;">
+                    @if($sale->type == "sales")
+                    <b></b>
+                    @else
+                    <b>(-)</b>
+                    @endif
+                    {{$currency}} {{ number_format($sale->qty * $sale->price, $decimalLength) }}
+                  </td>
+                  <div style="display: none">
+                    {{$total }}
+                  </div>
+                </tr>
+              @endforeach
+              <tr>
+                <td colspan="4"><hr/></td>
+              </tr>
+                <tr>
+                  <td colspan="2" ><b>Total Amt</b></td>
+                  <td colspan="2" style="text-align: end;" class="text-right text-md-left">{{$currency}} {{ number_format($amount->total_amount, $decimalLength) }}</td>
+                </tr>
+                <tr >
+                  <td colspan="2" ><b>Amt Paid</b></td>
+                  <td colspan="2" style="text-align: end;" class="text-right text-md-left">{{$currency}} {{ number_format($amount->received_amt, $decimalLength) }}</td>
+                </tr>
+                @if(number_format($amount->prev_acc_bal_amt, $decimalLength)  > 0)
+                <tr>
+                  <td colspan="2" ><b>Prev Acc Bal Amt</b></td>
+                  <td colspan="2" style="text-align: end;" class="text-right text-md-left">{{$currency}} {{ number_format($amount->prev_acc_bal_amt, $decimalLength) }}</td>
+                </tr>
+                @endif
+                @if((number_format($amount->acc_bal_amt, $decimalLength) + number_format($currentBalAmt, $decimalLength))  > 0)
+                <tr>
+                  <td colspan="2" ><b>Acc Bal Amt</b></td>
+                  <td colspan="2" style="text-align: end;" class="text-right text-md-left">{{$currency}} {{number_format( $amount->acc_bal_amt + $currentBalAmt, $decimalLength) }}</td>
+                </tr>
+                @endif
+
+                @if(($amount->received_amt - $totAmt ) > 0)
+                <tr>
+                  <td colspan="2" ><b>Bal Amt</b></td>
+                  <td colspan="2" style="text-align: end;" class="text-right text-lg-left">{{$currency}} {{ number_format($amount->received_amt - $totAmt , $decimalLength) }}</td>
+                </tr>
+                @endif
+                <tr>
+                <td colspan="4"><hr/><hr/></td>
+              </tr>
+              <tr>
+                <td colspan="4" style="text-align:center;">**** Thank you for shopping with us! ****</td>
+              </tr>
+              <tr>
+                <td colspan="4"><hr/></td>
+              </tr>
+              <tr>
+                <td colspan="4" style="text-align:center;">**** Please visit again! ****</td>
+              </tr>
+              <tr>
+                <td colspan="4"><hr/></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="hidden-print" style="margin-left:10px; text-align: center; width: {{ $paperWidth }};">
+  <button class="btn btn-primary printbutton" id="print" >Print</button>
+  <button><a class="btn btn-primary nextbutton " style="text-decoration: none;color: #000;" href="{{route('x_report')}}"><i class="fa fa-plus"></i> Close</a></button>
+</div>
+
+@push('js')
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script>
+    // function printInvoice() {
+    //   window.print();
+    // }
     function printInvoice() {
-      window.print();
+      console.log("coming2")
+        var content = $('#xReport').html();
+        console.log(content)
+        var printWindow = window.open('', '', 'height=800,width=600');
+        printWindow.document.write('<html><head><title>Print</title>');
+        printWindow.document.write('<style> .currency { margin-right: 5px; float: right; }</style>'); 
+        printWindow.document.write('</head><body><center>');
+        printWindow.document.write(content);
+        printWindow.document.write('</center></body></html>');
+        printWindow.document.close();
+        printWindow.print();
     }
     $(document).ready(function(){
 
@@ -172,11 +345,15 @@
       $('#invoice-close-btn').on('click', function() {
           window.location.href = "{{ route('invoice.index') }}";
         });
+        $('.printbutton').on('click', function () {
+      console.log("coming1")
+      printDiv()
+    });
+
+    
+
     });
   </script>
-
-@endsection
-@push('js')
 @endpush
 
 

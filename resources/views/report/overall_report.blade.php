@@ -24,6 +24,10 @@
           <div id="alert-message" class="alert alert-danger" role="alert" hidden></div>
             
             <div class="tile-body">
+              <div class="form-group col-md-12 mb-2">
+                <label for="fetchDate">Search By Date :</label>
+                <input id="fetchDate" name="fetchDate" type="date" class="form-control " value="{{ date('Y-m-d') }}"/>
+              </div>
               <div class="form-group col-md-12">
                 <label class="control-label">Route</label>
                 <select name="route_id" id='route_id' class="form-control @error('route_id') is-invalid @enderror">
@@ -43,7 +47,7 @@
               <div class="form-group col-md-12">
                 <label class="control-label">Company</label>
                 <select name="company_name" id='company_name' class="form-control @error('company_name') is-invalid @enderror">
-                  <option value=''>Select Company</option>
+                  <option value=''>All Companies</option>
                   @foreach ($groupedInvoices as $companyName => $invoices)
                   <option value="{{ $companyName }}" {{ old('company_name') == $companyName ? 'selected' : '' }}>
                     {{ $companyName }}
@@ -56,10 +60,7 @@
                 </span>
                 @enderror
               </div>
-              <div class="form-group col-md-12 mb-2">
-                <label for="fetchDate">Search By Date :</label>
-                <input id="fetchDate" name="fetchDate" type="date" class="form-control "/>
-              </div>
+             
               <div class="form-group  ">
 
               <div class="tile-body table-responsive">
@@ -79,21 +80,37 @@
                   </thead>
                   <tbody>
                   @foreach ($filteredInvoices as $companyName => $invoice) 
+                    @php
+                        $totalAmount = $filteredInvoices->sum('total_amount');
+                    @endphp
                     <tr>
                       <td class="text-center">{{1000+$invoice->id}}</td>
                       <td class="text-center">{{$invoice->created_at->format('d-m-Y')}}</td>
                       <td class="text-center">{{$invoice->customer->name}}</td>
                       <td class="text-center">{{$invoice->payment_type}}</td>
-                      <td class="text-center"><span>{{$currency}}</span>{{ number_format($invoice->total_amount,  $decimalLength )}}</td>
-                      <td class="text-center"><span>{{$currency}}</span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
-                      <td class="text-center"><span>{{$currency}}</span>{{number_format($invoice->acc_bal_amt,  $decimalLength )}}</td>
-                      <td class="text-center"><span>{{$currency}}</span>{{number_format($invoice->balance_amt,  $decimalLength )}}</td>
+                      <td class="text-center"><span>{{$currency}} </span>{{ number_format($invoice->total_amount,  $decimalLength )}}</td>
+                      <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
+                      <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->acc_bal_amt,  $decimalLength )}}</td>
+                      <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->balance_amt,  $decimalLength )}}</td>
                       <td class="d-flex justify-content-center" >
                         <a class="btn btn-info btn-sm" href="{{ route('invoice.show', '') }}/${invoice.id}"><i class="fa fa-eye" ></i></a>
                       </td>
                     </tr>
                     @endforeach
                   </tbody>
+                  <tfoot>
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="text-right"><b>Total</b></td>
+                      <td id="tot-amt" class="text-center"><span>{{$currency}} </span>{{$totalAmount}}</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
                 </table>
               </div>
               <!-- @foreach ($groupedInvoices as $companyName => $invoices) 
@@ -167,16 +184,7 @@
 @push('js')
 <script type="text/javascript">
   $(document).ready(function () {
-    $('.fetchDate').on('change', function () {
-      let companyName = $(this).data('company-name');
-      let selectedDate = $(this).val();
-      console.log(selectedDate,companyName);
-      const data = {
-        "selectedDate": selectedDate,
-        "companyName": companyName
-      }
-      fetchInvoiceByDate(data);
-    });
+   
 
     function generateSlug(str) {
       return str
@@ -237,7 +245,7 @@
     //   }
     // }
 
-    $('#route_id,#company_name, #fetchDate').on('change', function () {
+    $('#route_id,#company_name,#fetchDate').on('change', function () {
       var routeID = $('#route_id').find('option:selected').val();
       var companyName = $('#company_name').find('option:selected').text();
       let date = $('#fetchDate').val();
@@ -265,9 +273,11 @@
             try {
               console.log("Success",response);  
               $('#sampleTable tbody').empty();
-              const currency = response.currency;
+              const currency = response.currency + " ";
               const decimalLength = response.decimalLength;
               const invoiceData = response.filteredInvoices;
+              const totalAmt = invoiceData.reduce((sum, invoice) => sum + invoice.total_amount, 0);
+              $('#tot-amt').text(currency + parseFloat(totalAmt).toFixed(decimalLength))
               if (invoiceData.length > 0) {
                 invoiceData.forEach(invoice => {
                   $('#sampleTable tbody').append(`
@@ -276,10 +286,10 @@
                         <td class="text-center">${new Date(invoice.created_at).toLocaleDateString('en-GB')}</td>
                         <td class="text-center">${invoice.customer.name}</td>
                         <td class="text-center">${invoice.payment_type}</td>
-                        <td class="text-center">${currency +parseInt(invoice.total_amount).toFixed(decimalLength)}</td>
-                        <td class="text-center">${currency +parseInt(invoice.received_amt).toFixed(decimalLength)}</td>
-                        <td class="text-center">${currency +parseInt(invoice.acc_bal_amt).toFixed(decimalLength)}</td>
-                        <td class="text-center">${currency +parseInt(invoice.balance_amt).toFixed(decimalLength)}</td>
+                        <td class="text-center">${currency +parseFloat(invoice.total_amount).toFixed(decimalLength)}</td>
+                        <td class="text-center">${currency +parseFloat(invoice.received_amt).toFixed(decimalLength)}</td>
+                        <td class="text-center">${currency +parseFloat(invoice.acc_bal_amt).toFixed(decimalLength)}</td>
+                        <td class="text-center">${currency +parseFloat(invoice.balance_amt).toFixed(decimalLength)}</td>
                         <td class="d-flex justify-content-center" style="gap: 10px;">
                           <a class="btn btn-info btn-sm" href="{{ route('invoice.show', '') }}/${parseInt(invoice.id)}"><i class="fa fa-eye" ></i></a>
                         </td>

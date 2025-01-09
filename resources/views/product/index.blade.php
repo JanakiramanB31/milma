@@ -31,6 +31,7 @@
                             <tr>
                                 <th>Product </th>
                                 <th>Model </th>
+                                <th>Qty</th>
                                 <!-- <th>Serial</th>
                                 <th>Sales Price</th> -->
                                 <th>Purchase Price</th>
@@ -46,6 +47,7 @@
                                  <tr>
                                      <td>{{$add->product->name}}</td>
                                      <td>{{$add->product->model}}</td>
+                                     <td>{{$add->quantity}}</td>
                                      <!-- <td>{{$add->product->serial_number}}</td>
                                      <td>{{$add->product->sales_price}}</td> -->
                                      <td>{{$add->price}}</td>

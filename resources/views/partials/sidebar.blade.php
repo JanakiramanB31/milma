@@ -19,6 +19,29 @@
             </ul>
         </li>       -->  
 
+        <li ><a class="app-menu__item {{ request()->is('customer*') ? 'active' : ''}}" href="{{route('customer.index')}}" ><i class="app-menu__icon fa fa-users"></i><span class="app-menu__label">Customer</span></a>
+            <!-- <ul class="treeview-menu">
+                <li><a class="treeview-item" href="{{route('customer.create')}}"><i class="icon fa fa-circle-o"></i> Add Customer</a></li>
+                <li><a class="treeview-item" href="{{route('customer.index')}}"><i class="icon fa fa-circle-o"></i> Manage Customers</a></li>
+            </ul> -->
+        </li>
+
+        <li><a class="app-menu__item {{ request()->is('product*') ? 'active' : ''}}" href="{{route('product.index')}}" ><i class="app-menu__icon fa fa-cube"></i><span class="app-menu__label">Product</span></a>
+            <!-- <ul class="treeview-menu">
+                <li><a class="treeview-item" href="{{route('product.create')}}"><i class="icon fa fa-circle-o"></i> New Product</a></li>
+                <li><a class="treeview-item" href="{{route('product.index')}}"><i class="icon fa fa-circle-o"></i> Manage Products</a></li>
+            </ul> -->
+        </li>
+
+        <li><a class="app-menu__item {{ request()->is('sales') ? 'active' : ''}}" href="{{route('sales')}}"><i class="app-menu__icon fa fa-dollar"></i><span class="app-menu__label">View Sales</span></a></li>
+
+        <li ><a class="app-menu__item {{ request()->is('supplier*') ? 'active' : ''}}" href="{{route('supplier.index')}}" ><i class="app-menu__icon fa fa-truck"></i><span class="app-menu__label">Supplier</span></a>
+            <!-- <ul class="treeview-menu">
+                <li><a class="treeview-item" href="{{route('supplier.create')}}"><i class="icon fa fa-circle-o"></i> Add Supplier</a></li>
+                <li><a class="treeview-item" href="{{route('supplier.index')}}"><i class="icon fa fa-circle-o"></i> Manage Suppliers</a></li>
+            </ul> -->
+        </li>
+
         <li class="treeview"><a class="app-menu__item {{ request()->is('/report') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-file-text-o"></i><span class="app-menu__label">Reports</span><i class="treeview-indicator fa fa-angle-right"></i></a>
             <ul class="treeview-menu">
               <li><a class="treeview-item" href="{{route('x_report')}}"><i class="icon fa fa-circle-o"></i>X-Report</a></li>
@@ -47,12 +70,7 @@
             </ul> -->
         </li>
 
-        <li><a class="app-menu__item {{ request()->is('product*') ? 'active' : ''}}" href="{{route('product.index')}}" ><i class="app-menu__icon fa fa-cube"></i><span class="app-menu__label">Product</span></a>
-            <!-- <ul class="treeview-menu">
-                <li><a class="treeview-item" href="{{route('product.create')}}"><i class="icon fa fa-circle-o"></i> New Product</a></li>
-                <li><a class="treeview-item" href="{{route('product.index')}}"><i class="icon fa fa-circle-o"></i> Manage Products</a></li>
-            </ul> -->
-        </li>
+        
 
         <li ><a class="app-menu__item {{ request()->is('unit*') ? 'active' : ''}}" href="{{route('unit.index')}}" ><i class="app-menu__icon fa fa-bars"></i><span class="app-menu__label">Unit</span></a>
             <!-- <ul class="treeview-menu">
@@ -68,14 +86,8 @@
             </ul> -->
         </li>
 
-        <li><a class="app-menu__item {{ request()->is('sales') ? 'active' : ''}}" href="{{route('sales')}}"><i class="app-menu__icon fa fa-dollar"></i><span class="app-menu__label">View Sales</span></a></li>
 
-        <li ><a class="app-menu__item {{ request()->is('supplier*') ? 'active' : ''}}" href="{{route('supplier.index')}}" ><i class="app-menu__icon fa fa-truck"></i><span class="app-menu__label">Supplier</span></a>
-            <!-- <ul class="treeview-menu">
-                <li><a class="treeview-item" href="{{route('supplier.create')}}"><i class="icon fa fa-circle-o"></i> Add Supplier</a></li>
-                <li><a class="treeview-item" href="{{route('supplier.index')}}"><i class="icon fa fa-circle-o"></i> Manage Suppliers</a></li>
-            </ul> -->
-        </li>
+        
 
         <!-- <li><a class="app-menu__item {{ request()->is('purchase*') ? 'active' : ''}}" href="#" ><i class="app-menu__icon fa fa-exchange"></i><span class="app-menu__label">Purchase</span></a>
             <ul class="treeview-menu">
@@ -119,12 +131,7 @@
             </ul> -->
         </li>
         @endif
-        <li ><a class="app-menu__item {{ request()->is('customer*') ? 'active' : ''}}" href="{{route('customer.index')}}" ><i class="app-menu__icon fa fa-users"></i><span class="app-menu__label">Customer</span></a>
-            <!-- <ul class="treeview-menu">
-                <li><a class="treeview-item" href="{{route('customer.create')}}"><i class="icon fa fa-circle-o"></i> Add Customer</a></li>
-                <li><a class="treeview-item" href="{{route('customer.index')}}"><i class="icon fa fa-circle-o"></i> Manage Customers</a></li>
-            </ul> -->
-        </li>
+        
         
         <li><a class="app-menu__item {{ request()->is('invoice*') ? 'active' : ''}}" href="{{route('invoice.index')}}" ><i class="app-menu__icon fa fa-file"></i><span class="app-menu__label">Receipt</span></a>
             <!-- <ul class="treeview-menu">
@@ -137,6 +144,12 @@
             <!-- <ul class="treeview-menu">
                 <li><a class="treeview-item" href="{{route('stockintransit.create')}}"><i class="icon fa fa-circle-o"></i> Add Stock In Transit</a></li>
                 <li><a class="treeview-item" href="{{route('stockintransit.index')}}"><i class="icon fa fa-circle-o"></i> Manage Stock In Transits</a></li>
+            </ul> -->
+        </li>
+
+        <li ><a class="app-menu__item {{ request()->is('/report') ? 'active' : ''}}" href="{{route('x_report')}}"><i class="app-menu__icon fa fa-file-text-o"></i><span class="app-menu__label">X-Report</span></a>
+            <!-- <ul class="treeview-menu">
+              <li><a class="treeview-item" href="{{route('x_report')}}"><i class="icon fa fa-circle-o"></i>X-Report</a></li>
             </ul> -->
         </li>
 

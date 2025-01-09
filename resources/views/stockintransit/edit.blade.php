@@ -299,7 +299,7 @@
           $('#quantity-error').text(`Please enter non-negative quantities for ${productName}`).show();
           allValidated = false;
           return false;
-        } else if (quantityValue && availableQuantity == 0) {
+        }/*  else if (quantityValue && availableQuantity == 0) {
           $('#quantity-error').text(`${productName} is Out of Stock`).show();
           allValidated = false;
           return false;
@@ -307,7 +307,7 @@
           $('#quantity-error').text(`${productName} quantity exceeds available stock.`).show();
           allValidated = false;
           return false;
-        } else {
+        } */ else {
           $('#quantity-error').hide();
           allValidated = true;
           return true;
@@ -372,14 +372,15 @@
       var new_quantity = parseInt(existingQuantity) + parseInt(quantityValue);
       //console.log(quantityValue,existingQuantity,availableQuantity,new_quantity)
 
-      if ( quantityValue && availableQuantity == 0) {
+      /* if ( quantityValue && availableQuantity == 0) {
         $('#quantity-error').text('Out of Stock').show();
         $('#update_button').prop('disabled', true);
-      } else if (quantityValue < 0) {
+      } else */ 
+      if (quantityValue < 0) {
         $('#quantity-error').css("display", "block");
         $('#quantity-error').text('Please enter non-negative quantities.').show();
         $('#update_button').prop('disabled', true);
-      } else if (quantityValue >= 0 && quantityValue <= availableQuantity) {
+      }/*  else if (quantityValue >= 0 && quantityValue <= availableQuantity) {
         $('#update_button').prop('disabled', false);
         $('#quantity-error').css("display", "none");
         $('#product-section1').show();
@@ -388,7 +389,7 @@
       } else if (quantityValue > availableQuantity) {
         $('#update_button').prop('disabled', true);
         $('#quantity-error').text('Quantity exceeds the available stock.').show();
-      } else {
+      } */ else {
         $('#update_button').prop('disabled', true);
         $('#product-section1').hide();
       }

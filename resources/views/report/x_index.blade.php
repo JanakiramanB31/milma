@@ -27,16 +27,19 @@
               <label  for="startDate">Date :</label>
               <div class="row">
                 <div class="col-5  mb-2">
-                  <input id="startDate" name="startDate" type="date" class="form-control"/>
+                  <input id="startDate" name="startDate" type="date" class="form-control" value="{{ date('Y-m-d') }}"/>
                 </div>
                 <div class=" d-flex justify-content-center align-items-center">
                   <p>To</p>
                 </div>
                 <div class="col-5 mb-2">
-                  <input id="endDate" name="endDate" type="date" class="form-control"/>
+                  <input id="endDate" name="endDate" type="date" class="form-control" value="{{ date('Y-m-d') }}"/>
                 </div>
                 <div>
                   <button id="date-submit" class="btn btn-success">View</button>
+                </div>
+                <div class="ml-2">
+                  <button class="btn btn-success" id="print">Print</button>
                 </div>
               </div>
             </div>
@@ -80,7 +83,7 @@
                     <td></td>
                     <td></td>
                     <td><b>Amount of Credit Sales</b></td>
-                    <td ><p class="float-right mb-0" id="cardSalesAmount"><span>(-) {{ $currency }}</span> {{ number_format($totalCreditAmount,  $decimalLength ) }}</p></td>
+                    <td class="d-flex justify-content-end"><span class="mr-1" >(-)</span><p class=" mb-0" id="cardSalesAmount2"><span>{{ $currency }}</span> {{ number_format($totalCreditAmount,  $decimalLength ) }}</p></td>
                   </tr>
                   <tr>
                     <td></td>
@@ -92,7 +95,7 @@
                     <td><b>No. of Return Orders</b></td>
                     <td id="returnCount">{{$returnType['qty_count']}}</td>
                     <td><b>Total Amount of Return Orders</b></td>
-                    <td ><p class="float-right mb-0" id="returnAmount"><span>(-) {{ $currency }}</span> {{ number_format($returnType['total_amt'],  $decimalLength ) }}</p></td>
+                    <td class="d-flex justify-content-end"><span class="mr-1" >(-)</span><p class=" mb-0" id="returnAmount"><span>{{ $currency }}</span> {{ number_format($returnType['total_amt'],  $decimalLength ) }}</p></td>
                   </tr>
                   <tr>
                     <td></td>
@@ -106,9 +109,7 @@
           </div>
         </div>
       </div>
-      <div>
-        <button class="btn btn-primary" id="print">Print</button>
-      </div>
+      
 
   </main>
 @endsection
@@ -161,6 +162,7 @@
     });
 
     function fetchInvoiceByDate(selectedStartDate, selectedendDate) {
+      console.log("coming")
       const data = {
         "fromDate": selectedStartDate,
         "toDate": selectedendDate
@@ -192,8 +194,9 @@
               $('#bankSalesAmount').text(currency + response.bankPayments.total_received_amt.toFixed(decimalLength));
               $('#cardSalesCount').text(response.creditTransactionCount);
               $('#cardSalesAmount').text(currency + response.totalCreditAmount.toFixed(decimalLength));
-              $('#totalAmount').text(currency + (totalAmt + cardAmt).toFixed(decimalLength));
-              $('#totalNetAmount').text(currency + (totalAmt + cardAmt - returnAmt).toFixed(decimalLength));
+              $('#cardSalesAmount2').text(currency + response.totalCreditAmount.toFixed(decimalLength));
+              $('#totalAmount').text(currency + (totalAmt + cardAmt - response.totalCreditAmount).toFixed(decimalLength));
+              $('#totalNetAmount').text(currency + (totalAmt + cardAmt - response.totalCreditAmount - returnAmt).toFixed(decimalLength));
                   
             } catch(error) {
               console.log("Failed",error);

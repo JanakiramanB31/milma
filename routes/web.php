@@ -72,3 +72,7 @@ Route::post('invoice/fetchProducts/{id}', 'InvoiceController@fetchProducts')->na
 Route::post('invoice/storeReturns', 'InvoiceController@storeReturns')->name('invoice.storeReturns');
 Route::resource('stockintransit','StockInTransitController');
 Route::post('stockintransit/check', 'StockInTransitController@checkExistence')->name('stockintransit.check');
+
+Route::get('/report/x_report/{date?}', 'ReportController@x_index')->name('x_report');
+Route::get('/report/x_report/print/{data}', 'ReportController@x_report_print')->name('x_report_print');
+Route::post('report/x_report/fetchByDate/{date}', 'ReportController@fetchByDate')->name('x_report.fetchByDate');

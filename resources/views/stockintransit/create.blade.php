@@ -291,17 +291,18 @@
         $('#product-section1').show();
         $('#sku_code').text(sku);
         $('#barcode').text(barcode);
-        if ( quantityValue && availableQuantity == 0) {
+       /*  if ( quantityValue && availableQuantity == 0) {
           $('#quantity-error').text('Out of Stock').show();
           $('#add_button').prop('disabled', true);
           $('#check-button').attr('disabled', true);
-        } else if (quantityValue < 0) {
+        } else */ 
+        if (quantityValue < 0) {
           $('#quantity-error').css("display", "block");
           $('#quantity-error').text('Please enter non-negative quantities.').show();
           $('#add_button').prop('disabled', true);
           $('#check-button').attr('disabled', true);
         }
-        else if (quantityValue >= 0 && quantityValue <= availableQuantity) {
+        /* else if (quantityValue >= 0 && quantityValue <= availableQuantity) {
           $('#quantity-error').hide();
           $('#add_button').prop('disabled', false);
           $('#check-button').attr('disabled', false);
@@ -312,7 +313,7 @@
           $('#add_button').prop('disabled', true);
           $('#check-button').attr('disabled', true);
           $('#quantity-error').text('Quantity exceeds the available stock.').show();
-        } else {
+        } */ else {
           $('#add_button').prop('disabled', false);
           $('#check-button').attr('disabled', false);
           $('#product-section1').hide();

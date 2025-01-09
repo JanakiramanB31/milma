@@ -30,10 +30,17 @@ class ReportController extends Controller
       } else {
         $selectedDate = now()->toDateString();
       }
+      $userID = Auth::id();
+      $userRole = Auth::user()->role;
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       $routes = Route::all();
-      $saleTypesandTotalAmounts = Sale::select('type', 'qty', 'total_amount')->whereDate('created_at', $selectedDate)->get();
+
+      if ($userRole == 'admin') {
+        $saleTypesandTotalAmounts = Sale::select('type', 'qty', 'total_amount')->whereDate('created_at', $selectedDate)->get();
+      } else {
+        $saleTypesandTotalAmounts = Sale::select('type', 'qty', 'total_amount')->where('user_id', $userID)->whereDate('created_at', $selectedDate)->get();
+      } 
       //  echo '<pre>'; print_r($saleTypesandTotalAmounts); echo '</pre>';exit;
 
       $saleProductsTypesandAmounts = $saleTypesandTotalAmounts->groupBy('type')->map(function ($group) {
@@ -46,8 +53,12 @@ class ReportController extends Controller
       $saleType = $saleProductsTypesandAmounts->get('sales', ['total_amt' => 0, 'qty_count' => 0]);
       $returnType = $saleProductsTypesandAmounts->get('returns', ['total_amt' => 0, 'qty_count' => 0]);
 
+      if ($userRole == 'admin') {
+        $paymentTypesandTotalAmounts = Invoice::select('payment_type', 'received_amt','balance_amt')->whereDate('created_at', $selectedDate)->get();
+      } else {
+        $paymentTypesandTotalAmounts = Invoice::select('payment_type', 'received_amt','balance_amt')->where('user_id', $userID)->whereDate('created_at', $selectedDate)->get();
+      } 
 
-      $paymentTypesandTotalAmounts = Invoice::select('payment_type', 'received_amt','balance_amt')->whereDate('created_at', $selectedDate)->get();
 
       $saleProductspaymentTypesandAmounts = $paymentTypesandTotalAmounts->groupBy('payment_type')->map(function ($group) {
         return [
@@ -74,6 +85,9 @@ class ReportController extends Controller
     }
 
     public function fetchByDate(Request $request, $date){
+      $userID = Auth::id();
+      $userRole = Auth::user()->role;
+      $queryCondition = $userRole == 'admin' ? [] : ['user_id', $userID];
       $data = $request->input('date'); 
       $fromDate = $data['fromDate'];
       $currency = config('constants.CURRENCY_SYMBOL');
@@ -88,7 +102,20 @@ class ReportController extends Controller
       }
       
 
-      $saleTypesandTotalAmounts = Sale::select('type', 'qty', 'total_amount')->whereBetween('created_at', [$fromDate, $toDate])->get();
+      $saleTypesandTotalAmounts = Sale::select('type', 'qty', 'total_amount')
+      ->when($queryCondition, function ($query) use ($queryCondition) {
+        return $query->where($queryCondition[0], $queryCondition[1]);
+      })
+      ->when($fromDate == $toDate, function ($query) use ($fromDate) {
+        return $query->whereDate('created_at', $fromDate);
+      })
+      ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+        return $query->whereBetween('created_at', [$fromDate, $toDate]);
+      })
+      ->get();
+
+    
+      
       //  echo '<pre>'; print_r($saleTypesandTotalAmounts); echo '</pre>';exit;
 
       $saleProductsTypesandAmounts = $saleTypesandTotalAmounts->groupBy('type')->map(function ($group) {
@@ -102,7 +129,29 @@ class ReportController extends Controller
       $returnType = $saleProductsTypesandAmounts->get('returns', ['total_amt' => 0, 'qty_count' => 0]);
 
 
-      $paymentTypesandTotalAmounts = Invoice::select('payment_type', 'received_amt','balance_amt')->whereBetween('created_at', [$fromDate, $toDate])->get();
+      $saleTypesandTotalAmounts = Sale::select('type', 'qty', 'total_amount')
+        ->when($queryCondition, function ($query) use ($queryCondition) {
+          return $query->where($queryCondition[0], $queryCondition[1]);
+        })
+        ->when($fromDate == $toDate, function ($query) use ($fromDate) {
+          return $query->whereDate('created_at', $fromDate);
+        })
+        ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+          return $query->whereBetween('created_at', [$fromDate, $toDate]);
+        })
+        ->get();
+
+      $paymentTypesandTotalAmounts = Invoice::select('payment_type', 'received_amt', 'balance_amt')
+        ->when($queryCondition, function ($query) use ($queryCondition) {
+          return $query->where($queryCondition[0], $queryCondition[1]);
+        })
+        ->when($fromDate == $toDate, function ($query) use ($fromDate) {
+          return $query->whereDate('created_at', $fromDate);
+        })
+        ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+          return $query->whereBetween('created_at', [$fromDate, $toDate]);
+        })
+        ->get();
 
       $saleProductspaymentTypesandAmounts = $paymentTypesandTotalAmounts->groupBy('payment_type')->map(function ($group) {
         return [
@@ -245,7 +294,9 @@ class ReportController extends Controller
 
       $routeIDData = StockInTransit::select('user_id')->where('route_id', $routeID)->whereDate('created_at', $formattedDate)->get()->pluck('user_id');
       
-      if( $companyName != "Select Company" && !$routeID == "") {
+      if ($companyName == "All Companies" && $routeID == "") {
+        $filteredInvoices = Invoice::with('Customer')->whereDate('created_at', $formattedDate)->get();
+      } else if( $companyName != "All Companies" && !$routeID == "") {
         $filteredInvoices = Invoice::with('Customer')->whereHas('Customer', function ($query) use ($companyName) {
           $query->where('company_name', $companyName);
         })->whereDate('created_at', $formattedDate)->whereIn('user_id', $routeIDData) ->get();

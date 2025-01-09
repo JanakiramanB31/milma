@@ -18,10 +18,16 @@
             <h4><span style="text-align: center;">X Report</span></h4>
             <h5 style="font-size: 14px;">Taken: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5>
             <hr style="margin: 10px 20px; width: {{ $paperWidth }};"/>
+            @if ($salesData['selectedStartDate'] == $salesData['selectedEndDate']) 
+            <div class="d-flex align-items-space-between justify-content-space-between">
+              <b style="font-size: 14px;">Date: {{ \Carbon\Carbon::parse($salesData['selectedStartDate'])->format('d-m-Y') }}</b>
+            </div>
+            @else
             <div class="d-flex align-items-space-between justify-content-space-between">
               <b style="font-size: 14px;">From: {{ \Carbon\Carbon::parse($salesData['selectedStartDate'])->format('d-m-Y') }}</b>
               <b style="font-size: 14px;">To: {{ \Carbon\Carbon::parse($salesData['selectedEndDate'])->format('d-m-Y') }}</b>
             </div>
+            @endif
             <div style="margin: 10px 20px; width: {{ $paperWidth }}; text-align: left;">
               <hr/>
             </div>
@@ -52,15 +58,15 @@
               </tr>
 
               <tr>
-                <th>Amount of Cash Sales:</th>
+                <th>Cash Sales:</th>
                 <td class="currency">{{ $currency }} {{ $salesData['cashSalesAmount'] }}</td>
               </tr>
               <tr>
-                <th>Amount of Bank Transfer Sales: </th>
+                <th>Bank Transfer Sales: </th>
                 <td class="currency">{{ $currency }} {{ $salesData['bankSalesAmount'] }}</td>
               </tr>
               <tr>
-                <th>Amount of Credit Sales:</th>
+                <th>Credit Sales:</th>
                 <td class="currency">{{ $currency }} {{ $salesData['cardSalesAmount'] }}</td>
               </tr>
 
@@ -69,18 +75,18 @@
               </tr>
              
               <tr>
-                <th>Total Amount of Sales:</th>
+                <th>Total Sale Amt:</th>
                 <td class="currency">{{ $currency }} {{ $salesData['totalAmount'] + $salesData['cardSalesAmount'] }}</td>
               </tr>
               <tr>
-                <th>Amount of Credit Sales:</th>
+                <th>Amt of Credit Sales:</th>
                 <td class="currency">(-) {{ $currency }} {{ $salesData['cardSalesAmount'] }}</td>
               </tr>
               <tr>
                 <td colspan="2"><hr/></td>
               </tr>
               <tr>
-                <th>Total Amount: </th>
+                <th>Total Amt: </th>
                 <td class="currency">
                 {{ $currency }} {{ $salesData['totalAmount'] }}
                 </td>
@@ -93,17 +99,24 @@
                 <td class="currency">{{ $salesData['returnCount'] }}</td>
               </tr>
               <tr>
-                <th>Total Amount of Return Orders: </th>
+                <th>Total Amt of Returns: </th>
                 <td class="currency">(-) {{ $currency }} {{ $salesData['returnAmount'] }}</td>
               </tr>
               <tr>
                 <td colspan="2"><hr/></td>
               </tr>
               <tr>
-                <th>Total Net Amount: </th>
+                <th>Total Net Amt: </th>
                 <td class="currency">
                 {{ $currency }} {{ $salesData['totalAmount'] }}
                 </td>
+              </tr>
+              <tr>
+                <td colspan="2"><hr/></td>
+              </tr>
+              <tr>
+                <th>Cash in Hand:</th>
+                <td class="currency">{{ $currency }} {{ $salesData['cashSalesAmount'] }}</td>
               </tr>
               <tr>
                 <td colspan="2"><hr/></td>
@@ -117,6 +130,31 @@
 </div>
 
 <div class="hidden-print" style="margin-left:10px; text-align: center; width: {{ $paperWidth }};">
-  <button class="btn btn-primary printbutton" onClick="printDiv('xReport')">Print</button>
-  <a class="btn btn-primary nextbutton"><i class="fa fa-plus"></i> Close</a>
+  <button class="btn btn-primary printbutton" id="print" >Print</button>
+  <button><a class="btn btn-primary nextbutton " style="text-decoration: none;color: #000;" href="{{route('x_report')}}"><i class="fa fa-plus"></i> Close</a></button>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function () {
+    
+    $('.printbutton').on('click', function () {
+      console.log("coming1")
+      printDiv()
+    });
+
+    function printDiv() {
+      console.log("coming2")
+        var content = $('#xReport').html();
+        console.log(content)
+        var printWindow = window.open('', '', 'height=800,width=600');
+        printWindow.document.write('<html><head><title>Print</title>');
+        printWindow.document.write('<style> .currency { margin-right: 5px; float: right; }</style>'); 
+        printWindow.document.write('</head><body><center>');
+        printWindow.document.write(content);
+        printWindow.document.write('</center></body></html>');
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+  });
+</script>

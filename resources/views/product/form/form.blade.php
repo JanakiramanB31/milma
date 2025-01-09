@@ -101,6 +101,11 @@
     <div class="form-group col-md-6">
       <label class="control-label">Image</label>
       <input name="image"  class="form-control @error('image') is-invalid @enderror" type="file">
+      @if($product->image)
+        <div class="mt-2">
+          <img src="{{ asset('images/product/' . $product->image) }}" alt="Current Image" style="height: 50px;">
+        </div>
+      @endif
       @error('image')
       <span class="invalid-feedback" role="alert">
         <strong>{{ $message }}</strong>

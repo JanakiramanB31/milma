@@ -107,7 +107,7 @@
                           <td hidden></td>
                           <td><input type="hidden" name="total" id="total" class="form-control total" /></td>
                           <td><b>Total</b></td>
-                          <td><b class="currency"></b><b class="total"></b></td>
+                          <td><b class="currency"></b><b class="total" id="purchase-tot"></b></td>
                         </tr>
                       </tfoot>
                     </table>
@@ -773,6 +773,14 @@
         let receivedAmount = $(this).val();
         $(this).val(receivedAmount ? receivedAmount : 0);
       });
+
+      $('#payment_type').on('change', function () {
+        let paymentType = $(this).val();
+        if (paymentType == "Credit") {
+          let totalAmount = $('#purchase-tot').text();
+          $('#received_amt').val(totalAmount);
+        }
+      })
 
       //After Submitting Return Items to Invoice Make this to Non Editable
       $('#submit-data').on('click', function () {

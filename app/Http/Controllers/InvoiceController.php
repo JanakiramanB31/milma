@@ -56,7 +56,7 @@ class InvoiceController extends Controller
       $routeEmptyError = null;
       $returnProducts = array();
       $customers = Customer::where('status',1)->get();
-      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit Card');
+      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
       if ($userRole == 'admin') {
         $products = Product::where('status',1)->get();
       } else {
@@ -163,9 +163,12 @@ class InvoiceController extends Controller
       $invoice->customer_id = $request->customer_id;
       $invoice->user_id = $userId;
       $invoice->payment_type = $request->payment_type;
-      $invoice->received_amt = $request->received_amt;
+      $invoice->received_amt = $request->payment_type == "Credit" ? "0" : $request->received_amt;
       $invoice->acc_bal_amt = $request->acc_bal_amt;
-      if (($request->total + $request->acc_bal_amt) > $request->received_amt) {
+
+      if ($request->payment_type == "Credit") {
+        $invoice->balance_amt = $request->acc_bal_amt + $request->received_amt;
+      } else if (($request->total + $request->acc_bal_amt) > $request->received_amt) {
         $invoice->balance_amt = $balAmt; 
       } else {
         $invoice->balance_amt = 0.00; 
@@ -252,10 +255,12 @@ class InvoiceController extends Controller
      */
     public function show($id)
     {
+      $currency = config('constants.CURRENCY_SYMBOL');
+      $decimalLength = config('constants.DECIMAL_LENGTH');
       $invoice = Invoice::findOrFail($id);
       $sales = Sale::where('invoice_id', $id)->get();
       $amount = Invoice::select('total_amount','received_amt','prev_acc_bal_amt','acc_bal_amt','balance_amt')->where('id', $id)->first();
-      return view('invoice.show', compact('invoice','sales','amount'));
+      return view('invoice.show', compact('invoice','sales','amount','currency','decimalLength'));
     }
 
     public function fetchInvoiceByDate(Request $request, $date){

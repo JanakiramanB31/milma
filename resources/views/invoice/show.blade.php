@@ -1,7 +1,7 @@
 
 
 @php
-$paperWidth = "290px";
+$paperWidth = "400px";
   $salesTotal = 0;
   $returnsTotal = 0;
 
@@ -192,36 +192,16 @@ $paperWidth = "290px";
                 <td colspan="2" style="text-align: end;">PaymentType: <b style="font-size: 14px;">{{$invoice->payment_type}}</b></td>
               </tr>
               <tr>
-                <td colspan="2">Date: <b style="font-size: 14px;">{{$invoice->created_at->format('d-m-Y')}}</b></td>
-                <td colspan="2" style="text-align: end;">Due Date: <b style="font-size: 14px;">{{$invoice->created_at->format('d-m-Y')}}</b></td>
+                <td >Date: </td>
+                <td colspan="3"style="text-align: end;"><b style="font-size: 14px;">{{$invoice->created_at->format('d-m-Y')}}</b></td>
               </tr>    
               <tr>
                 <td colspan="4"><hr/><hr/></td>
               </tr>
 
               <tr>
-                <td>From</td>
-                <td colspan="3">MILMA FOODS UK LIMITED</td>
-              </tr>
-              <tr>
-                <td colspan="4"><hr/></td>
-              </tr>
-
-              <tr>
                 <td>To</td>
                 <td colspan="3">{{$invoice->customer->company_name}}</td>
-              </tr>
-              <tr>
-                <td>Address</td>
-                <td colspan="3">{{$invoice->customer->address}}</td>
-              </tr>
-              <tr>
-                <td>Phone No.</td>
-                <td colspan="3">{{$invoice->customer->mobile}}</td>
-              </tr>
-              <tr>
-                <td>Email</td>
-                <td colspan="3">{{$invoice->customer->email}}</td>
               </tr>
 
               <tr>
@@ -300,12 +280,7 @@ $paperWidth = "290px";
               <tr>
                 <td colspan="4"><hr/></td>
               </tr>
-              <tr>
-                <td colspan="4" style="text-align:center;">**** Please visit again! ****</td>
-              </tr>
-              <tr>
-                <td colspan="4"><hr/></td>
-              </tr>
+              
             </table>
           </div>
         </div>

@@ -347,7 +347,7 @@
             $('#quantity-error').text(`Please enter non-negative quantities for ${productName}`).show();
             allValidated = false;
             return false;
-          } else if (quantityValue && availableQuantity == 0) {
+          } /* else if (quantityValue && availableQuantity == 0) {
             $('#quantity-error').text(`${productName} is Out of Stock`).show();
             allValidated = false;
             return false;
@@ -355,7 +355,7 @@
             $('#quantity-error').text(`${productName} quantity exceeds available stock.`).show();
             allValidated = false;
             return false;
-          } else {
+          }  */else {
             $('#quantity-error').hide();
             allValidated = true;
             return true;

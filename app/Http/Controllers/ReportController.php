@@ -32,6 +32,7 @@ class ReportController extends Controller
       }
       $userID = Auth::id();
       $userRole = Auth::user()->role;
+      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit Card');
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       $routes = Route::all();
@@ -81,7 +82,7 @@ class ReportController extends Controller
 
       // echo '<pre>'; print_r($totalAmt); echo '</pre>';exit;
      
-      return view('report.x_index', compact('cashPayments', 'bankPayments', 'saleType', 'returnType','routes','totalCreditAmount', 'creditTransactionCount','currency','decimalLength'));
+      return view('report.x_index', compact('cashPayments', 'bankPayments', 'saleType', 'returnType','routes','totalCreditAmount', 'creditTransactionCount','currency','decimalLength','paymentMethods'));
     }
 
     public function fetchByDate(Request $request, $date){
@@ -242,6 +243,7 @@ class ReportController extends Controller
 
     public function overall_report()
     {
+      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       $formattedDate = now()->toDateString();
@@ -267,16 +269,18 @@ class ReportController extends Controller
       });
       $filteredInvoices = Invoice::with('Customer')->whereDate('created_at', $formattedDate)->get();
    
-      return view('report.overall_report', compact('routes', 'filteredInvoices','groupedInvoices','currency','decimalLength'));
+      return view('report.overall_report', compact('routes', 'filteredInvoices','groupedInvoices','currency','decimalLength','paymentMethods'));
     }
 
     public function fetchCompanyInvoices(Request $request)
     {
+      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       $data = json_decode($request->input('data'), true);
       $data['companyName'] = trim($data['companyName']);
       $data['routeID'] = trim($data['routeID']);
+      $data['paymentMethod'] = trim($data['paymentMethod']);
 
       if (empty($data['selectedDate'])) {
         $data['selectedDate'] = date('Y-m-d');
@@ -284,6 +288,7 @@ class ReportController extends Controller
       $selectedDate = $data['selectedDate'];
       $companyName = $data['companyName'];
       $routeID = $data['routeID'];
+      $paymentMethod = $data['paymentMethod'];
       if ($data) {
         $formattedDate = \Carbon\Carbon::parse($selectedDate)->format('Y-m-d');
       } else {
@@ -293,20 +298,20 @@ class ReportController extends Controller
       $invoiceWithCustomer = Invoice::with('Customer')->get(); 
 
       $routeIDData = StockInTransit::select('user_id')->where('route_id', $routeID)->whereDate('created_at', $formattedDate)->get()->pluck('user_id');
-      
-      if ($companyName == "All Companies" && $routeID == "") {
-        $filteredInvoices = Invoice::with('Customer')->whereDate('created_at', $formattedDate)->get();
-      } else if( $companyName != "All Companies" && !$routeID == "") {
-        $filteredInvoices = Invoice::with('Customer')->whereHas('Customer', function ($query) use ($companyName) {
-          $query->where('company_name', $companyName);
-        })->whereDate('created_at', $formattedDate)->whereIn('user_id', $routeIDData) ->get();
-      } else if ($routeID == "" ) {
-        $filteredInvoices = Invoice::with('Customer')->whereHas('Customer', function ($query) use ($companyName) {
-          $query->where('company_name', $companyName);
-        })->whereDate('created_at', $formattedDate)->get();
-      } else {
-        $filteredInvoices = Invoice::with('Customer')->whereDate('created_at', $formattedDate)->whereIn('user_id', $routeIDData) ->get();
-      }
+
+      $filteredInvoices = Invoice::with('Customer')->whereDate('created_at', $formattedDate)
+        ->when($companyName != "", function ($query) use ($companyName) {
+            $query->whereHas('Customer', function ($q) use ($companyName) {
+                $q->where('company_name', $companyName);
+            });
+        })
+        ->when($routeID != "", function ($query) use ($routeIDData) {
+            $query->whereIn('user_id', $routeIDData);
+        })
+        ->when($paymentMethod != "", function ($query) use ($paymentMethod) {
+          $query->where('payment_type', $paymentMethod);
+        })
+        ->get();
 
       // foreach ($filteredInvoices as $invoice) {
       //   if ($invoice->routeID == $routeID) {

@@ -31,6 +31,8 @@ Route::group(['middleware' => 'App\Http\Middleware\SuperAdminMiddleware', 'prefi
   Route::get('/report/y_report', 'ReportController@y_index')->name('z_report');
   Route::get('/report/overall_report', 'ReportController@overall_report')->name('overall_report');
   Route::post('/report/overall_report/fetch_company_invoice', 'ReportController@fetchCompanyInvoices')->name('fetchCompanyInvoices');
+  Route::resource('bt_list', 'BankTransferController');
+  Route::post('bt_list/{data?}', 'BankTransferController@fetchBTInvoicesByDate')->name('fetchBTInvoicesByDate');
 
   Route::resource('category', 'CategoryController');
   Route::resource('subcategory', 'SubcategoryController');

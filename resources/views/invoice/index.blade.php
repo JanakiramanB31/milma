@@ -41,7 +41,7 @@
               @foreach($invoices as $invoice)
               <tr>
                 <td>{{1000+$invoice->id}}</td>
-                <td>{{$invoice->customer->name}}</td>
+                <td>{{$invoice->customer->company_name}}</td>
                 <!-- <td>{{$invoice->created_at->format('d-m-Y')}}</td> -->
                 <td class="d-flex" style="gap: 10px;">
                   <a class="btn btn-info btn-sm" href="{{route('invoice.show', $invoice->id)}}"><i class="fa fa-eye" ></i></a>

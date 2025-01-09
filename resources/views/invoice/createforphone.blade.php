@@ -776,10 +776,8 @@
 
       $('#payment_type').on('change', function () {
         let paymentType = $(this).val();
-        if (paymentType == "Credit") {
-          let totalAmount = $('#purchase-tot').text();
-          $('#received_amt').val(totalAmount);
-        }
+        let totalAmount = $('#purchase-tot').text();
+        $('#received_amt').val(totalAmount);
       })
 
       //After Submitting Return Items to Invoice Make this to Non Editable

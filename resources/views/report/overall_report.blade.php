@@ -24,41 +24,56 @@
           <div id="alert-message" class="alert alert-danger" role="alert" hidden></div>
             
             <div class="tile-body">
-              <div class="form-group col-md-12 mb-2">
-                <label for="fetchDate">Search By Date :</label>
-                <input id="fetchDate" name="fetchDate" type="date" class="form-control " value="{{ date('Y-m-d') }}"/>
+              <div class="row">
+                <div class="form-group col-md-6 mb-2">
+                  <label for="fetchDate">Search By Date :</label>
+                  <input id="fetchDate" name="fetchDate" type="date" class="form-control " value="{{ date('Y-m-d') }}"/>
+                </div>
+                <div class="form-group col-md-6">
+                  <label class="control-label">Route</label>
+                  <select name="route_id" id='route_id' class="form-control @error('route_id') is-invalid @enderror">
+                    <option value=''>Select Route</option>
+                    @foreach($routes as $route)
+                    <option value="{{ $route['id'] }}" {{ old('route_id') == $route['id'] ? 'selected' : '' }}>
+                      {{ $route['route_number'] }}
+                    </option>
+                    @endforeach
+                  </select>
+                  @error('route_id')
+                  <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                  </span>
+                  @enderror
+                </div>
               </div>
-              <div class="form-group col-md-12">
-                <label class="control-label">Route</label>
-                <select name="route_id" id='route_id' class="form-control @error('route_id') is-invalid @enderror">
-                  <option value=''>Select Route</option>
-                  @foreach($routes as $route)
-                  <option value="{{ $route['id'] }}" {{ old('route_id') == $route['id'] ? 'selected' : '' }}>
-                    {{ $route['route_number'] }}
-                  </option>
-                  @endforeach
-                </select>
-                @error('route_id')
-                <span class="invalid-feedback" role="alert">
-                  <strong>{{ $message }}</strong>
-                </span>
-                @enderror
-              </div>
-              <div class="form-group col-md-12">
-                <label class="control-label">Company</label>
-                <select name="company_name" id='company_name' class="form-control @error('company_name') is-invalid @enderror">
-                  <option value=''>All Companies</option>
-                  @foreach ($groupedInvoices as $companyName => $invoices)
-                  <option value="{{ $companyName }}" {{ old('company_name') == $companyName ? 'selected' : '' }}>
-                    {{ $companyName }}
-                  </option>
-                  @endforeach
-                </select>
-                @error('route_id')
-                <span class="invalid-feedback" role="alert">
-                  <strong>{{ $message }}</strong>
-                </span>
-                @enderror
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label class="control-label">Company</label>
+                  <select name="company_name" id='company_name' class="form-control @error('company_name') is-invalid @enderror">
+                    <option value=''>All Companies</option>
+                    @foreach ($groupedInvoices as $companyName => $invoices)
+                    <option value="{{ $companyName }}" {{ old('company_name') == $companyName ? 'selected' : '' }}>
+                      {{ $companyName }}
+                    </option>
+                    @endforeach
+                  </select>
+                  @error('route_id')
+                  <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                  </span>
+                  @enderror
+                </div>
+
+                <div class="form-group col-md-6">
+                  <label class="form-label">Payment Type</label>
+                  <select id="payment_type" name="payment_type" class="form-control">
+                    <option value = ''>Select Payment Type</option>
+                    @foreach($paymentMethods as $paymentMethod)
+                    <option name="payment_type"  value="{{$paymentMethod}}">{{$paymentMethod}}</option>
+                    @endforeach
+                  </select>
+                  <div id="payment-type-error" class="text-danger"></div>
+                </div>
               </div>
              
               <div class="form-group  ">
@@ -245,16 +260,18 @@
     //   }
     // }
 
-    $('#route_id,#company_name,#fetchDate').on('change', function () {
+    $('#route_id,#company_name,#fetchDate,#payment_type').on('change', function () {
       var routeID = $('#route_id').find('option:selected').val();
-      var companyName = $('#company_name').find('option:selected').text();
+      var companyName = $('#company_name').find('option:selected').val();
+      var paymentMethod = $('#payment_type').find('option:selected').val();
       let date = $('#fetchDate').val();
       let selectedDate = $('#fetchDate').val();
-      console.log(selectedDate,companyName, routeID);
+      console.log(selectedDate,companyName, routeID, paymentMethod);
       const data = {
         "routeID": routeID,
         "selectedDate": selectedDate,
-        "companyName": companyName
+        "companyName": companyName,
+        "paymentMethod": paymentMethod
       }
       fetchInvoices(data);
     });
@@ -276,7 +293,7 @@
               const currency = response.currency + " ";
               const decimalLength = response.decimalLength;
               const invoiceData = response.filteredInvoices;
-              const totalAmt = invoiceData.reduce((sum, invoice) => sum + invoice.total_amount, 0);
+              const totalAmt = invoiceData.reduce((sum, invoice) => sum + parseFloat(invoice.total_amount), 0);
               $('#tot-amt').text(currency + parseFloat(totalAmt).toFixed(decimalLength))
               if (invoiceData.length > 0) {
                 invoiceData.forEach(invoice => {

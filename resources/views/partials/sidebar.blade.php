@@ -49,6 +49,8 @@
             </ul>
         </li>
 
+        <li><a class="app-menu__item {{ request()->is('bt_list') ? 'active' : ''}}" href="{{route('bt_list.index')}}"><i class="app-menu__icon fa fa-dollar"></i><span class="app-menu__label">Bank Transfer List</span></a></li>
+
         <li><a class="app-menu__item {{ request()->is('tax*') ? 'active' : ''}}" href="{{route('tax.index')}}"><i class="app-menu__icon fa fa-percent"></i><span class="app-menu__label">Tax</span></a>
            <!--  <ul class="treeview-menu">
                 <li><a class="treeview-item" href="{{route('tax.create')}}"><i class="icon fa fa-circle-o"></i> Add Tax</a></li>
@@ -146,12 +148,13 @@
                 <li><a class="treeview-item" href="{{route('stockintransit.index')}}"><i class="icon fa fa-circle-o"></i> Manage Stock In Transits</a></li>
             </ul> -->
         </li>
-
+        @if(Auth::user()->role != 'admin')
         <li ><a class="app-menu__item {{ request()->is('/report') ? 'active' : ''}}" href="{{route('x_report')}}"><i class="app-menu__icon fa fa-file-text-o"></i><span class="app-menu__label">X-Report</span></a>
             <!-- <ul class="treeview-menu">
               <li><a class="treeview-item" href="{{route('x_report')}}"><i class="icon fa fa-circle-o"></i>X-Report</a></li>
             </ul> -->
         </li>
+        @endif
 
     </ul>
 </aside>

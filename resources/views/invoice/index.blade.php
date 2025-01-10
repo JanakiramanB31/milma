@@ -25,14 +25,14 @@
       <div class="tile">
         <div class="mb-2">
           <label for="fetchDate">Search By Date :</label>
-          <input id="fetchDate" name="fetchDate" type="date" class="form-control"/>
+          <input id="fetchDate" name="fetchDate" type="date" class="form-control" value="{{ date('Y-m-d') }}"/>
         </div>
         <div class="tile-body table-responsive">
           <table class="table table-hover table-bordered" id="sampleTable">
             <thead>
               <tr>
                 <th>Receipt ID </th>
-                <th>Customer Name </th>
+                <th>Company Name </th>
                 <!-- <th>Date </th> -->
                 <th>Action</th>
               </tr>
@@ -118,7 +118,7 @@
       var table = $('#sampleTable').DataTable({
         dom: '<"top"f>rt<"bottom"l<"pagination"p><"clear">>',
         language: {
-          emptyTable: "No stock available",
+          emptyTable: "No invoices found for this date.",
           lengthMenu: "Show _MENU_ rows"
         },
         pageLength: 10,     
@@ -215,7 +215,7 @@
                       $('#sampleTable tbody').append(`
                         <tr>
                           <td>${1000 + invoice.id}</td>
-                          <td>${invoice.customer.name}</td>
+                          <td>${invoice.customer.company_name}</td>
                           <td class="d-flex" style="gap: 10px;">
                             <a class="btn btn-primary btn-sm" href="/invoices/${invoice.id}"><i class="fa fa-eye"></i></a>
                             <a class="btn btn-info btn-sm" href="/invoices/${invoice.id}/edit"><i class="fa fa-edit"></i></a>

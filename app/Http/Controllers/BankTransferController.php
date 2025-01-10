@@ -14,23 +14,25 @@ class BankTransferController extends Controller
      */
     public function index()
     {
+      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
       $formattedDate = now()->toDateString();
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       $filteredInvoices = Invoice::with('Customer')->whereDate('created_at', $formattedDate)->where('payment_type', 'Bank Transfer')->get();
-      return view('bt_list.index', compact('currency', 'decimalLength', 'filteredInvoices'));
+      return view('bt_list.index', compact('currency', 'decimalLength', 'filteredInvoices','paymentMethods'));
     }
 
     public function fetchBTInvoicesByDate(Request $request) {
       $data = json_decode($request->input('data'), true);
       $fromDate = $data['fromDate'];
       $toDate = $data['toDate'];
+      $paymentMethod = $data['paymentMethod'];
       if ($fromDate && $toDate) {
-        $fromDate = \Carbon\Carbon::parse($fromDate)->format('Y-m-d');
-        $toDate = \Carbon\Carbon::parse($toDate)->format('Y-m-d');
+        $fromDate = \Carbon\Carbon::parse($fromDate)->startOfDay();
+        $toDate = \Carbon\Carbon::parse($toDate)->endOfDay();
       } else {
-          $fromDate = now()->toDateString();
-          $toDate = now()->toDateString();
+          $fromDate = now()->startOfDay()->toDateString();
+          $toDate = now()->endOfDay()->toDateString();
       }
 
       $currency = config('constants.CURRENCY_SYMBOL');
@@ -41,8 +43,11 @@ class BankTransferController extends Controller
       })
       ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
         return $query->whereBetween('created_at', [$fromDate, $toDate]);
+      }) 
+      ->when($paymentMethod != "", function ($query) use ($paymentMethod) {
+        $query->where('payment_type', $paymentMethod);
       })
-      ->where('payment_type', 'Bank Transfer')->get();
+      ->get();
       $data = [
         "filteredInvoices" => $filteredInvoices,
         "currency" =>$currency,

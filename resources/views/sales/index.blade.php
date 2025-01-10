@@ -26,9 +26,53 @@
             <div class="col-md-12">
                 <div class="tile">
                     <div class="tile-body">
+                    <div>
+                      <label  for="startDate">Date :</label>
+                      <div class="row">
+                        <div class="col-6  mb-2">
+                          <input id="startDate" name="startDate" type="date" class="form-control" value="{{ date('Y-m-d') }}"/>
+                        </div>
+                        <div class=" d-flex justify-content-center align-items-center">
+                          <p>To</p>
+                        </div>
+                        <div class="col-5 mb-2">
+                          <input id="endDate" name="endDate" type="date" class="form-control" value="{{ date('Y-m-d') }}"/>
+                        </div>
+                        
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="form-group col-md-6">
+                        <label class="control-label">Company</label>
+                        <select name="company_name" id='company_name' class="form-control">
+                          <option value=''>All Companies</option>
+                          @foreach ($salesWithCompanies as $companyName => $sales)
+                          <option value="{{ $companyName }}" >
+                            {{ $companyName }}
+                          </option>
+                          @endforeach
+                          </option>
+                          
+                        </select>
+                      </div>
+
+                      <div class="form-group col-md-6">
+                        <label class="form-label">Product</label>
+                        <select id="prod_name" name="prod_name" class="form-control">
+                          <option value = ''>All Products</option>
+                          @foreach ($salesWithProducts as $productName => $sales)
+                          <option value="{{ $productName }}" >
+                            {{ $productName }}
+                          </option>
+                          @endforeach
+                        </select>
+                        <div id="payment-type-error" class="text-danger"></div>
+                      </div>
+                    </div>
                         <table class="table table-hover table-bordered" id="sampleTable">
                             <thead>
                             <tr>
+                                <th>Company Name </th>
                                 <th>Product </th>
                                 <th>Qty </th>
                                 <th>Price</th>
@@ -39,11 +83,12 @@
                             <tbody>
             @foreach($sales as $sale)
                 <tr>
+                    <td>{{ $sale->customer->company_name }}</td>
                     <td>{{ $sale->product->name }}</td>
                     <td>{{ $sale->qty }}</td>
                     <td>{{ $sale->price }}</td>
                     <td>{{ $sale->total_amount }}</td>
-                    <td>{{ $sale->created_at }}</td>
+                    <td>{{ $sale->created_at->format('d-m-Y') }}</td>
                     
                 </tr>
             @endforeach
@@ -64,5 +109,73 @@
     <script type="text/javascript" src="{{asset('/')}}js/plugins/dataTables.bootstrap.min.js"></script>
     <script type="text/javascript">$('#sampleTable').DataTable();</script>
     <script src="https://unpkg.com/sweetalert2@7.19.1/dist/sweetalert2.all.js"></script>
+    <script>
+    $(document).ready(function () {
+
+      $('#startDate,#company_name,#endDate,#prod_name').on('change', function () {
+        var fromDate = $('#startDate').val();
+        var companyName = $('#company_name').find('option:selected').val();
+        var productName = $('#prod_name').find('option:selected').val();
+        let toDate = $('#endDate').val();
+        console.log(fromDate,companyName, toDate, productName);
+        const data = {
+          "fromDate": fromDate,
+          "toDate": toDate,
+          "companyName": companyName,
+          "productName": productName
+        }
+        fetchInvoices(data);
+      });
+
+      function fetchInvoices(data) {
+      const data1Json = JSON.stringify(data);
+      if(data) {
+        $.ajax({
+          url: '{{ route("filterSalesData",":data") }}'.replace(':data', data1Json),
+          type: 'POST',
+          data: {
+            data: data1Json,
+            _token: '{{ csrf_token() }}' 
+          },
+          success: function(response) {
+            try {
+              console.log("Success",response);  
+              $('#sampleTable tbody').empty();
+              const currency = response.currency + " ";
+              const decimalLength = response.decimalLength;
+              const salesData = response.filteredSales;
+              console.log(salesData)
+              if (salesData.length > 0) {
+                salesData.forEach(sale => {
+                  $('#sampleTable tbody').append(`
+                      <tr>
+                        <td >${sale.customer.company_name}</td>
+                        <td class="text-center">${sale.product.name}</td>
+                        <td class="text-center">${sale.qty}</td>
+                        <td class="text-center">${currency +parseFloat(sale.price).toFixed(decimalLength)}</td>
+                        <td class="text-center">${currency +parseFloat(sale.total_amount).toFixed(decimalLength)}</td>
+                        <td class="text-center">${new Date(sale.created_at).toLocaleDateString('en-GB')}</td>
+                       
+                      </tr>
+                  `);
+                });
+              } else {
+                $('#sampleTable tbody').append('<tr><td colspan="9" class="text-center">No invoices found for this date.</td></tr>');
+              }               
+            } catch(error) {
+              console.log("Failed",error)
+            }
+          },
+          error: function(xhr) {
+            var errorMessage =  'An error occurred. Please try again.';
+            $('#error-message').html(errorMessage).show();
+          }
+        });
+      } else {
+        console.log("Failed")
+      }
+    }
+  });
+  </script>
     
 @endpush

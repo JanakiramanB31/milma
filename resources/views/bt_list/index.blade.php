@@ -26,17 +26,27 @@
             <div class="tile-body">
             <label for="fetchDate">Date :</label>
               <div class="row">
-                <div class="col-5  mb-2">
+                <div class="col-md-6  mb-2">
                   <input id="startDate" name="startDate" type="date" class="form-control" value="{{ date('Y-m-d') }}"/>
                 </div>
                 <div class=" d-flex justify-content-center align-items-center">
                   <p>To</p>
                 </div>
-                <div class="col-5 mb-2">
+                <div class="col-md-5 mb-2">
                   <input id="endDate" name="endDate" type="date" class="form-control" value="{{ date('Y-m-d') }}"/>
                 </div>
-                <div>
+                <!-- <div>
                   <button id="date-submit" class="btn btn-success">View</button>
+                </div> -->
+                <div class="form-group col-md-12">
+                  <label class="form-label">Payment Type</label>
+                  <select id="payment_type" name="payment_type" class="form-control">
+                    <option value = ''>Select Payment Type</option>
+                    @foreach($paymentMethods as $paymentMethod)
+                    <option name="payment_type"  value="{{$paymentMethod}}">{{$paymentMethod}}</option>
+                    @endforeach
+                  </select>
+                  <div id="payment-type-error" class="text-danger"></div>
                 </div>
               </div>
              
@@ -48,7 +58,7 @@
                     <tr>
                       <th class="text-center">Invoice ID </th>
                       <th class="text-center">Date</th>
-                      <th class="text-center">Customer Name </th>
+                      <th class="text-center">Company Name </th>
                       <th class="text-center">Payment Type </th>
                       <th class="text-center">Total Amt</th>
                       <th class="text-center">Received Amt</th>
@@ -65,7 +75,7 @@
                     <tr>
                       <td class="text-center">{{1000+$invoice->id}}</td>
                       <td class="text-center">{{$invoice->created_at->format('d-m-Y')}}</td>
-                      <td class="text-center">{{$invoice->customer->name}}</td>
+                      <td class="text-center">{{$invoice->customer->company_name}}</td>
                       <td class="text-center">{{$invoice->payment_type}}</td>
                       <td class="text-center"><span>{{$currency}} </span>{{ number_format($invoice->total_amount,  $decimalLength )}}</td>
                       <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
@@ -135,9 +145,10 @@
 <script type="text/javascript">
   $(document).ready(function () {
 
-    $('#date-submit').on('click', function () {
+    $('#startDate,#endDate,#payment_type').on('change', function () {
       let selectedStartDate = $('#startDate').val();
       let selectedEndDate = $('#endDate').val();
+      var paymentMethod = $('#payment_type').find('option:selected').val();
       console.log(selectedEndDate)
       let today = new Date().toISOString().split('T')[0];
 
@@ -174,16 +185,18 @@
         }, 3000);
       } else {
         // Both start and end dates are valid
-        fetchInvoices(selectedStartDate, selectedEndDate);
+        const data = {
+          "fromDate": selectedStartDate,
+          "toDate": selectedEndDate,
+          "paymentMethod": paymentMethod
+        }
+        fetchInvoices(data);
       }
     });
 
-    function fetchInvoices(selectedStartDate, selectedEndDate) {
+    function fetchInvoices(data) {
       console.log("coming")
-      const data = {
-        "fromDate": selectedStartDate,
-        "toDate": selectedEndDate
-      }
+      
 
       const data1Json = JSON.stringify(data);
       if(data) {

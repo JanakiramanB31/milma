@@ -111,6 +111,7 @@ class StockInTransitController extends Controller
             $stockInTransit->route_id = $request->route_id;
             $stockInTransit->vehicle_id = $request->vehicle_id;
             $stockInTransit->product_id = $productID;
+            $stockInTransit->start_quantity = $quantities[$key];
             $stockInTransit->quantity = $quantities[$key];
             $stockInTransit->save();
 
@@ -197,6 +198,7 @@ class StockInTransitController extends Controller
             $stockInTransit->route_id = $request->route_id;
             $stockInTransit->vehicle_id = $request->vehicle_id;
             $stockInTransit->product_id = $productID;
+            $stockInTransit->start_quantity =$quantity;
             $stockInTransit->quantity = $quantity;
             $stockInTransit->save();
 
@@ -209,6 +211,7 @@ class StockInTransitController extends Controller
               $stockInTransit->route_id = $request->route_id;
               $stockInTransit->vehicle_id = $request->vehicle_id;
               $stockInTransit->product_id = $productID;
+              $stockInTransit->start_quantity = $oldQuantities[$key] + $newQuantities[$key];
               $stockInTransit->quantity = $oldQuantities[$key] + $newQuantities[$key];
               $stockInTransit->save();
 

@@ -84,7 +84,7 @@
                     <tr>
                       <th class="text-center">Invoice ID </th>
                       <th class="text-center">Date</th>
-                      <th class="text-center">Customer Name </th>
+                      <th class="text-center">Company Name </th>
                       <th class="text-center">Payment Type </th>
                       <th class="text-center">Total Amt</th>
                       <th class="text-center">Received Amt</th>
@@ -101,7 +101,7 @@
                     <tr>
                       <td class="text-center">{{1000+$invoice->id}}</td>
                       <td class="text-center">{{$invoice->created_at->format('d-m-Y')}}</td>
-                      <td class="text-center">{{$invoice->customer->name}}</td>
+                      <td class="text-center">{{$invoice->customer->company_name}}</td>
                       <td class="text-center">{{$invoice->payment_type}}</td>
                       <td class="text-center"><span>{{$currency}} </span>{{ number_format($invoice->total_amount,  $decimalLength )}}</td>
                       <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
@@ -301,7 +301,7 @@
                       <tr>
                         <td class="text-center">${1000+(invoice.id)}</td>
                         <td class="text-center">${new Date(invoice.created_at).toLocaleDateString('en-GB')}</td>
-                        <td class="text-center">${invoice.customer.name}</td>
+                        <td class="text-center">${invoice.customer.company_name}</td>
                         <td class="text-center">${invoice.payment_type}</td>
                         <td class="text-center">${currency +parseFloat(invoice.total_amount).toFixed(decimalLength)}</td>
                         <td class="text-center">${currency +parseFloat(invoice.received_amt).toFixed(decimalLength)}</td>

@@ -69,7 +69,7 @@
                   </tr>
                   <tr>
                     <td><b>No. of Credit Sales</b></td>
-                    <td >{{$creditTransactionCount}}</td>
+                    <td id="cardSalesCount">{{$creditTransactionCount}}</td>
                     <td><b>Amount of Credit Sales</b></td>
                     <td ><p id="cardSalesAmount" class="float-right mb-0"><span>{{ $currency }}</span> {{ number_format($totalCreditAmount,  $decimalLength ) }}</p></td>
                   </tr>
@@ -227,6 +227,7 @@
       let returnAmount = $('#returnAmount').text().replace("£", "").replace(" ", "").replace("(","").replace(")","").replace("-","");
       let totalAmount = $('#totalAmount').text().replace("£", "").replace(" ", "").replace("(","").replace(")","").replace("-","");
       let totalNetAmount = $('#totalNetAmount').text().replace("£", "").replace(" ", "").replace("(","").replace(")","").replace("-","");
+      console.log("cardSalesCount", cardSalesCount)
       const data = {
         "selectedStartDate": selectedStartDate,
         "selectedEndDate": selectedEndDate,

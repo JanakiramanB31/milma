@@ -46,6 +46,7 @@
             <ul class="treeview-menu">
               <li><a class="treeview-item" href="{{route('x_report')}}"><i class="icon fa fa-circle-o"></i>X-Report</a></li>
               <li><a class="treeview-item" href="{{route('overall_report')}}"><i class="icon fa fa-circle-o"></i>Overall-Report</a></li>
+              <li><a class="treeview-item" href="{{route('z_report')}}"><i class="icon fa fa-circle-o"></i>Z-Report</a></li>
             </ul>
         </li>
 
@@ -149,11 +150,12 @@
             </ul> -->
         </li>
         @if(Auth::user()->role != 'admin')
-        <li ><a class="app-menu__item {{ request()->is('/report') ? 'active' : ''}}" href="{{route('x_report')}}"><i class="app-menu__icon fa fa-file-text-o"></i><span class="app-menu__label">X-Report</span></a>
-            <!-- <ul class="treeview-menu">
+        <!-- <li ><a class="app-menu__item {{ request()->is('/report') ? 'active' : ''}}" href="{{route('x_report')}}"><i class="app-menu__icon fa fa-file-text-o"></i><span class="app-menu__label">X-Report</span></a>
+            <ul class="treeview-menu">
               <li><a class="treeview-item" href="{{route('x_report')}}"><i class="icon fa fa-circle-o"></i>X-Report</a></li>
-            </ul> -->
-        </li>
+            </ul>
+        </li> -->
+        <li><a class="treeview-item" href="{{route('z_report')}}"><i class="app-menu__icon fa fa-file-text-o"></i>Z-Report</a></li>
         @endif
 
     </ul>

@@ -10,4 +10,7 @@ class Sales extends Model
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
+    public function customer(){
+      return $this->belongsTo(Customer::class, 'customer_id');
+    }
 }

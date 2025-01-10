@@ -36,7 +36,7 @@ class InvoiceController extends Controller
       $userRole = Auth::user()->role;
       $today = now()->toDateString();
       if ($userRole == 'admin') {
-        $invoices = Invoice::all();
+        $invoices = Invoice::whereDate('created_at', $today)->get();
       } else {
         $invoices = Invoice::where('user_id',$userID)->whereDate('created_at', $today)->get();
       }
@@ -192,6 +192,7 @@ class InvoiceController extends Controller
           $sale->type = $request->type[$key];
           $sale->reason = $request->reason[$key];
           $sale->user_id = $userId;
+          $sale->customer_id = $request->customer_id;
           $sale->qty = $request->qty[$key];
           $sale->price = $request->price[$key];
           $sale->total_amount = $request->amount[$key];
@@ -208,6 +209,10 @@ class InvoiceController extends Controller
             $returns->amount = $request->amount[$key];
             $returns->save();
           }
+
+          $customer = Customer::findOrFail($request->customer_id);
+          $customer->previous_balance = $invoice->balance_amt;
+          $customer->save();
 
           $stockintransits = StockInTransit::where('user_id', $userId)->where('product_id',$product_id)->whereDate('created_at', $today)->get();
 
@@ -377,6 +382,7 @@ class InvoiceController extends Controller
           $sale->type = $request->type[$key];
           $sale->reason = $request->reason[$key];
           $sale->user_id = $userId;
+          $sale->customer_id = $request->customer_id;
           $sale->qty = $request->qty[$key];
           $sale->price = $request->price[$key];
           $sale->total_amount = $request->amount[$key];
@@ -393,6 +399,10 @@ class InvoiceController extends Controller
             $returns->amount = $request->amount[$key];
             $returns->save();
           }
+
+          $customer = Customer::findOrFail($request->customer_id);
+          $customer->previous_balance = $invoice->balance_amt;
+          $customer->save();
 
           $stockintransits = StockInTransit::where('user_id', $userId)->where('product_id',$product_id)->whereDate('created_at', $today)->get();
 

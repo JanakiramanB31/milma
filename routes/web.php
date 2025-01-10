@@ -34,6 +34,11 @@ Route::group(['middleware' => 'App\Http\Middleware\SuperAdminMiddleware', 'prefi
   Route::resource('bt_list', 'BankTransferController');
   Route::post('bt_list/{data?}', 'BankTransferController@fetchBTInvoicesByDate')->name('fetchBTInvoicesByDate');
 
+  Route::get('/report/z_report', 'ReportController@z_index')->name('z_report');
+  Route::post('/report/z_report/fetch_company_invoice', 'ReportController@zReportCompanyInvoices')->name('zReportCompanyInvoices');
+  Route::get('/report/z_report/print/{data?}', 'ReportController@zReportPrintCompanyInvoices')->name('zReportPrintCompanyInvoices');
+
+
   Route::resource('category', 'CategoryController');
   Route::resource('subcategory', 'SubcategoryController');
   Route::resource('tax', 'TaxController');
@@ -54,6 +59,9 @@ Route::group(['middleware' => 'App\Http\Middleware\SuperAdminMiddleware', 'prefi
   Route::post('invoice/storeReturns', 'InvoiceController@storeReturns')->name('invoice.storeReturns');
   Route::resource('rate', 'RateController');
   Route::get('sales', [SalesController::class, 'index'])->name('sales');
+
+  Route::post('sales', [SalesController::class, 'filterSalesData'])->name('filterSalesData');
+
   Route::resource('purchase', 'PurchaseController');
   Route::get('/findPrice', 'InvoiceController@findPrice')->name('findPrice');
   Route::get('/findPricePurchase', 'PurchaseController@findPricePurchase')->name('findPricePurchase');
@@ -78,3 +86,7 @@ Route::post('stockintransit/check', 'StockInTransitController@checkExistence')->
 Route::get('/report/x_report/{date?}', 'ReportController@x_index')->name('x_report');
 Route::get('/report/x_report/print/{data}', 'ReportController@x_report_print')->name('x_report_print');
 Route::post('report/x_report/fetchByDate/{date}', 'ReportController@fetchByDate')->name('x_report.fetchByDate');
+
+Route::get('/report/z_report', 'ReportController@z_index')->name('z_report');
+Route::post('/report/z_report/fetch_company_invoice', 'ReportController@zReportCompanyInvoices')->name('zReportCompanyInvoices');
+Route::get('/report/z_report/print/{data?}', 'ReportController@zReportPrintCompanyInvoices')->name('zReportPrintCompanyInvoices');

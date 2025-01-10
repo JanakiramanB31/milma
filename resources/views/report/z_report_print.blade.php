@@ -18,7 +18,7 @@
             <h4><span style="text-align: center;">Z Report</span></h4>
             <h5 style="font-size: 14px;">Taken: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5>
             <hr style="margin: 10px 20px; width: {{ $paperWidth }};"/>
-            @if ($fromDate == $toDate) 
+            @if ($fromDate->format('d-m-Y') == $toDate->format('d-m-Y')) 
             <div class="d-flex align-items-space-between justify-content-space-between">
               <b style="font-size: 14px;">Date: {{ \Carbon\Carbon::parse($fromDate)->format('d-m-Y') }}</b>
             </div>

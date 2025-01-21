@@ -83,8 +83,10 @@
                       <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->balance_amt,  $decimalLength )}}</td>
                       <td class="d-flex justify-content-center" style="gap: 10px;">
                         <a class="btn btn-info btn-sm" href="{{ route('invoice.show', '') }}/{{$invoice->id}}"><i class="fa fa-eye" ></i></a>
+                        @if ($invoice->reference_number == null)
                         <i class="fa  fa-check fa-sm btn btn-success payment-approve" data-id="{{$invoice->id}}" ></i>
                         <i class="fa  fa-times fa-sm btn btn-danger payment-denied" data-id="{{$invoice->id}}" ></i>
+                        @endif
                       </td>
                     </tr>
                     @endforeach
@@ -230,6 +232,9 @@
                         <td class="text-center">${currency +parseFloat(invoice.balance_amt).toFixed(decimalLength)}</td>
                         <td class="d-flex justify-content-center" style="gap: 10px;">
                           <a class="btn btn-info btn-sm" href="{{ route('invoice.show', '') }}/${parseInt(invoice.id)}"><i class="fa fa-eye" ></i></a>
+                          ${invoice.reference_number == null ?
+                          `<i class="fa  fa-check fa-sm btn btn-success payment-approve" data-id="${parseInt(invoice.id)}" ></i>
+                          <i class="fa  fa-times fa-sm btn btn-danger payment-denied" data-id="${parseInt(invoice.id)}" ></i>` : '' }
                         </td>
                       </tr>
                   `);
@@ -251,58 +256,60 @@
       }
     }
 
-    // $(document).on('click', '#reference-number-entry-button', function () {
-    //   var referenceNumber = $('#reference-number-entry').val();
-    //   var invoiceID = $('#paymentApproveForm').data('invoice-id');
-    //   console.log(referenceNumber, invoiceID)
-    //   if (referenceNumber.trim() == '') {
-    //     Swal.fire({
-    //         icon: 'error',
-    //         title: 'Oops...',
-    //         text: 'Reference number cannot be empty!',
-    //     });
-    //     return;
-    //   }
+    $(document).on('click', '#reference-number-entry-button', function () {
+      var referenceNumber = $('#reference-number-entry').val();
+      var invoiceID =  $('#paymentApproveForm').data('invoice-id');
+      console.log(referenceNumber, invoiceID)
+      if (referenceNumber.trim() == '') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Reference number cannot be empty!',
+        });
+        return;
+      }
 
-    //   $.ajax({
-    //     url: '{{ route("bt_list.update",":id") }}'.replace(':id', invoiceID),
-    //     type: 'POST',
-    //     data: {
-    //       invoice_id: invoiceID,
-    //       reference_number: referenceNumber,
-    //       _token: '{{ csrf_token() }}'
-    //     },
-    //     success: function (response) {
-    //       if (response.success) {
-    //         Swal.fire({
-    //           icon: 'success',
-    //           title: 'Success',
-    //           text: response.message,
-    //         });
-    //         $('#paymentApproveForm').modal('hide'); 
-    //       } else {
-    //         Swal.fire({
-    //           icon: 'error',
-    //           title: 'Error',
-    //           text: response.message,
-    //         });
-    //       }
-    //     },
-    //     error: function (xhr) {
-    //       Swal.fire({
-    //         icon: 'error',
-    //         title: 'Error',
-    //         text: 'Something went wrong. Please try again.',
-    //       });
-    //     }
-    //   });
-    // });
+      $.ajax({
+        url: '{{ route("updateBTList",":id") }}'.replace(':id', invoiceID),
+        type: 'POST',
+        data: {
+          invoice_id: invoiceID,
+          reference_number: referenceNumber,
+          _token: '{{ csrf_token() }}'
+        },
+        success: function (response) {
+          if (response.success) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: response.message,
+            });
+            $('#paymentApproveForm').modal('hide'); 
+            $('#reference-number-entry').val('');
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: response.message,
+            });
+          }
+        },
+        error: function (xhr) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error2',
+            text: 'Something went wrong. Please try again.',
+          });
+        }
+      });
+    });
 
-    // $(document).on('click', '.payment-approve', function () {
-    //   var invoiceID = $(this).data('id'); 
-    //   $('#paymentApproveForm').data('invoice-id', invoiceID);
-    //   $('#paymentApproveForm').modal('show');
-    // });
+    $(document).on('click', '.payment-approve', function () {
+      var invoiceID = $(this).data('id'); 
+      console.log("Invoice ID", invoiceID)
+      $('#paymentApproveForm').data('invoice-id', invoiceID);
+      $('#paymentApproveForm').modal('show');
+    });
 
     $(document).on('click', '.payment-denied', function () {
       paymentAction();

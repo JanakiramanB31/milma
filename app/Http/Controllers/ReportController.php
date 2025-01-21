@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Invoice;
 use App\Product;
+use App\Returns;
 use App\Route;
 use App\Sale;
 use App\Sales;
@@ -32,7 +33,7 @@ class ReportController extends Controller
       }
       $userID = Auth::id();
       $userRole = Auth::user()->role;
-      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit Card');
+      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       $routes = Route::all();
@@ -201,7 +202,7 @@ class ReportController extends Controller
       $today = now()->toDateString();
       $cash_invoices = Invoice::where('payment_type', 'Cash')->whereDate('created_at', $today)->count();
       $bank_invoices = Invoice::where('payment_type', 'Bank Transfer')->whereDate('created_at', $today)->count();
-      $card_invoices = Invoice::where('payment_type', 'Credit Card')->whereDate('created_at', $today)->count();
+      $card_invoices = Invoice::where('payment_type', 'Credit')->whereDate('created_at', $today)->count();
       
       $saleProducts = Sale::select('product_id', 'qty')->get();
 
@@ -370,7 +371,7 @@ class ReportController extends Controller
         
       });
 
-      $filteredInvoices = Invoice::with('Customer', 'Sales.product')->whereDate('created_at', $formattedDate)->get();
+      $filteredInvoices = Invoice::with('Customer', 'Sales.product')->where('print_status', '0')->whereDate('created_at', $formattedDate)->get();
     // $this->pr($filteredInvoices);exit;
    
       return view('report.z_index', compact( 'filteredInvoices','groupedInvoices','currency','decimalLength','paymentMethods'));
@@ -400,6 +401,7 @@ class ReportController extends Controller
       }
 
       $filteredInvoices = Invoice::with('Customer', 'Sales.product')
+        ->where('print_status', '0')
         ->when($fromDate == $toDate, function ($query) use ($fromDate) {
           return $query->whereDate('created_at', $fromDate);
         })
@@ -464,6 +466,7 @@ class ReportController extends Controller
       }
 
       $filteredInvoices = Invoice::with('Customer', 'Sales.product')
+        ->where('print_status', '0')
         ->when($fromDate == $toDate, function ($query) use ($fromDate) {
           return $query->whereDate('created_at', $fromDate);
         })
@@ -478,6 +481,8 @@ class ReportController extends Controller
        
         ->get();
 
+        $invoiceIDList = $filteredInvoices->pluck('id');
+
         $totalCashAmount = $filteredInvoices->where('payment_type', 'Cash')->sum(function ($invoice) {
           return $invoice->received_amt - $invoice->returned_amount;
         });
@@ -486,7 +491,29 @@ class ReportController extends Controller
             return $invoice->received_amt - $invoice->returned_amount;
         });
 
-        $loadedProducts = StockInTransit::select('product_id','start_quantity','quantity')->where('user_id', $userID)->whereDate('created_at',$today)->get();
+        if ($userRole == 'admin') {
+          $loadedProducts = StockInTransit::select('product_id','start_quantity','quantity')
+            ->when($fromDate == $toDate, function ($query) use ($fromDate) {
+            return $query->whereDate('created_at', $fromDate);
+            })
+            ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+              return $query->whereBetween('created_at', [$fromDate, $toDate]);
+            })
+            ->get();
+
+          $salesReturns = Returns::with('Product')
+            ->when($fromDate == $toDate, function ($query) use ($fromDate) {
+              return $query->whereDate('created_at', $fromDate);
+            })
+            ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+              return $query->whereBetween('created_at', [$fromDate, $toDate]);
+            })
+            ->get();
+
+        } else {
+          $loadedProducts = StockInTransit::select('product_id','start_quantity','quantity')->where('user_id', $userID)->whereDate('created_at',$today)->get();
+          $salesReturns = Returns::with('Product')->where('salesman_id', $userID)->whereDate('created_at',$today)->get();
+        }
         // print_r($loadedProducts);exit;
         
 
@@ -503,9 +530,21 @@ class ReportController extends Controller
       //   }
       // }
    
-      return view('report.z_report_print', compact('filteredInvoices','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount','loadedProducts'));
+      return view('report.z_report_print', compact('filteredInvoices','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount','loadedProducts','salesReturns'));
     }
 
+    public function zReportInvoiceUpdate(Request $request)
+    {
+      $invoiceIDList = $request->input('data');
+      foreach ($invoiceIDList as $invoiceID) {
+        $invoice = Invoice::findOrFail($invoiceID);
+        $invoice->print_status = '1';
+        $invoice->save();
+      }
+      return response()->json( [
+        "message" => "success",
+      ] );
+    }
 
     /**
      * Store a newly created resource in storage.

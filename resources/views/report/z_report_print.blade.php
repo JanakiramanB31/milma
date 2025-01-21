@@ -15,8 +15,8 @@
           <div class="hr-line-dashed" ></div>
           <div class="pos-report">
             <h3 style="text-align: center;"><span style="text-align: center;">MILMA FOODS UK LIMITED</span></h3>
-            <h4><span style="text-align: center;">Z Report</span></h4>
-            <h5 style="font-size: 14px;">Taken: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5>
+           <!--  <h4><span style="text-align: center;">Z Report</span></h4> -->
+            <!-- <h5 style="font-size: 14px;">Taken: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5> -->
             <hr style="margin: 10px 20px; width: {{ $paperWidth }};"/>
             @if ($fromDate->format('d-m-Y') == $toDate->format('d-m-Y')) 
             <div class="d-flex align-items-space-between justify-content-space-between">
@@ -32,9 +32,33 @@
               <hr/>
             </div>
             <div class="hr-line-dashed"></div>
-            <table class="table" style="margin: 10px 10px 10px 20px; width: {{ $paperWidth }}; text-align: left;">
-              
-            
+            <table id="invoice-table" class="table" style="margin: 10px 10px 10px 20px; width: {{ $paperWidth }}; text-align: left;" data-value="{{ json_encode($invoiceIDList) }}">
+            <tr>
+              <th>SALE RETURN</th>
+              <th>ITEM</th>
+              <th style="text-align: right;">GROSS</th>
+            </tr>
+            @php
+                $totalReturnsAmount = $salesReturns->sum('amount');
+            @endphp
+            @foreach($salesReturns as $salesReturn)
+            <tr>
+              <td></td>
+              <td>{{$salesReturn->product->name}}</td>
+              <td style="text-align: right;"><span>{{$currency}} </span>{{number_format($salesReturn->amount,  $decimalLength )}}</td>
+            </tr>
+            @endforeach
+            <tr>
+              <td colspan="3"><hr /></td>
+            </tr>
+            <tr>
+              <th>TOTAL</th>
+              <td></td>
+              <td style="text-align: right;"><span>{{$currency}} </span>{{number_format($totalReturnsAmount,  $decimalLength )}}</td>
+            </tr>
+            <tr>
+              <td colspan="3"><hr /></td>
+            </tr>
             
             <tr>
               <th>STOCK</th>
@@ -50,7 +74,7 @@
             <tr>
               <td colspan="3"><hr /></td>
             </tr>
-            @foreach ($loadedProducts as $loadedProduct) 
+            @foreach ($loadedProducts as $loadedProduct)
               <tr>
                 <td>{{ $loadedProduct->product->name }}</td>
                 <td>{{ $loadedProduct->start_quantity }}</td>
@@ -122,6 +146,12 @@
               <tr>
                 <td colspan="3"><hr/><hr/></td>
               </tr>
+              <tr>
+                <td colspan="3" style="text-align: center;">**** END OF SHIFT REPORT ****</td>
+              </tr>
+              <tr>
+                <td colspan="3"><hr/><hr/></td>
+              </tr>
             </table>
           </div>
         </div>
@@ -155,6 +185,29 @@
         printWindow.document.write('</center></body></html>');
         printWindow.document.close();
         printWindow.print();
+
+        var invoiceIDList = $('#invoice-table').data('value');
+
+        $.ajax({
+          url: '{{ route("zReportInvoiceUpdate") }}',
+          type: 'POST',
+          data: {
+            data: invoiceIDList,
+            _token: '{{ csrf_token() }}' 
+          },
+          success: function(response) {
+            try {
+              console.log("Success",response); 
+              window.location.href= "{{route('z_report')}}"                        
+            } catch(error) {
+              console.log("Failed",error)
+            }
+          },
+          error: function(xhr) {
+            var errorMessage =  'An error occurred. Please try again.';
+            $('#error-message').html(errorMessage).show();
+          }
+        });
     }
 
   });

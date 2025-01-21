@@ -31,12 +31,15 @@ Route::group(['middleware' => 'App\Http\Middleware\SuperAdminMiddleware', 'prefi
   Route::get('/report/y_report', 'ReportController@y_index')->name('z_report');
   Route::get('/report/overall_report', 'ReportController@overall_report')->name('overall_report');
   Route::post('/report/overall_report/fetch_company_invoice', 'ReportController@fetchCompanyInvoices')->name('fetchCompanyInvoices');
+
   Route::resource('bt_list', 'BankTransferController');
   Route::post('bt_list/{data?}', 'BankTransferController@fetchBTInvoicesByDate')->name('fetchBTInvoicesByDate');
+  Route::post('bt_list_update/{data?}', 'BankTransferController@update')->name('updateBTList');
 
   Route::get('/report/z_report', 'ReportController@z_index')->name('z_report');
   Route::post('/report/z_report/fetch_company_invoice', 'ReportController@zReportCompanyInvoices')->name('zReportCompanyInvoices');
   Route::get('/report/z_report/print/{data?}', 'ReportController@zReportPrintCompanyInvoices')->name('zReportPrintCompanyInvoices');
+  Route::post('/report/z_report/print/update', 'ReportController@zReportInvoiceUpdate')->name('zReportInvoiceUpdate');
 
 
   Route::resource('category', 'CategoryController');

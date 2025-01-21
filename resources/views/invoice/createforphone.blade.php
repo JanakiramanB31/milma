@@ -1184,6 +1184,8 @@
 
         if (allValidated) {
           $('#amountForm').modal('show');
+          let totalAmount = $('#purchase-tot').text();
+          $('#received_amt').val(totalAmount);
           $('#product-form-data').attr("disabled", false);
         } else {
           $('#alert-container').show();

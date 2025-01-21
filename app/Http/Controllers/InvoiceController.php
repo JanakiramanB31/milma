@@ -205,6 +205,7 @@ class InvoiceController extends Controller
             $returns->customer_id = $request->customer_id;
             $returns->product_id = $request->product_id[$key];
             $returns->invoice_id = $invoice->id;
+            $returns->salesman_id =  $userId;
             $returns->quantity = $request->qty[$key];
             $returns->amount = $request->amount[$key];
             $returns->save();
@@ -295,7 +296,7 @@ class InvoiceController extends Controller
       $userRole = Auth::user()->role;
       $today = now()->toDateString();
       $routeEmptyError = null;
-      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit Card');
+      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
       $customers = Customer::where('status',1)->get();
       $invoice = Invoice::findOrFail($id);
       $sales = Sale::where('invoice_id', $id)->get();
@@ -357,13 +358,21 @@ class InvoiceController extends Controller
       $invoice->customer_id = $request->customer_id;
       $invoice->user_id = $userId;
       $invoice->payment_type = $request->payment_type;
-      $invoice->received_amt = $request->received_amt;
+      $invoice->received_amt = $request->payment_type == "Credit" ? "0" : $request->received_amt;
       $invoice->acc_bal_amt = $request->acc_bal_amt;
-      if (($request->total + $request->acc_bal_amt) > $request->received_amt) {
+
+      if ($request->payment_type == "Credit") {
+        $invoice->balance_amt = $request->acc_bal_amt + $request->received_amt;
+      } else if (($request->total + $request->acc_bal_amt) > $request->received_amt) {
         $invoice->balance_amt = $balAmt; 
       } else {
         $invoice->balance_amt = 0.00; 
       }
+      // if (($request->total + $request->acc_bal_amt) > $request->received_amt) {
+      //   $invoice->balance_amt = $balAmt; 
+      // } else {
+      //   $invoice->balance_amt = 0.00; 
+      // }
       $invoice->total_amount = $request->total;
       if($returnedAmt > 0 ) {
         $invoice->returned_amt = $returnedAmt;
@@ -395,6 +404,7 @@ class InvoiceController extends Controller
             $returns->customer_id = $request->customer_id;
             $returns->product_id = $request->product_id[$key];
             $returns->invoice_id = $invoice->id;
+            $returns->salesman_id =  $userId;
             $returns->quantity = $request->qty[$key];
             $returns->amount = $request->amount[$key];
             $returns->save();

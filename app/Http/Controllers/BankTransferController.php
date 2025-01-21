@@ -108,14 +108,14 @@ class BankTransferController extends Controller
      */
     public function update(Request $request, $id)
     {
-    //   $request->validate([
-    //     'invoice_id' => 'required',
-    //     'reference_number' => 'required',
-    // ]);
+      $request->validate([
+        'invoice_id' => 'required',
+        'reference_number' => 'required',
+    ]);
     // $data = $this->pr($request);
-    // $invoice = Invoice::findOrFail($id);
-    // $invoice->customer_id = $request->customer_id;
-    // $invoice->save();
+    $invoice = Invoice::findOrFail($id);
+    $invoice->reference_number = $request->reference_number;
+    $invoice->save();
     // return redirect('invoice/'.$invoice->id)->with('message','Invoice Updated Successfully');
     return response()->json( [
       'success' => true,

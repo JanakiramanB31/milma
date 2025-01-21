@@ -74,11 +74,12 @@
                         <th class="text-center">Action</th>
                       </tr>
                     </thead>
+                    @php
+                          $totalAmount = $filteredInvoices->sum('total_amount') ?? '0';
+                      @endphp
                     <tbody>
                     @foreach ($filteredInvoices as $companyName => $invoice) 
-                      @php
-                          $totalAmount = $filteredInvoices->sum('total_amount');
-                      @endphp
+                      
                       <tr>
                         <td class="text-center">{{1000+$invoice->id}}</td>
                         <td class="text-center">{{$invoice->created_at->format('d-m-Y')}}</td>
@@ -97,7 +98,7 @@
                         <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->acc_bal_amt,  $decimalLength )}}</td>
                         <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->balance_amt,  $decimalLength )}}</td>
                         <td class="d-flex justify-content-center" >
-                          <a class="btn btn-info btn-sm" href="{{ route('invoice.show', '') }}/${invoice.id}"><i class="fa fa-eye" ></i></a>
+                          <a class="btn btn-info btn-sm" href="{{ route('invoice.show', '') }}/{{$invoice->id}}"><i class="fa fa-eye" ></i></a>
                         </td>
                       </tr>
                       @endforeach
@@ -108,7 +109,7 @@
                         <td></td>
                         <td></td>
                         <td class="text-right"><b>Total</b></td>
-                        <td id="tot-amt" class="text-center"><span>{{$currency}} </span>{{$totalAmount}}</td>
+                        <td id="tot-amt" class="text-center"><span>{{$currency}} </span>{{number_format($totalAmount,  $decimalLength )}}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -169,8 +170,8 @@
                         <td class="text-center">${1000+(invoice.id)}</td>
                         <td class="text-center">${new Date(invoice.created_at).toLocaleDateString('en-GB')}</td>
                         <td class="text-center">${invoice.customer.company_name}</td>
+                        <td class="text-center">${invoice.sales.map(item => item.product.name).join(', ')}</td>
                         <td class="text-center">${invoice.payment_type}</td>
-                        
                         <td class="text-center">${currency +parseFloat(invoice.total_amount).toFixed(decimalLength)}</td>
                         <td class="text-center">${currency +parseFloat(invoice.received_amt).toFixed(decimalLength)}</td>
                         <td class="text-center">${currency +parseFloat(invoice.acc_bal_amt).toFixed(decimalLength)}</td>

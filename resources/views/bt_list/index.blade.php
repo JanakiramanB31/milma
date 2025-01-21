@@ -67,11 +67,12 @@
                       <th class="text-center">Action</th>
                     </tr>
                   </thead>
+                  @php
+                    $totalAmount = $filteredInvoices->sum('total_amount') ?? 0;
+                  @endphp
                   <tbody>
                   @foreach ($filteredInvoices as $companyName => $invoice) 
-                    @php
-                        $totalAmount = $filteredInvoices->sum('total_amount');
-                    @endphp
+                    
                     <tr>
                       <td class="text-center">{{1000+$invoice->id}}</td>
                       <td class="text-center">{{$invoice->created_at->format('d-m-Y')}}</td>
@@ -286,6 +287,7 @@
             });
             $('#paymentApproveForm').modal('hide'); 
             $('#reference-number-entry').val('');
+            window.location.href = "{{route('bt_list.index')}}"
           } else {
             Swal.fire({
               icon: 'error',

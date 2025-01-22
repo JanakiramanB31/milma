@@ -1,6 +1,9 @@
 @php
     $paperWidth = "320px";
+    $salesData['selectedStartDate'] = \Carbon\Carbon::parse($salesData['selectedStartDate']);
+    $salesData['selectedEndDate'] = \Carbon\Carbon::parse($salesData['selectedEndDate']);
 @endphp
+
 <div class="wrapper wrapper-content animated fadeInRight">
   <div class="row" id="xReport">
     <style>

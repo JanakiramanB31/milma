@@ -75,7 +75,7 @@
                   </tr>
                   <tr>
                     <td><b>Total No. of Sales</b></td>
-                    <td id="salesCount">{{$saleType['qty_count']}}</td>
+                    <td id="salesCount">{{$cashPayments['transaction_count'] + $bankPayments['transaction_count'] + $creditTransactionCount}}</td>
                     <td><b>Total Amount of Sales</b></td>
                     <td ><p id="salesAmount" class="float-right mb-0"><span>{{ $currency }}</span> {{ number_format($saleType['total_amt'],  $decimalLength ) }}</p></td>
                   </tr>
@@ -184,7 +184,7 @@
               var cardAmt = (response.cardSalesAmount || 0);
               var returnAmt = (response.returnType.total_amt || 0);
               console.log("Success", response);  
-              $('#salesCount').text(response.saleType.qty_count);
+              $('#salesCount').text(response.cashPayments.transaction_count + response.bankPayments.transaction_count+ creditTransactionCount);
               $('#salesAmount').text(currency + response.saleType.total_amt.toFixed(decimalLength));
               $('#returnCount').text(response.returnType.qty_count);
               $('#returnAmount').text(currency + response.returnType.total_amt.toFixed(decimalLength));

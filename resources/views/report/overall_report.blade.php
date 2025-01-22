@@ -94,10 +94,11 @@
                     </tr>
                   </thead>
                   <tbody>
-                  @foreach ($filteredInvoices as $companyName => $invoice) 
-                    @php
+                  @php
                         $totalAmount = $filteredInvoices->sum('total_amount');
                     @endphp
+                  @foreach ($filteredInvoices as $companyName => $invoice) 
+                    
                     <tr>
                       <td class="text-center">{{1000+$invoice->id}}</td>
                       <td class="text-center">{{$invoice->created_at->format('d-m-Y')}}</td>

@@ -206,7 +206,7 @@
           </select>
         </div>
         <div class="form-group col-md-4">
-          <input name="supplier_price[]" value="{{ $SupplierPrice }}" class="form-control prod-rate-price @error('supplier_price') is-invalid @enderror" type="text" placeholder="Purchase Price">
+          <input name="supplier_price[]" value="{{ number_format($SupplierPrice, $decimalLength }}" class="form-control prod-rate-price @error('supplier_price') is-invalid @enderror" type="text" placeholder="Purchase Price">
           <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : '' }}</span>
         </div>
         <div class="form-group col-md-4">

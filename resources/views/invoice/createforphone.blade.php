@@ -484,8 +484,8 @@
         var priceVal = tr.find('.price').val();
         var price = priceVal;
         //console.log("Checking Price",price)
-        var amount = (qty * price);
-        tr.find('.amount').val(amount ? amount : 0);
+        var amount =parseFloat(qty * price).toFixed(2);
+        tr.find('.amount').val(amount ? amount : 0.00);
         total();
       });
 
@@ -612,13 +612,13 @@
         var tr = $(this).closest('tr');
         var qty = tr.find('.return-qty').val();
         var price = tr.find('.return-price').val();
-        var amount = (qty * price);
+        var amount = parseFloat(qty * price).toFixed(2);
         tr.find('.return-amount').val(amount);
         returnTotal();
         $('#return-entry-button').on("click", function(){
           $('#return-product-name-entry').val();
           $('#return-qty-entry').val(qty);
-          $('#return-price-entry').val(price);
+          $('#return-price-entry').val(parseFloat(price).toFixed(2));
         });
       });
 
@@ -771,13 +771,13 @@
 
       $('#received_amt').on('change', function (){
         let receivedAmount = $(this).val();
-        $(this).val(receivedAmount ? receivedAmount : 0);
+        $(this).val(parseFloat(receivedAmount ? receivedAmount : 0).toFixed(2));
       });
 
       $('#payment_type').on('change', function () {
         let paymentType = $(this).val();
         let totalAmount = $('#purchase-tot').text();
-        $('#received_amt').val(totalAmount);
+        $('#received_amt').val(parseFloat(totalAmount).toFixed(2));
       })
 
       //After Submitting Return Items to Invoice Make this to Non Editable
@@ -963,10 +963,10 @@
             $('#prod-name').text(prodName);
             $('#prod-qty').text(qtyValue);
             $('#return-view-price-currency').text('£');
-            $('#prod-price').text(prodPrice);
+            $('#prod-price').text(parseFloat(prodPrice).toFixed(2));
             $('#prod-rtn-reason').text(rtnReason);
             $('#return-view-tot-currency').text('£');
-            $('#prod-tot-amt').text(totalAmt ? totalAmt : 0);
+            $('#prod-tot-amt').text(parseFloat(totalAmt ? totalAmt : 0).toFixed(2));
             $('#productDetailsModal').modal('show');
 
             setTimeout(()=> {

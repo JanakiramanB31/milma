@@ -55,6 +55,8 @@ class InvoiceController extends Controller
       $today = now()->toDateString();
       $routeEmptyError = null;
       $returnProducts = array();
+      $currency = config('constants.CURRENCY_SYMBOL');
+      $decimalLength = config('constants.DECIMAL_LENGTH');
       $customers = Customer::where('status',1)->get();
       $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
       if ($userRole == 'admin') {
@@ -79,7 +81,7 @@ class InvoiceController extends Controller
           return view('invoice.createforphone', compact('customers','userRole','returnProducts','paymentMethods','routeEmptyError','products'));
         }
       }
-      return view('invoice.createforphone', compact('customers','userRole','returnProducts','paymentMethods','products','routeEmptyError'));
+      return view('invoice.createforphone', compact('customers','userRole','returnProducts','paymentMethods','products','routeEmptyError','currency','decimalLength'));
     }
 
     /**
@@ -295,6 +297,8 @@ class InvoiceController extends Controller
       $userID = Auth::id();
       $userRole = Auth::user()->role;
       $today = now()->toDateString();
+      $currency = config('constants.CURRENCY_SYMBOL');
+      $decimalLength = config('constants.DECIMAL_LENGTH');
       $routeEmptyError = null;
       $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
       $customers = Customer::where('status',1)->get();
@@ -324,7 +328,7 @@ class InvoiceController extends Controller
         }
       }
       
-      return view('invoice.edit', compact('customers','userRole','returnProducts','invoice','sales','paymentMethods','routeEmptyError','products'));
+      return view('invoice.edit', compact('customers','userRole','returnProducts','invoice','sales','paymentMethods','routeEmptyError','products','currency','decimalLength'));
     }
 
     /**
@@ -419,10 +423,10 @@ class InvoiceController extends Controller
           foreach ($stockintransits as $stockintransit) {
             if ($request->type[$key] === "sales") {
               $stockintransit->sold_qty += $request->qty[$key];
-              $stockintransit->quantity -= $request->qty[$key];
+              $stockintransit->quantity -= $request->prev_qty[$key];
             } else {
               $stockintransit->sold_qty -= $request->qty[$key];
-              $stockintransit->quantity += $request->qty[$key];
+              $stockintransit->quantity += $request->prev_qty[$key];
             }
             $stockintransit->save();
           }

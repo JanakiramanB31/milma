@@ -108,9 +108,10 @@
                         <td></td>
                         <td></td>
                         <td></td>
+                        <td></td>
                         <td class="text-right"><b>Total</b></td>
                         <td id="tot-amt" class="text-center"><span>{{$currency}} </span>{{number_format($totalAmount,  $decimalLength )}}</td>
-                        <td></td>
+                        
                         <td></td>
                         <td></td>
                         <td></td>

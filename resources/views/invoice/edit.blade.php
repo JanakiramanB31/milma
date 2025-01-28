@@ -116,7 +116,8 @@
                             @endif
                           </td>
                           <td class="p-1">
-                            <input type="text" name="qty[]" value="{{$sale->qty}}" data-id="{{$sale->product->id}}" data-prodname="{{$sale->product->name}}" class="form-control text-center p-1 fs-6 {{$sale->type == 'sales'? 'qty' :'return-qty'}}">
+                            <input type="text" name="qty[]" value="{{$sale->qty}}" data-qty = "{{$sale->qty}}" data-id="{{$sale->product->id}}" data-prodname="{{$sale->product->name}}" class="form-control text-center p-1 fs-6 {{$sale->type == 'sales'? 'qty' :'return-qty'}}">
+                            <input type="hidden" name="prev_qty[]" value="{{$sale->qty}}" >
                             <input type="hidden" name="type[]" value="{{$sale->type == 'sales'? 'sales' : 'returns'}}" class="form-control" >
                           </td>
                           <td hidden><input type="text" value="{{$sale->price}}"  name="price[]" class="form-control p-1 fs-6 {{$sale->type == 'sales'? 'price' :'return-price'}} " ></td>
@@ -496,7 +497,7 @@
           $('#alert-message').text("The selected product rate type price is not available, so the base rate has been applied instead.");
           $('#alert-message').show();
         }
-        tr.find('.price').val(prodPrices[id]);
+        tr.find('.price').val(parseFloat(prodPrices[id]).toFixed(2));
       });
 
       //Calculating the Total Amount for Selected Product
@@ -504,8 +505,8 @@
         var tr = $(this).parent().parent();
         var qty = tr.find('.qty').val();
         var price = tr.find('.price').val();
-        var amount = (qty * price);
-        tr.find('.amount').val(amount ? amount : 0);
+        var amount = parseFloat(qty * price).toFixed(2);
+        tr.find('.amount').val(parseFloat(amount ? amount : 0).toFixed(2));
         total();
       });
 
@@ -620,7 +621,7 @@
         if (selectedProductID) {
           var productDetails = prodData.quantityAndPrices.find(item => item.product_id == selectedProductID);
           if (productDetails) {
-            row.find('.return-price').val(productDetails.price);
+            row.find('.return-price').val(parseFloat(productDetails.price).toFixed(2));
           } else {
             row.find('.return-price').val('');
           }
@@ -631,8 +632,8 @@
         var tr = $(this).closest('tr');
         var returnQtyVal = parseInt(tr.find('.return-qty').val());
         var returnProdPrice = tr.find('.return-price').val();
-        var returnAmt = (returnQtyVal * returnProdPrice);
-        tr.find('.return-amount').val(returnAmt ? returnAmt : 0);
+        var returnAmt = parseFloat(returnQtyVal * returnProdPrice).toFixed(2);
+        tr.find('.return-amount').val(parseFloat(returnAmt ? returnAmt : 0).toFixed(2));
         total();
       });
 
@@ -642,12 +643,12 @@
         var qty = tr.find('.return-qty').val();
         var price = tr.find('.return-price').val();
         var amount = (qty * price);
-        tr.find('.return-amount').val(amount ? amount : 0);
+        tr.find('.return-amount').val(parseFloat(amount ? amount : 0).toFixed(2));
         returnTotal();
         $('#return-entry-button').on("click", function(){
           $('#return-product-name-entry').val();
           $('#return-qty-entry').val(qty);
-          $('#return-price-entry').val(price);
+          $('#return-price-entry').val(parseFloat(price).toFixed(2));
         });
       });
 
@@ -802,7 +803,7 @@
 
       $('#received_amt').on('change', function (){
         let receivedAmount = $(this).val();
-        $(this).val(receivedAmount ? receivedAmount : 0);
+        $(this).val(parseFloat(receivedAmount ? receivedAmount : 0).toFixed(2));
       });
 
       //After Submitting Return Items to Invoice Make this to Non Editable
@@ -988,10 +989,10 @@
             $('#prod-name').text(prodName);
             $('#prod-qty').text(qtyValue);
             $('#return-view-price-currency').text('£');
-            $('#prod-price').text(prodPrice);
+            $('#prod-price').text(parseFloat(prodPrice).toFixed(2));
             $('#prod-rtn-reason').text(rtnReason);
             $('#return-view-tot-currency').text('£');
-            $('#prod-tot-amt').text(totalAmt ? totalAmt : 0);
+            $('#prod-tot-amt').text(parseFloat(totalAmt ? totalAmt : 0).toFixed(2));
             $('#productDetailsModal').modal('show');
 
             setTimeout(()=> {
@@ -1145,6 +1146,8 @@
           const qtyVal = parseInt($(this).val());
           const productID = $(this).data('id');
           const prodName = $(this).data('prodname');
+          const prevQty = parseInt($(this).data('qty'));
+          console.log("prevQty",prevQty)
 
           if (!productID) {
             console.log("Failed: No product ID");
@@ -1168,7 +1171,7 @@
             if (qtyVal && availableQty === 0) {
               $('#alert-message').text(`${prodName} is Out of Stock`).show();
               allValidated = false;
-            } else if (qtyVal > availableQty) {
+            } else if ((prevQty-qtyVal) > availableQty) {
               $('#alert-message').text(`${prodName} Quantity exceeds available stock`).show();
               allValidated = false;
             } else if (qtyVal < 0) {
@@ -1241,6 +1244,8 @@
       $(document).on('input','.qty' ,function (){
         let qtyVal = parseInt($(this).val());
         let productID = $(this).data('id');
+        const prevQty = parseInt($(this).data('qty'));
+          console.log("prevQty",prevQty)
         //console.log(productID);
 
         if (!productID) {
@@ -1273,7 +1278,7 @@
                   $('#product-form-data').attr("disabled", true);
                   $('#alert-message').text('Out of Stock').show();
                   return false;
-                } else if(qtyVal > availableQty){
+                } else if ((qtyVal-prevQty) > availableQty) {
                   //console.log("QtyValue", qtyVal,"Available Qty",availableQty)
                   $('#product-form-data').attr("disabled", true);
                   $('#alert-message').text("Quantity exceeds available stock");

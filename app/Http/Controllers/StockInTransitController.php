@@ -155,9 +155,9 @@ class StockInTransitController extends Controller
       $existUserID = $stockInTransit->user_id;
       $users = User::where('role', 'sales')->get(); 
       $today = now()->format('Y-m-d');
-      $productIDsAndQuantities = StockInTransit::select('id', 'quantity', 'product_id')->where('route_id', $stockInTransit->route_id)->where('vehicle_id', $stockInTransit->vehicle_id)->where('user_id', $existUserID)->whereDate('created_at', $today)->get();    
-      $stockInTransitIDs = $productIDsAndQuantities->pluck('id','product_id')->toArray();
-      $productIDsAndQuantities = $productIDsAndQuantities->pluck('quantity','product_id')->toArray();
+      $productIDsAndQuantity = StockInTransit::select('id', 'quantity', 'product_id')->where('route_id', $stockInTransit->route_id)->where('vehicle_id', $stockInTransit->vehicle_id)->where('user_id', $existUserID)->whereDate('created_at', $today)->get();    
+      $stockInTransitIDs = $productIDsAndQuantity->pluck('id','product_id')->toArray();
+      $productIDsAndQuantities = $productIDsAndQuantity->pluck('quantity','product_id')->toArray();
       $supplierProdQuantities = [];
       foreach ($products as $product) {
         $quantity = ProductSupplier::where('product_id', $product->id)->value('quantity');

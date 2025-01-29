@@ -139,7 +139,7 @@
                           <td hidden></td>
                           <td><input type="hidden" name="total" id="total" class="form-control total" /></td>
                           <td><b>Total</b></td>
-                          <td><b class="currency">£</b><b class="total"></b></td>
+                          <td><b class="currency">£</b><b class="total" id="purchase-tot"></b></td>
                         </tr>
                       </tfoot>
                     </table>
@@ -295,10 +295,23 @@
                     </select>
                     <div id="payment-type-error" class="text-danger"></div>
                   </div>
-                  <!-- Received Amount PopUp Form Content -->
+                  <div style="padding:18px;">
+                    <label class="form-label">Total Amt</label>
+                    <input id="prod_tot_amt" type="text"  name="prod_tot_amt" readonly class="form-control"  min="0"/>
+                  </div>
+                  <div style="padding:18px;">
+                    <label class="form-label">Paid Amt</label>
+                    <input id="prev_received_amt" type="text"  name="prev_received_amt" readonly value="{{number_format(($invoice->received_amt - $invoice->returned_amt), $decimalLength)}}" class="form-control"  min="0"/>
+                  </div>
                   <div class="modal-body d-flex flex-column justify-content-center">
-                    <label class="form-label">Amount</label>
-                    <input id="received_amt" type="text"  name="received_amt" value="{{($invoice->received_amt - $invoice->returned_amt)}}" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
+                    <label id="cus_received_amt_label" class="form-label">Amount</label>
+                    <input id="cus_received_amt" type="text"  name="cus_received_amt"  class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
+                    <div id="cus_received-amt-error" class="text-danger"></div>
+                  </div>
+                  <!-- Received Amount PopUp Form Content -->
+                  <div class="modal-body d-none flex-column justify-content-center">
+                    <label id="received_amt_label" class="form-label">Amount</label>
+                    <input id="received_amt" type="text"  name="received_amt"  class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
                     <div id="received-amt-error" class="text-danger"></div>
                   </div>
                   <!-- Received Amount PopUp Form Footer -->
@@ -431,7 +444,7 @@
       });
 
       //Accept Only Float Number Price In Quantity Field 
-      $(document).on('input', '.return-price, .price, .amount, .return-amount, #received_amt', function() {
+      $(document).on('input', '.return-price, .price, .amount, .return-amount, #received_amt,  #cus_received_amt', function() {
         this.value = this.value.replace(/[^0-9.]/g, '');
         
         const parts = this.value.split('.');
@@ -805,6 +818,22 @@
         let receivedAmount = $(this).val();
         $(this).val(parseFloat(receivedAmount ? receivedAmount : 0).toFixed(2));
       });
+
+      $('#payment_type').on('change', function () {
+        let paymentType = $(this).val();
+        let prevPaidAmt = $('#prev_received_amt').val();
+        let totalAmount = $('#purchase-tot').text();
+        let balAmount =  totalAmount - prevPaidAmt;
+        if (balAmount < 0) {
+          $('#cus_received_amt_label').html("Refund Amount Due")
+          
+        } else {
+          $('#cus_received_amt_label').html("Remaining Amount to Pay")
+        }
+        $('#prod_tot_amt').val(parseFloat(totalAmount).toFixed(2));
+        $('#received_amt').val(parseFloat(balAmount).toFixed(2));
+        $('#cus_received_amt').val(parseFloat(Math.abs(balAmount)).toFixed(2));
+      })
 
       //After Submitting Return Items to Invoice Make this to Non Editable
       $('#submit-data').on('click', function () {
@@ -1191,7 +1220,21 @@
 
         if (allValidated) {
           // checkReturnQty();
+          
           $('#amountForm').modal('show');
+          let prevPaidAmt = $('#prev_received_amt').val();
+          let totalAmount = $('#purchase-tot').text();
+          let balAmount =  totalAmount - prevPaidAmt;
+          if (balAmount < 0) {
+            $('#received_amt_label').html("Refund Amount Due")
+            $('#cus_received_amt_label').html("Refund Amount Due")
+          } else {
+            $('#received_amt_label').html("Remaining Amount to Pay")
+            $('#cus_received_amt_label').html("Remaining Amount to Pay")
+          }
+          $('#prod_tot_amt').val(parseFloat(totalAmount).toFixed(2));
+          $('#received_amt').val(parseFloat( balAmount).toFixed(2));
+          $('#cus_received_amt').val(parseFloat(Math.abs(balAmount)).toFixed(2));
           $('#product-form-data').attr("disabled", false);
         } else {
           $('#alert-message').show();

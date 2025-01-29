@@ -11,7 +11,8 @@ class SalesController extends Controller
     public function index()
     {
         $sales = Sales::all(); // Include products related to sales
-
+        $currency = config('constants.CURRENCY_SYMBOL');
+        $decimalLength = config('constants.DECIMAL_LENGTH');
         $salesWithCompanies = $sales->groupBy(function ($sale) {
             return $sale->Customer->company_name ;
         });
@@ -20,10 +21,10 @@ class SalesController extends Controller
           return $sale->Product->name ;
         });
 
-        // $this->pr($groupedInvoices);
+        // $this->pr($sales);
         // exit;
         
-        return view('sales.index', compact('sales','salesWithCompanies','salesWithProducts'));
+        return view('sales.index', compact('sales','salesWithCompanies','salesWithProducts','currency','decimalLength'));
     }
 
     public function filterSalesData(Request $request)
@@ -43,8 +44,8 @@ class SalesController extends Controller
       $productName = $data['productName'];
 
       if ($fromDate && $toDate) {
-        $fromDate = \Carbon\Carbon::parse($fromDate)->format('Y-m-d');
-        $toDate = \Carbon\Carbon::parse($toDate)->format('Y-m-d');
+        $fromDate = \Carbon\Carbon::parse($fromDate)->startOfDay();
+        $toDate = \Carbon\Carbon::parse($toDate)->endOfDay();
       } else {
           $fromDate = now()->toDateString();
           $toDate = now()->toDateString();

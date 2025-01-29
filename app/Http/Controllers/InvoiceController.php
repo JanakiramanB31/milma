@@ -362,12 +362,12 @@ class InvoiceController extends Controller
       $invoice->customer_id = $request->customer_id;
       $invoice->user_id = $userId;
       $invoice->payment_type = $request->payment_type;
-      $invoice->received_amt = $request->payment_type == "Credit" ? "0" : $request->received_amt;
+      $invoice->received_amt = $request->payment_type == "Credit" ? $request->prev_received_amt : ($request->received_amt);
       $invoice->acc_bal_amt = $request->acc_bal_amt;
 
       if ($request->payment_type == "Credit") {
         $invoice->balance_amt = $request->acc_bal_amt + $request->received_amt;
-      } else if (($request->total + $request->acc_bal_amt) > $request->received_amt) {
+      } else if (($request->total + $request->acc_bal_amt) > ($request->prev_received_amt + $request->received_amt)) {
         $invoice->balance_amt = $balAmt; 
       } else {
         $invoice->balance_amt = 0.00; 
@@ -419,15 +419,24 @@ class InvoiceController extends Controller
           $customer->save();
 
           $stockintransits = StockInTransit::where('user_id', $userId)->where('product_id',$product_id)->whereDate('created_at', $today)->get();
-
+          // $this->pr($request->all());
+          // exit;
           foreach ($stockintransits as $stockintransit) {
             if ($request->type[$key] === "sales") {
-              $stockintransit->sold_qty += $request->qty[$key];
-              $stockintransit->quantity -= $request->prev_qty[$key];
+              
+              $stockintransit->sold_qty = $stockintransit->sold_qty + ( $request->qty[$key] - $request->prev_qty[$key] );
+              $stockintransit->quantity = $stockintransit->quantity - ( $request->qty[$key] - $request->prev_qty[$key] );
+              // $this->pr("sold_qty");$this->pr($stockintransit->sold_qty);
+              // $this->pr("quantity");$this->pr($stockintransit->quantity);
+              // $this->pr("qty");$this->pr($request->qty[$key]);
+              // $this->pr("prev_qty");$this->pr($request->prev_qty[$key]);
+              // $this->pr("sold_qty1");$this->pr($stockintransit->sold_qty + ( $request->qty[$key] - $request->prev_qty[$key] ));
+              // $this->pr("quantity2");$this->pr($stockintransit->quantity - ( $request->qty[$key] - $request->prev_qty[$key] ));
             } else {
-              $stockintransit->sold_qty -= $request->qty[$key];
+              $stockintransit->sold_qty -= ($request->prev_qty[$key] - $request->qty[$key]);
               $stockintransit->quantity += $request->prev_qty[$key];
             }
+            // exit;
             $stockintransit->save();
           }
         }

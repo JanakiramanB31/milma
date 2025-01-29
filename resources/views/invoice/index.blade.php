@@ -33,7 +33,7 @@
               <tr>
                 <th>Receipt ID </th>
                 <th>Company Name </th>
-                <!-- <th>Date </th> -->
+                <th>Date </th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -42,7 +42,7 @@
               <tr>
                 <td>{{1000+$invoice->id}}</td>
                 <td>{{$invoice->customer->company_name}}</td>
-                <!-- <td>{{$invoice->created_at->format('d-m-Y')}}</td> -->
+                <td>{{$invoice->created_at->format('d-m-Y')}}</td>
                 <td class="d-flex" style="gap: 10px;">
                   <a class="btn btn-info btn-sm" href="{{route('invoice.show', $invoice->id)}}"><i class="fa fa-eye" ></i></a>
                   <a class="btn btn-primary btn-sm" href="{{route('invoice.edit', $invoice->id)}}"><i class="fa fa-edit" ></i></a>

@@ -165,7 +165,11 @@ class InvoiceController extends Controller
       $invoice->customer_id = $request->customer_id;
       $invoice->user_id = $userId;
       $invoice->payment_type = $request->payment_type;
-      $invoice->received_amt = $request->payment_type == "Credit" ? "0" : $request->received_amt;
+      if ($request->received_amt < 0) {
+        $invoice->received_amt = 0.00;
+      } else {
+        $invoice->received_amt = $request->payment_type == "Credit" ? "0" : $request->received_amt;
+      }
       $invoice->acc_bal_amt = $request->acc_bal_amt;
 
       if ($request->payment_type == "Credit") {
@@ -176,11 +180,14 @@ class InvoiceController extends Controller
         $invoice->balance_amt = 0.00; 
       }
       $invoice->total_amount = $request->total;
-      if($returnedAmt > 0 ) {
+      if ($request->received_amt < 0) {
+        $invoice->returned_amt = $request->received_amt;
+      } else if ($returnedAmt > 0 ) {
         $invoice->returned_amt = $returnedAmt;
       } else {
         $invoice->returned_amt = 0;
       }
+      
       $invoice->prev_acc_bal_amt = $request->acc_bal_amt;
       $invoice->save();
 
@@ -433,7 +440,7 @@ class InvoiceController extends Controller
               // $this->pr("sold_qty1");$this->pr($stockintransit->sold_qty + ( $request->qty[$key] - $request->prev_qty[$key] ));
               // $this->pr("quantity2");$this->pr($stockintransit->quantity - ( $request->qty[$key] - $request->prev_qty[$key] ));
             } else {
-              $stockintransit->sold_qty = $stockintransit->sold_qty - ($request->prev_qty[$key] - $request->qty[$key]);
+              $stockintransit->sold_qty = $stockintransit->sold_qty - ( $request->qty[$key] - $request->prev_qty[$key] );
               $stockintransit->quantity = $stockintransit->quantity + ( $request->qty[$key] - $request->prev_qty[$key] );
             }
             // exit;

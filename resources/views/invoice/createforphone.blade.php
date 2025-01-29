@@ -274,6 +274,11 @@
                     </div>
                     <!-- Received Amount PopUp Form Content -->
                     <div class="modal-body d-flex flex-column justify-content-center">
+                    <label id="cus_received_amt_label" class="form-label">Amount</label>
+                      <input id="cus_received_amt" type="text"  name="cus_received_amt" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
+                      <div id="cus_received-amt-error" class="text-danger"></div>
+                    </div>
+                    <div class="modal-body d-flex flex-column justify-content-center">
                     <label class="form-label">Amount</label>
                       <input id="received_amt" type="text"  name="received_amt" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
                       <div id="received-amt-error" class="text-danger"></div>
@@ -777,7 +782,14 @@
       $('#payment_type').on('change', function () {
         let paymentType = $(this).val();
         let totalAmount = $('#purchase-tot').text();
+        if (totalAmount < 0) {
+          $('#cus_received_amt_label').html("Refund Amount Due")
+          
+        } else {
+          $('#cus_received_amt_label').html("Remaining Amount to Pay")
+        }
         $('#received_amt').val(parseFloat(totalAmount).toFixed(2));
+        $('#cus_received_amt').val(parseFloat(Math.abs(totalAmount)).toFixed(2));
       })
 
       //After Submitting Return Items to Invoice Make this to Non Editable
@@ -1194,6 +1206,12 @@
         if (allValidated) {
           $('#amountForm').modal('show');
           let totalAmount = $('#purchase-tot').text();
+          if (totalAmount < 0) {
+            $('#cus_received_amt_label').html("Refund Amount Due")
+          } else {
+            $('#cus_received_amt_label').html("Remaining Amount to Pay")
+          }
+          $('#cus_received_amt').val(parseFloat(Math.abs(totalAmount)).toFixed(2));
           $('#received_amt').val(parseFloat(totalAmount).toFixed(2));
           $('#product-form-data').attr("disabled", false);
         } else {

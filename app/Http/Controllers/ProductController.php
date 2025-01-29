@@ -42,6 +42,8 @@ class ProductController extends Controller
         // exit;
         $suppliers =Supplier::all();
         $categories = Category::all();
+        $currency = config('constants.CURRENCY_SYMBOL');
+        $decimalLength = config('constants.DECIMAL_LENGTH');
         $taxes = Tax::all();
         $units = Unit::all();
         $rates = Rate::all();
@@ -56,7 +58,7 @@ class ProductController extends Controller
         $productPrices =array('0');
         $productSupplierQuantity = array('0');
         //  echo '<pre>'; print_r($stockTypes); echo '</pre>'; exit;
-        return view('product.create', compact('product','productSupplierQuantity','productSupplierIds','productSupplierPrices','categories','taxes','units','suppliers', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices'));
+        return view('product.create', compact('product','decimalLength', 'currency','productSupplierQuantity','productSupplierIds','productSupplierPrices','categories','taxes','units','suppliers', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices'));
     }
 
     /**
@@ -195,7 +197,8 @@ class ProductController extends Controller
     {
         $productId = $id; // The specific product ID you want to retrieve associated ProductSupplier record for
         $additional = ProductSupplier::where('product_id', $productId)->first();
-        
+        $currency = config('constants.CURRENCY_SYMBOL');
+        $decimalLength = config('constants.DECIMAL_LENGTH');
         $product =Product::findOrFail($id);
         // echo '<pre>'; print_r($product); echo '</pre>'; exit;
         $suppliers =Supplier::all();
@@ -218,7 +221,7 @@ class ProductController extends Controller
         $stockTypes = config('constants.STOCK_TYPES');
         $editPage = true;
         $submitURL = route('product.update',$product->id);
-        return view('product.edit', compact('additional','productSupplierIds','productSupplierQuantity','productSupplierPrices','suppliers','categories','taxes','units','product', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices' ));
+        return view('product.edit', compact('additional','decimalLength', 'currency','productSupplierIds','productSupplierQuantity','productSupplierPrices','suppliers','categories','taxes','units','product', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices' ));
     }
 
     /**

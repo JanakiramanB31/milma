@@ -31,7 +31,7 @@
           <div class="d-flex justify-content-end align-items-center mt-2">
             <div class="d-flex h-100 justify-content-center align-items-center">
               <p class="mb-0 ">Bal Amt:</p><p class="mb-0 mx-1 d-inline"></p>
-              <b id="bal-amt-symbol" class="h5 mb-0 mr-1"></b><b id="bal-amt" class="h5 mb-0">{{$invoice->prev_acc_bal_amt}}</b>
+              <b id="bal-amt-symbol" class="h5 mb-0 mr-1"></b><b id="bal-amt" class="h5 mb-0">{{number_format($invoice->prev_acc_bal_amt, $decimalLength)}}</b>
             </div>
           </div>
 
@@ -120,8 +120,8 @@
                             <input type="hidden" name="prev_qty[]" value="{{$sale->qty}}" >
                             <input type="hidden" name="type[]" value="{{$sale->type == 'sales'? 'sales' : 'returns'}}" class="form-control" >
                           </td>
-                          <td hidden><input type="text" value="{{$sale->price}}"  name="price[]" class="form-control p-1 fs-6 {{$sale->type == 'sales'? 'price' :'return-price'}} " ></td>
-                          <td class="p-1"><input type="text" value="{{$sale->total_amount}}" name="amount[]" class="form-control text-center p-1 fs-6 {{$sale->type == 'sales'? 'amount' :'return-amount'}}" ></td>
+                          <td hidden><input type="text" value="{{number_format($sale->price, $decimalLength)}}"  name="price[]" class="form-control p-1 fs-6 {{$sale->type == 'sales'? 'price' :'return-price'}} " ></td>
+                          <td class="p-1"><input type="text" value="{{number_format($sale->total_amount, $decimalLength)}}" name="amount[]" class="form-control text-center p-1 fs-6 {{$sale->type == 'sales'? 'amount' :'return-amount'}}" ></td>
                           <td hidden><input type="hidden" name="reason[]" class="form-control p-1 fs-6 {{$sale->type == 'sales'? 'reason' :'return-reason'}}" ></td>
                           <td align="center" class="p-1"><i class="fa fa-trash-o fa-sm btn btn-danger prod-remove"></i></td>
 
@@ -1197,7 +1197,7 @@
             const availableQty = parseInt(response.productIDsandQuantitites[productID]);
             //console.log("Available Quantity", availableQty);
 
-            if (qtyVal && availableQty === 0) {
+            if (qtyVal && prevQty+availableQty === 0) {
               $('#alert-message').text(`${prodName} is Out of Stock`).show();
               allValidated = false;
             } else if ((prevQty-qtyVal) > availableQty) {
@@ -1317,7 +1317,7 @@
                 var qtyData = response.productIDsandQuantitites;
                 var availableQty = parseInt(qtyData[productID]);
                 //console.log("Available Quantity",availableQty);
-                if (qtyVal && availableQty == 0) {
+                if (qtyVal && prevQty+availableQty == 0) {
                   $('#product-form-data').attr("disabled", true);
                   $('#alert-message').text('Out of Stock').show();
                   return false;

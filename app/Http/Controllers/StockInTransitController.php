@@ -115,8 +115,8 @@ class StockInTransitController extends Controller
             $stockInTransit->quantity = $quantities[$key];
             $stockInTransit->save();
 
-            $supplier->quantity = $supplier->quantity - $quantities[$key];
-            $supplier->save();
+            // $supplier->quantity = $supplier->quantity - $quantities[$key];
+            // $supplier->save();
           }
 
         }
@@ -202,8 +202,8 @@ class StockInTransitController extends Controller
             $stockInTransit->quantity = $quantity;
             $stockInTransit->save();
 
-            $supplier->quantity -= $newQuantities[$key];
-            $supplier->save();
+            // $supplier->quantity -= $newQuantities[$key];
+            // $supplier->save();
           }
         } else {
             if (isset($newQuantities[$key]) && !empty($newQuantities[$key]) ) {
@@ -215,8 +215,8 @@ class StockInTransitController extends Controller
               $stockInTransit->quantity = $oldQuantities[$key] + $newQuantities[$key];
               $stockInTransit->save();
 
-              $supplier->quantity -= $newQuantities[$key];
-              $supplier->save();
+              // $supplier->quantity -= $newQuantities[$key];
+              // $supplier->save();
             }
         }
       }

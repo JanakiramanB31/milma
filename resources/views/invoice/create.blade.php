@@ -228,8 +228,8 @@
         var tr = $(this).parent().parent();
         var qty = tr.find('.qty').val();
         var price = tr.find('.price').val();
-        var amount = (qty * price);
-        tr.find('.amount').val(amount.toFixed(2));
+        var amount = qty * price;
+        tr.find('.amount').val(parseFloat(amount).toFixed(2));
         total();
       });
 
@@ -249,12 +249,12 @@
         $('#product-section .return-amount').each(function () {
           var returnsAmount =$(this).val()-0;
           returnsTotal += returnsAmount;
-          console.log("Retuens Amount",returnsTotal)
+          console.log("Returns Amount",returnsTotal)
         })
         var total = salesTotal - returnsTotal;
         $('.currency').html("£");
-        $('.total').html(total);
-        $('#total').val(total.toFixed(2));
+        $('.total').html(parseFloat(total).toFixed(2));
+        $('#total').val(parseFloat(total).toFixed(2));
       }
 
       $('.addRow').on('click', function () {
@@ -393,12 +393,12 @@
         var qty = tr.find('.return-qty').val();
         var price = tr.find('.return-price').val();
         var amount = (qty * price);
-        tr.find('.return-amount').val(amount.toFixed(2));
+        tr.find('.return-amount').val(parseFloat(amount).toFixed(2));
         returnTotal();
         $('#return-entry-button').on("click", function(){
           $('#return-product-name-entry').val();
-          $('#return-qty-entry').val(qty.toFixed(2));
-          $('#return-price-entry').val(price.toFixed(2));
+          $('#return-qty-entry').val(parseFloat(qty).toFixed(2));
+          $('#return-price-entry').val(parseFloat(price).toFixed(2));
         });
       });
 
@@ -409,7 +409,7 @@
           total += amount;
         })
         $('.return-currency').html("£");
-        $('.return-total').html(total.toFixed(2));
+        $('.return-total').html(parseFloat(total).toFixed(2));
       }
 
       
@@ -428,7 +428,7 @@
         const qty = parseFloat(row.find('.return-qty').val()) || '';
         const price = parseFloat(row.find('.return-price').val()) || '';
         const amount = qty * price;
-        row.find('.return-amount').val(amount.toFixed(2));
+        row.find('.return-amount').val(parseFloat(amount).toFixed(2));
       }
 
       function addReturnRow() {

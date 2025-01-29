@@ -146,7 +146,7 @@
                       @else
                         @foreach($products as $product)
                           <figure class="flex-{grow|shrink}-1">
-                            <image class="product-select" data-id="{{$product->id}}" data-name="{{$product->name}}" src={{asset('images/product/' . $product->image)}} width='50px' height='50px'/>
+                            <image class="product-select" data-qty="{{$product->quantity}}" data-id="{{$product->id}}" data-name="{{$product->name}}" src={{asset('images/product/' . $product->image)}} width='50px' height='50px'/>
                             <figcaption style="width: 50px;"><p class="d-inline" style=" white-space: normal;word-wrap: break-word;overflow-wrap: break-word;">{{$product->name}}<p class="d-inline">-</p><b>{{$product->quantity}}</b><p class="d-inline">({{$product->unit->name}})</p></p></figcaption>
                           </figure>
                         @endforeach
@@ -474,7 +474,7 @@
           $('#alert-message').text("The selected product rate type price is not available, so the base rate has been applied instead.");
           $('#alert-container').show();
         }
-        tr.find('.price').val(productPrice);
+        tr.find('.price').val(parseFloat(productPrice).toFixed(2));
       });
 
       //Calculating the Total Amount for Selected Product
@@ -600,7 +600,7 @@
         if (selectedProductID) {
           var productDetails = prodData.quantityAndPrices.find(item => item.product_id == selectedProductID);
           if (productDetails) {
-            row.find('.return-price').val(productDetails.price);
+            row.find('.return-price').val(parseFloat(productDetails.price).toFixed(2));
           } else {
             row.find('.return-price').val('');
           }
@@ -833,6 +833,7 @@
       //Validating Customer Selected and Avoiding Same Products selecting Multiple Times Function  
       $(document).on("click", '.product-select', function() {
         var productID = $(this).data('id');
+        var productQty = $(this).data('qty');
         var productName = $(this).data('name');
         var customerID = parseInt($('#customer_name').val(), 10);
         //console.log(customerID)
@@ -872,7 +873,15 @@
             $('#alert-message').text("The selected product rate type price is not available, so the base rate has been applied instead.");
             $('#alert-container').show();
           }
-          addProductMobileRow(productID, productName, productPrice);
+          if (productQty <=0) {
+            $('#alert-message').text(`${productName} is Out of Stock`);
+            $('#alert-container').show();
+            setTimeout(()=>{
+              $('#alert-container').hide();
+          }, 3000)
+          } else {
+            addProductMobileRow(productID, productName, productPrice);
+          }
           } else {
             $('#alert-message').text("Already added the Product");
             $('#alert-container').show();
@@ -1185,7 +1194,7 @@
         if (allValidated) {
           $('#amountForm').modal('show');
           let totalAmount = $('#purchase-tot').text();
-          $('#received_amt').val(totalAmount);
+          $('#received_amt').val(parseFloat(totalAmount).toFixed(2));
           $('#product-form-data').attr("disabled", false);
         } else {
           $('#alert-container').show();

@@ -433,8 +433,8 @@ class InvoiceController extends Controller
               // $this->pr("sold_qty1");$this->pr($stockintransit->sold_qty + ( $request->qty[$key] - $request->prev_qty[$key] ));
               // $this->pr("quantity2");$this->pr($stockintransit->quantity - ( $request->qty[$key] - $request->prev_qty[$key] ));
             } else {
-              $stockintransit->sold_qty -= ($request->prev_qty[$key] - $request->qty[$key]);
-              $stockintransit->quantity += $request->prev_qty[$key];
+              $stockintransit->sold_qty = $stockintransit->sold_qty - ($request->prev_qty[$key] - $request->qty[$key]);
+              $stockintransit->quantity = $stockintransit->quantity - ( $request->qty[$key] - $request->prev_qty[$key] );
             }
             // exit;
             $stockintransit->save();

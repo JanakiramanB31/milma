@@ -260,7 +260,15 @@
     $(document).on('click', '#reference-number-entry-button', function () {
       var referenceNumber = $('#reference-number-entry').val();
       var invoiceID =  $('#paymentApproveForm').data('invoice-id');
-      console.log(referenceNumber, invoiceID)
+      console.log(referenceNumber, invoiceID);
+      let selectedStartDate = $('#startDate').val();
+      let selectedEndDate = $('#endDate').val();
+      var paymentMethod = $('#payment_type').find('option:selected').val();
+      const data1 = {
+          "fromDate": selectedStartDate,
+          "toDate": selectedEndDate,
+          "paymentMethod": paymentMethod
+        }
       if (referenceNumber.trim() == '') {
         Swal.fire({
             icon: 'error',
@@ -287,7 +295,7 @@
             });
             $('#paymentApproveForm').modal('hide'); 
             $('#reference-number-entry').val('');
-            window.location.href = "{{route('bt_list.index')}}"
+            fetchInvoices(data1);
           } else {
             Swal.fire({
               icon: 'error',

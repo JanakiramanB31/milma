@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Customer;
 use App\User;
 use App\Sale;
 use App\Product;
@@ -41,6 +42,7 @@ class HomeController extends Controller
     $totalSales = Sale::count();
     $totalSuppliers = Supplier::count();
     $totalInvoices = Invoice::count();
+    $totalCustomers = Customer::count();
 
     // Fetch monthly sales data from the sales table
     $monthlySales = Sale::selectRaw('SUM(total_amount) as total_amount, MONTH(created_at) as month')
@@ -94,6 +96,7 @@ class HomeController extends Controller
         'formattedTopSales'=> $formattedTopSales,
         'totalProducts' => $totalProducts,
         'totalSales' => $totalSales,
+        'totalCustomers' => $totalCustomers,
         'totalSuppliers' => $totalSuppliers,
         'totalInvoices' => $totalInvoices,
         'todaySales' => $todaySales, 

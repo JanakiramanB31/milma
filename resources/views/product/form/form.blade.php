@@ -262,7 +262,7 @@
               </select>
             </div>
             <div class="form-group col-md-5" >
-              <input name="product_price[]" value="{{ $curProductPrice }}" class="form-control prod-sup-price @error('product_price') is-invalid @enderror" type="text" placeholder="Product Price">
+              <input name="product_price[]" value="{{ $curProductPrice ? number_format($curProductPrice, $decimalLength) : '' }}" class="form-control prod-sup-price @error('product_price') is-invalid @enderror" type="text" placeholder="Product Price">
               <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : ''  }}</span>
             </div>
             <div class="form-group rate_btn_group d-flex col-md-2" style="gap: 5px;">

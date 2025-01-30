@@ -36,12 +36,14 @@ class InvoiceController extends Controller
       $userID = Auth::id();
       $userRole = Auth::user()->role;
       $today = now()->toDateString();
+      $currency = config('constants.CURRENCY_SYMBOL');
+      $decimalLength = config('constants.DECIMAL_LENGTH');
       if ($userRole == 'admin') {
         $invoices = Invoice::whereDate('created_at', $today)->get();
       } else {
         $invoices = Invoice::where('user_id',$userID)->whereDate('created_at', $today)->get();
       }
-      return view('invoice.index', compact('invoices'));
+      return view('invoice.index', compact('invoices','currency', 'decimalLength'));
     }
 
     /**
@@ -233,12 +235,15 @@ class InvoiceController extends Controller
           $stockintransits = StockInTransit::where('user_id', $userId)->where('product_id',$product_id)->whereDate('created_at', $today)->get();
 
           foreach ($stockintransits as $stockintransit) {
+
+
             if ($request->type[$key] === "sales") {
               $stockintransit->sold_qty += $request->qty[$key];
               $stockintransit->quantity -= $request->qty[$key];
             } else {
-              $stockintransit->sold_qty -= $request->qty[$key];
-              $stockintransit->quantity += $request->qty[$key];
+              // $this->pr($request->type[$key]);
+              // exit;
+              $stockintransit->return_qty += $request->qty[$key];
             }
             $stockintransit->save();
           }
@@ -291,7 +296,7 @@ class InvoiceController extends Controller
       if ($userRole == 'admin') {
       $invoices = Invoice::with('customer')->whereDate('created_at', $selectedDate)->get();
       } else {
-        $invoices = Invoice::with('customer')->where('user_id',$userID)->whereDate('created_at', $selectedDate)->get();
+      $invoices = Invoice::with('customer')->where('user_id',$userID)->whereDate('created_at', $selectedDate)->get();
       }
       // $this->pr($invoices);
       // exit;
@@ -446,8 +451,7 @@ class InvoiceController extends Controller
               // $this->pr("sold_qty1");$this->pr($stockintransit->sold_qty + ( $request->qty[$key] - $request->prev_qty[$key] ));
               // $this->pr("quantity2");$this->pr($stockintransit->quantity - ( $request->qty[$key] - $request->prev_qty[$key] ));
             } else {
-              $stockintransit->sold_qty = $stockintransit->sold_qty - ( $request->qty[$key] - $request->prev_qty[$key] );
-              $stockintransit->quantity = $stockintransit->quantity + ( $request->qty[$key] - $request->prev_qty[$key] );
+              $stockintransit->return_qty = $stockintransit->return_qty + ( $request->qty[$key] - $request->prev_qty[$key] );
             }
             // exit;
             $stockintransit->save();

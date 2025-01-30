@@ -33,7 +33,7 @@
               <tr>
                 <th>Receipt ID </th>
                 <th>Company Name </th>
-                <th>Date </th>
+                <th>Total Amt </th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -42,7 +42,7 @@
               <tr>
                 <td>{{1000+$invoice->id}}</td>
                 <td>{{$invoice->customer->company_name}}</td>
-                <td>{{$invoice->created_at->format('d-m-Y')}}</td>
+                <td><span>{{$currency}} </span>{{number_format($invoice->total_amount, $decimalLength)}}</td>
                 <td class="d-flex" style="gap: 10px;">
                   <a class="btn btn-info btn-sm" href="{{route('invoice.show', $invoice->id)}}"><i class="fa fa-eye" ></i></a>
                   <a class="btn btn-primary btn-sm" href="{{route('invoice.edit', $invoice->id)}}"><i class="fa fa-edit" ></i></a>
@@ -114,7 +114,10 @@
     }
 
     $(document).ready(function () {
-
+      var currentUserRole = @if(Auth::check()) {!! json_encode(Auth::user()->role) !!} @else 'guest' @endif;
+      var baseUrl = @json(url('/')); 
+      // console.log("BasEURL",baseUrl)
+      // console.log("UserRole", currentUserRole)
       var table = $('#sampleTable').DataTable({
         dom: '<"top"f>rt<"bottom"l<"pagination"p><"clear">>',
         language: {
@@ -212,26 +215,31 @@
                 $('#sampleTable tbody').empty();
                 if (response.length > 0) {
                   response.forEach(invoice => {
+                    var today = new Date().toISOString().split('T')[0];
+                    var invoiceDate = new Date(invoice.created_at).toISOString().split('T')[0]; 
                       $('#sampleTable tbody').append(`
                         <tr>
                           <td>${1000 + invoice.id}</td>
                           <td>${invoice.customer.company_name}</td>
+                          <td>${parseFloat(invoice.total_amount).toFixed(2)}</td>
                           <td class="d-flex" style="gap: 10px;">
-                            <a class="btn btn-primary btn-sm" href="/invoices/${invoice.id}"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-info btn-sm" href="/invoices/${invoice.id}/edit"><i class="fa fa-edit"></i></a>
+                            <a class="btn btn-primary btn-sm" href="${baseUrl}/invoice/${invoice.id}"><i class="fa fa-eye"></i></a>
+                            ${currentUserRole != "admin" && invoiceDate !== today   ? '' : `
+                            <a class="btn btn-info btn-sm" href="${baseUrl}/invoice/${invoice.id}/edit"><i class="fa fa-edit"></i></a>
                             <button class="btn btn-danger btn-sm" type="button" onclick="confirmDelete(${invoice.id})">
                               <i class="fa fa-trash"></i>
                             </button>
-                            <form id="delete-form-${invoice.id}" action="/invoices/${invoice.id}" method="POST" style="display: none;">
+                            <form id="delete-form-${invoice.id}" action="${baseUrl}/invoice/${invoice.id}" method="POST" style="display: none;">
                               @csrf
                               @method('DELETE')
                             </form>
+                              `}
                           </td>
                         </tr>
                     `);
                   });
                 } else {
-                  $('#sampleTable tbody').append('<tr><td colspan="3" class="text-center">No invoices found for this date.</td></tr>');
+                  $('#sampleTable tbody').append('<tr><td colspan="4" class="text-center">No invoices found for this date.</td></tr>');
                 }               
               } catch(error) {
                 console.log("Failed",error)

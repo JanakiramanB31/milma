@@ -138,7 +138,7 @@
 
                   <!-- Products List with Image -->
                   <div class="overflow-y p-1 border border-primary rounded" style="height: 300px;overflow-y: auto;">
-                    <div id="product-list" class="d-flex flex-wrap h-100 " style="gap: 10px;">
+                    <div id="product-list" class="d-flex flex-wrap h-100 " style="gap: 20px;">
                       @if(count($products) == 0)
                         <div class="d-flex w-100 h-100 justify-content-center align-items-center">
                           <p>No Products Found</p>
@@ -279,7 +279,7 @@
                       <input id="cus_received_amt" type="text"  name="cus_received_amt" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
                       <div id="cus_received-amt-error" class="text-danger"></div>
                     </div>
-                    <div class="modal-body d-flex flex-column justify-content-center">
+                    <div class="modal-body d-none flex-column justify-content-center">
                     <label class="form-label">Amount</label>
                       <input id="received_amt" type="text"  name="received_amt" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
                       <div id="received-amt-error" class="text-danger"></div>

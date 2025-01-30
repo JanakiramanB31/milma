@@ -67,7 +67,7 @@
                 <div class="form-group col-md-6">
                   <label class="form-label">Payment Type</label>
                   <select id="payment_type" name="payment_type" class="form-control">
-                    <option value = ''>Select Payment Type</option>
+                    <option value = ''>All Payment Types</option>
                     @foreach($paymentMethods as $paymentMethod)
                     <option name="payment_type"  value="{{$paymentMethod}}">{{$paymentMethod}}</option>
                     @endforeach

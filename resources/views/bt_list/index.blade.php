@@ -41,7 +41,7 @@
                 <div class="form-group col-md-12">
                   <label class="form-label">Payment Type</label>
                   <select id="payment_type" name="payment_type" class="form-control">
-                    <option value = ''>Select Payment Type</option>
+                    <option value = ''>All Payment Types</option>
                     @foreach($paymentMethods as $paymentMethod)
                     <option name="payment_type"  value="{{$paymentMethod}}">{{$paymentMethod}}</option>
                     @endforeach
@@ -225,7 +225,7 @@
                       <tr>
                         <td class="text-center">${1000+(invoice.id)}</td>
                         <td class="text-center">${new Date(invoice.created_at).toLocaleDateString('en-GB')}</td>
-                        <td class="text-center">${invoice.customer.name}</td>
+                        <td class="text-center">${invoice.customer.company_name}</td>
                         <td class="text-center">${invoice.payment_type}</td>
                         <td class="text-center">${currency +parseFloat(invoice.total_amount).toFixed(decimalLength)}</td>
                         <td class="text-center">${currency +parseFloat(invoice.received_amt).toFixed(decimalLength)}</td>

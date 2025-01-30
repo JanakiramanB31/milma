@@ -10,7 +10,8 @@ class SalesController extends Controller
 {
     public function index()
     {
-        $sales = Sales::all(); // Include products related to sales
+        $fromDate = now()->toDateString();
+        $sales = Sales::where('type', 'sales')->whereDate('created_at', $fromDate)->get(); // Include products related to sales
         $currency = config('constants.CURRENCY_SYMBOL');
         $decimalLength = config('constants.DECIMAL_LENGTH');
         $salesWithCompanies = $sales->groupBy(function ($sale) {
@@ -52,6 +53,7 @@ class SalesController extends Controller
       }
 
       $filteredSales =  Sales::with(['Customer', 'Product'])
+        ->where('type', 'sales')
         ->when($fromDate == $toDate, function ($query) use ($fromDate) {
           return $query->whereDate('created_at', $fromDate);
         })

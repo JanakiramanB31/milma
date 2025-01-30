@@ -33,7 +33,7 @@ $paperWidth = "500px";
                 <h2 class="page-header mb-0"><i class="fa fa-file"></i> MILMA</h2>
               </div>
               <div>
-                <h5 class="mb-0" style="white-space: nowrap;">Date:<p class="mx-1 mb-0 d-inline"></p>{{$invoice->created_at->format('d-m-Y')}}</h5>
+                <h5 class="mb-0" style="white-space: nowrap;">Date:<p class="mx-1 mb-0 d-inline"></p>{{$invoice->created_at->format('d-m-Y H:i:s')}}</h5>
               </div>
             </div>
             <div class="row invoice-info">

@@ -189,7 +189,13 @@
   <div class="tile">
 
     <div id="example-2" class="content">
+      <div class="row mb-2">
+        <div class="col-md-4">Supplier</div>
+        <div class="col-md-4">Price</div>
+        <div class="col-md-4">Qty</div>
+      </div>
       <div class="group row">
+      
       @foreach(old('supplier_id', $productSupplierIds) as $index => $oldSupplierId)
       @php
         $SupplierPrice = old('supplier_price', $productSupplierPrices)[$index];
@@ -197,6 +203,7 @@
         $SupplierQuantity = old('quantity',$productSupplierQuantity)[$index];
         $SupplierQuantity = ($SupplierQuantity)? $SupplierQuantity :'';
       @endphp
+      
         <div class="form-group col-md-4">
           <select name="supplier_id[]" class="form-control" >
             <option value=''>Select Supplier</option>
@@ -227,7 +234,10 @@
 
   <div class="tile">
     <div id="rate_type_form" class="content">
-
+     <div class="row mb-2">
+        <div class="col-md-5">Rate</div>
+        <div class="col-md-5">Price</div>
+      </div>
       <div class="rate_type_group row" style="display: none;">
           <div class="form-group col-md-5" >
             <select name="rate_id[]" class="form-control">

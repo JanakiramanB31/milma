@@ -193,7 +193,7 @@
       @foreach(old('supplier_id', $productSupplierIds) as $index => $oldSupplierId)
       @php
         $SupplierPrice = old('supplier_price', $productSupplierPrices)[$index];
-        $SupplierPrice = ($SupplierPrice)?$SupplierPrice:'';
+        $SupplierPrice = ($SupplierPrice)?$SupplierPrice: 0;
         $SupplierQuantity = old('quantity',$productSupplierQuantity)[$index];
         $SupplierQuantity = ($SupplierQuantity)? $SupplierQuantity :'';
       @endphp
@@ -206,7 +206,7 @@
           </select>
         </div>
         <div class="form-group col-md-4">
-          <input name="supplier_price[]" value="{{ number_format($SupplierPrice, $decimalLength) }}" class="form-control prod-rate-price @error('supplier_price') is-invalid @enderror" type="text" placeholder="Purchase Price">
+          <input name="supplier_price[]" value="{{ $SupplierPrice ? number_format($SupplierPrice, $decimalLength) : '' }}" class="form-control prod-rate-price @error('supplier_price') is-invalid @enderror" type="text" placeholder="Purchase Price">
           <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : '' }}</span>
         </div>
         <div class="form-group col-md-4">
@@ -226,34 +226,53 @@
   <!-- Product Price Entry -->
 
   <div class="tile">
-    <div id="example-3" class="content">
-      <div class="group row">
-        <?php //$old = session()->getOldInput();
- //echo '<pre>';print_r($old); echo '</pre>'; ?>
-      @foreach(old('rate_id', $productRateIds) as $index => $oldRateId)
-      @php
-        $curProductPrice = old('product_price', $productPrices)[$index];
-        $curProductPrice = ($curProductPrice)?$curProductPrice:'';
-      @endphp
-        <div class="form-group col-md-5">
-          <select name="rate_id[]" class="form-control">
-            <option value = ''>Select Rate Type</option>
-            @foreach($rates as $rate)
-            <option value="{{$rate->id}}" {{$rate->id == $oldRateId ? 'selected' : '' }}>{{$rate->type}}</option>
-            @endforeach
-          </select>
+    <div id="rate_type_form" class="content">
+
+      <div class="rate_type_group row" style="display: none;">
+          <div class="form-group col-md-5" >
+            <select name="rate_id[]" class="form-control">
+              <option value = ''>Select Rate Type</option>
+              @foreach($rates as $rate)
+              <option value="{{$rate->id}}">{{$rate->type}}</option>
+              @endforeach
+            </select>
+          </div>
+          <div class="form-group col-md-5" >
+            <input name="product_price[]" class="form-control prod-sup-price @error('product_price') is-invalid @enderror" type="text" placeholder="Product Price">
+            <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : ''  }}</span>
+          </div>
+          <div class="form-group rate_btn_group d-flex col-md-2" style="gap: 5px;">
+            <button type="button"  class="rate_btn_add btn btn-success btn-sm float-right"><i class="fa fa-plus"></i></button>
+            <button type="button" class="rate_btn_remove btn btn-danger btn-sm btnRemove float-right"><i class="fa fa-trash"></i></button>
+          </div>
         </div>
-        <div class="form-group col-md-5">
-          <input name="product_price[]" value="{{ $curProductPrice }}" class="form-control prod-sup-price @error('product_price') is-invalid @enderror" type="text" placeholder="Product Price">
-          <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : ''  }}</span>
-        </div>
+        @foreach(old('rate_id', $productRateIds) as $index => $oldRateId)
+          <div class="row rate_type_group">
+        
+            @php
+              $curProductPrice = old('product_price', $productPrices)[$index];
+              $curProductPrice = ($curProductPrice)?$curProductPrice:'';
+            @endphp
+            <div class="form-group col-md-5" >
+              <select name="rate_id[]" class="form-control">
+                <option value = ''>Select Rate Type</option>
+                @foreach($rates as $rate)
+                <option value="{{$rate->id}}" {{$rate->id == $oldRateId ? 'selected' : '' }}>{{$rate->type}}</option>
+                @endforeach
+              </select>
+            </div>
+            <div class="form-group col-md-5" >
+              <input name="product_price[]" value="{{ $curProductPrice }}" class="form-control prod-sup-price @error('product_price') is-invalid @enderror" type="text" placeholder="Product Price">
+              <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : ''  }}</span>
+            </div>
+            <div class="form-group rate_btn_group d-flex col-md-2" style="gap: 5px;">
+              <button type="button" class="rate_btn_add btn btn-success btn-sm float-right"><i class="fa fa-plus"></i></button>
+              <button type="button" class="rate_btn_remove btn btn-danger btn-sm btnRemove float-right"><i class="fa fa-trash"></i></button>
+            </div>
+          </div>
         @endforeach
-        <div class="form-group col-md-2">
-          <button type="button" id="btnAdd-3" class="btn btn-success btn-sm float-right"><i class="fa fa-plus"></i></button>
-          <button type="button" class="btn btn-danger btn-sm btnRemove float-right"><i class="fa fa-trash"></i></button>
-        </div>
       </div>
-    </div>
+    
   </div>
 
   <div class="form-group col-md-4 align-self-end">
@@ -294,6 +313,26 @@
         $('#quantity').removeClass("is-invalid");
         $('#quantity-error').css("display", "none");
         $('#submit-data').attr("disabled", false);
+      }
+    });
+
+    $(document).on('click','.rate_btn_add', function () {
+      console.log("f")
+      var newField = $('.rate_type_group').first().clone();
+      newField.css("display", 'flex');
+      newField.find("input").val(""); 
+      newField.find("select").prop("selectedIndex", 0);
+      $('#rate_type_form').append(newField) 
+    });
+
+    $(document).on('click', '.rate_btn_remove', function () {
+      var rowCount = $('#rate_type_form').find('.rate_type_group').length;
+      console.log(rowCount);
+      if (rowCount > 2) {
+        console.log("Inside",rowCount);
+        $(this).closest('.rate_type_group').remove();
+      } else {
+        $('#error_message').html("You can't delete the last field")
       }
     });
   });

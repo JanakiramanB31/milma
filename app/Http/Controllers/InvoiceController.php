@@ -9,6 +9,7 @@ use App\Sales;
 use App\Supplier;
 use App\Invoice;
 use App\ProductPrice;
+use App\ProductSupplier;
 use App\Returns;
 use App\StockInTransit;
 use Illuminate\Http\Request;
@@ -61,6 +62,11 @@ class InvoiceController extends Controller
       $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
       if ($userRole == 'admin') {
         $products = Product::where('status',1)->get();
+        
+        foreach ($products as $product) {
+          $prodQty = ProductSupplier::select('quantity')->where('product_id', $product->id)->first();
+          $product->quantity = $prodQty->quantity;
+        }
       } else {
         $routeData = StockInTransit::select('route_id', 'vehicle_id')->where('user_id',$userID)->whereDate('created_at', $today)->first();
 

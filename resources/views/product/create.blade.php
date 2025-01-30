@@ -17,7 +17,7 @@
   </div>
 
   @if(session()->has('message'))
-  <div class="alert alert-success">
+  <div id="error_message" class="alert alert-success">
     {{ session()->get('message') }}
   </div>
   @endif
@@ -64,7 +64,7 @@
         var addButton = $('.add_button'); //Add button selector
         var wrapper = $('.field_wrapper'); //Input field wrapper
         var fieldHTML = '<div><select name="supplier_id[]" class="form-control"><option class="form-control">Select Supplier</option>@foreach($suppliers as $supplier)<option value="{{$supplier->id}}">{{$supplier->name}}</option>@endforeach</select><input name="supplier_price[]" class="form-control" type="text" placeholder="Enter Sales Price"><a href="javascript:void(0);" class="remove_button btn btn-danger" title="Delete field"><i class="fa fa-minus"></i></a></div>'
-        var rateFieldHTML = '<div><select name="rate_id[]" class="form-control"><option class="form-control">Select Rate Type</option>@foreach($rates as $rate)<option value="{{$rate->id}}">{{$rate->name}}</option>@endforeach</select><input name="product_price[]" class="form-control" type="number" placeholder="Product Price"><a href="javascript:void(0);" class="remove_button btn btn-danger" title="Delete field"><i class="fa fa-minus"></i></a></div>';
+        var rateFieldHTML = '<div><select name="rate_id[]" class="form-control"><option class="form-control">Select Rate Type</option>@foreach($rates as $rate)<option value="{{$rate->id}}">{{$rate->name}}</option>@endforeach</select><input name="product_price[]" class="form-control" type="number" placeholder="Product Price"></div>';
         var x = 1; //Initial field counter is 1
 
         //Once add button is clicked
@@ -89,11 +89,11 @@
             btnRemove:'.btnRemove'
         });
 
-        $('#example-3').multifield({
-            section: '.group',
-            btnAdd:'#btnAdd-3',
-            btnRemove:'.btnRemove'
-        });
+        // $('#example-3').multifield({
+        //     section: '.group',
+        //     btnAdd:'.rate_btn_add',
+        //     btnRemove:'.btnRemove'
+        // });
     });
 </script>
 

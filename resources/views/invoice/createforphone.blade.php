@@ -145,6 +145,7 @@
                         </div>  
                       @else
                         @foreach($products as $product)
+                        
                           <figure class="flex-{grow|shrink}-1">
                             <image class="product-select" data-qty="{{$product->quantity}}" data-id="{{$product->id}}" data-name="{{$product->name}}" src={{asset('images/product/' . $product->image)}} width='50px' height='50px'/>
                             <figcaption style="width: 50px;"><p class="d-inline" style=" white-space: normal;word-wrap: break-word;overflow-wrap: break-word;">{{$product->name}}<p class="d-inline">-</p><b>{{$product->quantity}}</b><p class="d-inline">({{$product->unit->name}})</p></p></figcaption>

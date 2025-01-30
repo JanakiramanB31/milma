@@ -24,11 +24,13 @@ class ProductController extends Controller
     {
         $products = Product::where('status',1)->get();
         $additional = ProductSupplier::with('product')->get();
+        $currency = config('constants.CURRENCY_SYMBOL');
+        $decimalLength = config('constants.DECIMAL_LENGTH');
         // $this->pr($additional->toArray());
         // // $this->pr($additional->products->toArray());
         // exit;
         $rates = Rate::all();
-        return view('product.index', compact('products','additional', 'rates'));
+        return view('product.index', compact('products','additional', 'rates','currency','decimalLength'));
     }
 
     /**
@@ -38,8 +40,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        // phpinfo();
-        // exit;
+       
         $suppliers =Supplier::all();
         $categories = Category::all();
         $currency = config('constants.CURRENCY_SYMBOL');
@@ -164,12 +165,13 @@ class ProductController extends Controller
 
         
         foreach($rateIds as $key => $rate_id){
-
+          if ($rate_id) {
           $product_price = new ProductPrice();
           $product_price->product_id = $product->id;
           $product_price->rate_id = $request->rate_id[$key];
           $product_price->price = $request->product_price[$key];
           $product_price->save();
+          }
       }
 
 
@@ -235,7 +237,7 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
-      $this->pr($request->all());
+      // $this->pr($request->all());
       //exit;
       $request->validate([
         'name' => 'required|min:3|unique:products,name,' . $id . '|regex:/^[a-zA-Z ]+$/',
@@ -288,8 +290,12 @@ class ProductController extends Controller
       $product->save();
 
       $supplierIDs = $request->supplier_id;
-      $this->pr($supplierIDs);
+      // $this->pr($supplierIDs);
       //exit;
+      $rateIds =$request->rate_id;
+      // $this->pr($rateIds);
+      // $this->pr($request->product_price);
+      // exit;
 
     foreach ($supplierIDs as $key => $supplierID) {
         $supplier = ProductSupplier::where('product_id', $id)
@@ -299,6 +305,29 @@ class ProductController extends Controller
         $supplier->quantity = $request->quantity[$key];
         $supplier->save();
     }
+
+    foreach($rateIds as $key => $rate_id){
+      if ($rate_id && $request->product_price[$key]) {
+        $product_price = ProductPrice::where('product_id', $id)->where('rate_id', $rate_id)->first();
+        // $this->pr($product_price);
+        // exit;
+        if (!$product_price) {
+          // Create a new ProductPrice entry if it doesn't exist
+          $product_price = new ProductPrice();
+          $product_price->product_id = $id;
+          $product_price->rate_id = $rate_id;
+      }
+        $product_price->price = $request->product_price[$key];
+        $product_price->save();
+
+        $existingRateIds = ProductPrice::where('product_id', $id)->pluck('rate_id')->toArray();
+        $rateIdsToDelete = array_diff($existingRateIds, array_filter($rateIds));
+        ProductPrice::where('product_id', $id)->whereIn('rate_id', $rateIdsToDelete)->delete();
+      }
+    }
+  //   if (empty($rateIds)) {
+  //     ProductPrice::where('product_id', $id)->delete();
+  // }
 
     return redirect()->back()->with('message', 'Product has been updated successfully');
 }

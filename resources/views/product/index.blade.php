@@ -50,7 +50,7 @@
                                      <td>{{$add->quantity}}</td>
                                      <!-- <td>{{$add->product->serial_number}}</td>
                                      <td>{{$add->product->sales_price}}</td> -->
-                                     <td>{{$add->price}}</td>
+                                     <td><span>{{$currency}}</span>{{number_format($add->price, $decimalLength)}}</td>
                                      <td>{{$add->supplier->name}}</td>
                                      <td><img width="40px" src="{{ asset('images/product/'.$add->product->image) }}"></td>
 

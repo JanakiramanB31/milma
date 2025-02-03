@@ -9,5 +9,10 @@ return [
         'RS' => array('name'=>'Returned Stock', 'short_name'=>'RS'),
     ],
     'CURRENCY_SYMBOL' => '£',
-    'DECIMAL_LENGTH' => '2'
+    'DECIMAL_LENGTH' => '2',
+    'RETURN_REASON' => [
+        'D' => array('name'=>'Damage', 'short_name'=>'D'),
+        'EXP' => array('name'=>'Expired', 'short_name'=>'EXP'),
+        'RS' => array('name'=>'Reduce Stock', 'short_name'=>'RS'),
+    ],
 ];

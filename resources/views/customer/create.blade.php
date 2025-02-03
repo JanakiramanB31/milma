@@ -22,9 +22,9 @@
       </div>
     @endif
 
-    <!-- <div class="">
+    <div class="">
       <a class="btn btn-primary" href="{{route('customer.index')}}"><i class="fa fa-edit"> </i>Manage Customers</a>
-    </div> -->
+    </div>
     <div class="row mt-2">
       <div class="clearix"></div>
       <div class="col-md-12">

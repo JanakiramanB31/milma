@@ -59,8 +59,11 @@ class InvoiceController extends Controller
       $routeEmptyError = null;
       $returnProducts = array();
       $currency = config('constants.CURRENCY_SYMBOL');
+      $returnReasons = config('constants.RETURN_REASON');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       $customers = Customer::where('status',1)->get();
+      // $this->pr($customers);
+      //     exit;   
       $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
       if ($userRole == 'admin') {
         $products = Product::where('status',1)->get();
@@ -86,10 +89,10 @@ class InvoiceController extends Controller
           $products =array();
           $returnProducts = array();
           $routeEmptyError = "Route Number or Vehicle Number Not Found";
-          return view('invoice.createforphone', compact('customers','userRole','returnProducts','paymentMethods','routeEmptyError','products'));
+          return view('invoice.createforphone', compact('customers','userRole','returnProducts','paymentMethods','routeEmptyError','products','returnReasons'));
         }
       }
-      return view('invoice.createforphone', compact('customers','userRole','returnProducts','paymentMethods','products','routeEmptyError','currency','decimalLength'));
+      return view('invoice.createforphone', compact('customers','userRole','returnProducts','paymentMethods','products','routeEmptyError','currency','decimalLength','returnReasons'));
     }
 
     /**
@@ -101,6 +104,7 @@ class InvoiceController extends Controller
     public function getProducts(Request $request, $id) {
       $userID = Auth::id();
       $cusID = $id;
+      $returnReasons = config('constants.RETURN_REASON');
       $balAmt = Invoice::select('balance_amt')->where('customer_id', $cusID)->orderBy('created_at', 'desc')->first() ?? 0;
       $PrevbalAmt = Invoice::select('prev_acc_bal_amt')->where('customer_id', $cusID)->orderBy('created_at', 'desc')->first() ?? 0;
       $returnProducts = Product::select('id','name')->where('status',1)->whereIn('id', function($query) use ($cusID) {
@@ -125,7 +129,7 @@ class InvoiceController extends Controller
       //  $this->pr($prodIDsAndPrices);
       //  exit;
 
-      return response()->json(['returnProducts' => $returnProducts,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices' => $prodIDsAndPrices,'prodIDsAndBasePrices' => $prodIDsAndBasePrices,'balance_amount' => $balAmt, 'prev_acc_bal_amt' => $PrevbalAmt]);
+      return response()->json(['returnProducts' => $returnProducts,'quantityAndPrices' => $quantityAndPrices, 'productIdsAndPrices' => $prodIDsAndPrices,'prodIDsAndBasePrices' => $prodIDsAndBasePrices,'balance_amount' => $balAmt, 'prev_acc_bal_amt' => $PrevbalAmt, 'returnReasons' => $returnReasons]);
       
     }
 
@@ -207,7 +211,8 @@ class InvoiceController extends Controller
         if ($product_id && isset($request->qty[$key]) && $request->qty[$key]) {
           $sale = new Sale();
           $sale->type = $request->type[$key];
-          $sale->reason = $request->reason[$key];
+          $sale->reason = $request->product_return_reason[$key];
+          $sale->notes = $request->reason[$key];
           $sale->user_id = $userId;
           $sale->customer_id = $request->customer_id;
           $sale->qty = $request->qty[$key];
@@ -323,6 +328,7 @@ class InvoiceController extends Controller
       $invoice = Invoice::findOrFail($id);
       $sales = Sale::where('invoice_id', $id)->get();
       $customerID = $invoice->customer_id;
+      $returnReasons = config('constants.RETURN_REASON');
       $returnProducts = Returns::where('invoice_id', $id)->where('customer_id',$customerID)->get();
       // $this->pr($returnProducts);
       // exit;
@@ -342,11 +348,11 @@ class InvoiceController extends Controller
         } else {
           $products=array();
           $routeEmptyError = "Route Number or Vehicle Number Not Found";
-          return view('invoice.edit', compact('customers','userRole','returnProducts','invoice','sales','paymentMethods','routeEmptyError','products'));
+          return view('invoice.edit', compact('customers','userRole','returnProducts','invoice','sales','paymentMethods','routeEmptyError','products','returnReasons'));
         }
       }
       
-      return view('invoice.edit', compact('customers','userRole','returnProducts','invoice','sales','paymentMethods','routeEmptyError','products','currency','decimalLength'));
+      return view('invoice.edit', compact('customers','userRole','returnProducts','invoice','sales','paymentMethods','routeEmptyError','products','currency','decimalLength','returnReasons'));
     }
 
     /**
@@ -360,6 +366,9 @@ class InvoiceController extends Controller
     
     public function update(Request $request, $id)
     {
+      // $this->pr($request->all());
+      // exit;
+      
       $request->validate([
           'customer_id' => 'required',
           'product_id' => 'required',
@@ -411,7 +420,8 @@ class InvoiceController extends Controller
         if ($product_id && isset($request->qty[$key]) && $request->qty[$key]) {
           $sale = new Sale();
           $sale->type = $request->type[$key];
-          $sale->reason = $request->reason[$key];
+          $sale->reason = $request->product_return_reason[$key];
+          $sale->notes = $request->reason[$key];
           $sale->user_id = $userId;
           $sale->customer_id = $request->customer_id;
           $sale->qty = $request->qty[$key];

@@ -58,11 +58,12 @@
               @csrf
               <!-- Gathering Customer Name and Date -->
               <div class="row" >
-                <div class="form-group col">
+                <div class="form-group col-md-12">
                   <label class="control-label">Company Name</label>
                   <select name="customer_id" class="form-control select2" id="customer_name" data-live-search="true">
                     <option value = '0'>Select Customer</option>
                     @foreach($customers as $customer)
+                    
                     <option name="customer_id" value="{{$customer->id}}">{{$customer->company_name}} </option>
                     @endforeach
                   </select>
@@ -147,8 +148,8 @@
                         @foreach($products as $product)
                         
                           <figure class="flex-{grow|shrink}-1">
-                            <image class="product-select" data-qty="{{$product->quantity}}" data-id="{{$product->id}}" data-name="{{$product->name}}" src={{asset('images/product/' . $product->image)}} width='50px' height='50px'/>
-                            <figcaption style="width: 50px;"><p class="d-inline" style=" white-space: normal;word-wrap: break-word;overflow-wrap: break-word;">{{$product->name}}<p class="d-inline">-</p><b>{{$product->quantity}}</b><p class="d-inline">({{$product->unit->name}})</p></p></figcaption>
+                            <image class="product-select" data-qty="{{$product->quantity}}" data-id="{{$product->id}}" data-name="{{$product->name}}" src={{asset('images/product/' . $product->image)}} width='80px' height='80px'/>
+                            <figcaption style="width: 80px;"><p class="d-inline" style=" white-space: normal;word-wrap: break-word;overflow-wrap: break-word;">{{$product->name}}<p class="d-inline">-</p><b>{{$product->quantity}}</b><p class="d-inline">({{$product->unit->name}})</p></p></figcaption>
                           </figure>
                         @endforeach
                       @endif
@@ -174,9 +175,10 @@
                         <thead>
                           <tr>
                             <th scope="col" class="col-4">Product</th>
+                            <th scope="col" class="col-3">Reason</th>
                             <th scope="col" class="col-2">Qty</th>
                             <th scope="col" hidden>Price</th>
-                            <th scope="col" class="col-5">Amt</th>
+                            <th scope="col" class="col-2">Amt</th>
                             <th scope="col" class="col-1">Actions</th>
                           </tr>
                         </thead>
@@ -194,6 +196,14 @@
                                   <option value="{{$returnProduct->id}}" data-id="{{$returnProduct->id}}">{{$returnProduct->name}}</option>
                                   @endforeach
                                 @endif
+                              </select>
+                            </td>
+                            <td class="p-1" style="gap: 10px;">
+                              <select id="return-product-reason" name="product_return_reason[]" class="form-control p-1 return-product-reason" >
+                                <option value =''>Select Return Reason</option>
+                                  @foreach($returnReasons as $returnReason)
+                                  <option value="{{$returnReason['name']}}">{{$returnReason['name']}}</option>
+                                  @endforeach
                               </select>
                             </td>
                             <td class="p-1">
@@ -273,14 +283,19 @@
                       </select>
                       <div id="payment-type-error" class="text-danger"></div>
                     </div>
+                    <div id="prev_credit" class="modal-body flex-column justify-content-center">
+                      <label id="prev_credit_amt_label" class="form-label">Previous Credit Amount</label>
+                      <input id="prev_credit_amt" type="text"  name="prev_credit_amt" class="form-control" min="0" readonly/>
+                      <div id="prev_credit_amt_error" class="text-danger"></div>
+                    </div>
                     <!-- Received Amount PopUp Form Content -->
-                    <div class="modal-body d-flex flex-column justify-content-center">
-                    <label id="cus_received_amt_label" class="form-label">Amount</label>
+                    <div class="modal-body d-none flex-column justify-content-center">
+                      <label id="cus_received_amt_label" class="form-label">Amount</label>
                       <input id="cus_received_amt" type="text"  name="cus_received_amt" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
                       <div id="cus_received-amt-error" class="text-danger"></div>
                     </div>
-                    <div class="modal-body d-none flex-column justify-content-center">
-                    <label class="form-label">Amount</label>
+                    <div class="modal-body d-flex flex-column justify-content-center">
+                      <label class="form-label">Amount</label>
                       <input id="received_amt" type="text"  name="received_amt" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
                       <div id="received-amt-error" class="text-danger"></div>
                     </div>
@@ -301,13 +316,13 @@
               <div class="modal-content ">
                 <!-- Return Reason PopUp Form Header -->
                 <div class="modal-header">
-                  <h5 class="modal-title" id="returnReasonFormLabel">Add Reason</h5>
+                  <h5 class="modal-title" id="returnReasonFormLabel">Add Notes</h5>
                   <button type="button" class="btn-close btn btn-danger" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-remove"></i></button>
                 </div>
                 <!-- Return Reason PopUp Form Content -->
                 <div class="modal-body ">
                   <div>
-                    <label>Enter Reason</label>
+                    <label>Enter Notes</label>
                     <textarea id="return-reason-entry" name="popup-reason" class="return-popup-reason form-control-lg col-12"></textarea>
                   </div>
                 </div>
@@ -383,6 +398,7 @@
     var prodData= '';
     var cusID = '' ;
     var returnProducts = [];
+    var returnReasons = [];
     var selectedReturnProductIDs = [];
     //console.log("Data",prodData)
     $(document).ready(function(){
@@ -575,6 +591,7 @@
                 $('.return-product-id').empty().append('<option value="">Select Return Product</option>');
                 if (response.returnProducts.length > 0) {
                   returnProducts = response.returnProducts;
+                  returnReasons.push(response.returnReasons);
                   //console.log("returnProducts",returnProducts);
                   $.each(response.returnProducts, function(index, returnProduct) {
                     $('.return-product-id').append('<option value="' + returnProduct.id + '">' + returnProduct.name + '</option>');
@@ -656,6 +673,11 @@
         var returnOptions = returnProducts.map((item) => {
           return `<option value="${item.id}" data-id="${item.id}">${item.name}</option>`;
         }).join('');
+        var returnReason = returnReasons.map((item) => {
+          const reason = Object.values(item)[0];
+          console.log(reason)
+          return `<option value="${reason.name}">${reason.name}</option>`;
+        }).join('');
 
         var newRow = `
           <tr>
@@ -663,6 +685,12 @@
               <select id="return-product-id" name="product_id[]" class="form-control p-1 return-product-id" data-toggle="tooltip" data-placement="top" aria-label="Select Return Product">
                 <option value =''>Select Return Product</option>
                 ${returnOptions}
+              </select>
+            </td>
+            <td class="p-1">
+              <select id="return-product-reason" name="product_return_reason[]" class="form-control p-1 return-product-reason" data-toggle="tooltip" data-placement="top" aria-label="Select Return Reason">
+                <option value =''>Select Return Reason</option>
+                ${returnReason}
               </select>
             </td>
             <td class="p-1">
@@ -723,9 +751,18 @@
             $(this).val(selectedValue);
             var inputValue = $(this).find('input').val();
             var selectValue = $(this).find('select').val();
+            var reasonValue = $(this).find('.return-product-reason').val();
 
             if ( selectValue.length == 0) {
               $('#return-table-error').html("Please Select the Product");
+              $('#return-table-error').show();
+              setTimeout(()=> {
+                $('#return-table-error').hide();
+              }, 3000);
+              allFilled = false; 
+              return false;
+            } else if (reasonValue.length == 0) {
+              $('#return-table-error').html("Please Select the Reason");
               $('#return-table-error').show();
               setTimeout(()=> {
                 $('#return-table-error').hide();
@@ -758,6 +795,7 @@
           if (allFilled) {
             returnSection.each(function() {
               $(this).find('td').last().html('<i class="fa fa-trash-o fa-sm btn btn-danger prod-remove"></i>');
+              $(this).find('.return-product-reason').parent().attr('hidden', true);
               $(this).find('input').attr('readonly', true);
               $(this).find('select').attr('disabled', true);
             });
@@ -784,10 +822,12 @@
         let paymentType = $(this).val();
         let totalAmount = $('#purchase-tot').text();
         if (totalAmount < 0) {
-          $('#cus_received_amt_label').html("Refund Amount Due")
+          $('#received_amt_label').html("Refund Amount Due");
+          $('#received_amt_label').html("Refund Amount Due");
           
         } else {
-          $('#cus_received_amt_label').html("Remaining Amount to Pay")
+          $('#received_amt_label').html("Remaining Amount to Pay");
+          $('#received_amt_label').html("Refund Amount Due")
         }
         $('#received_amt').val(parseFloat(totalAmount).toFixed(2));
         $('#cus_received_amt').val(parseFloat(Math.abs(totalAmount)).toFixed(2));
@@ -837,6 +877,7 @@
           '<td class="p-1"><input type="text" name="qty[]" style="-moz-appearance: textfield;" data-id="'+productID+'" data-prodname="' +productName+'" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
           '<td hidden><input type="text" value="'+productPrice+'"  name="price[]" class="form-control p-1 fs-6 price" ></td>\n' +
           '<td class="p-1"><input type="text"  name="amount[]" class="form-control text-center p-1 fs-6 amount" ></td>\n' +
+          '<td hidden><input type="hidden" name="product_return_reason[]" class="form-control p-1 fs-6 product_return_reason" ></td>\n' +
           '<td hidden><input type="hidden" name="reason[]" class="form-control p-1 fs-6 reason" ></td>\n' +
           '<td class="p-1" align="center"><i class="fa fa-trash-o fa-sm btn btn-danger prod-remove" data-id="' +productID+'" ></i></td>\n'+
           '</tr>';
@@ -1207,10 +1248,21 @@
         if (allValidated) {
           $('#amountForm').modal('show');
           let totalAmount = $('#purchase-tot').text();
+          var prevCreditAmt = parseFloat($('#bal-amt').text()).toFixed(2);
+          console.log("Prev Credit Amt", prevCreditAmt)
+          
+          $('#prev_credit_amt').val(prevCreditAmt)
           if (totalAmount < 0) {
             $('#cus_received_amt_label').html("Refund Amount Due")
           } else {
             $('#cus_received_amt_label').html("Remaining Amount to Pay")
+          }
+          if (prevCreditAmt > 0) {
+            $('#prev_credit').css("display","flex");
+            $('#cus_received_amt_label').html("Current Amount")
+
+          } else {
+            $('#prev_credit').css("display","none");
           }
           $('#cus_received_amt').val(parseFloat(Math.abs(totalAmount)).toFixed(2));
           $('#received_amt').val(parseFloat(totalAmount).toFixed(2));

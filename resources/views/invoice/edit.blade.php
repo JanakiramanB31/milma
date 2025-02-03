@@ -110,12 +110,21 @@
                                 <option name="product_id[]" value ='0'>Select Return Product</option>
                                 @foreach($returnProducts as $returnProduct)
                                 <option name="product_id[]" value="{{$returnProduct->product_id}}" data-id="{{$returnProduct->product_id}}" {{ optional($sale->product)->id == $returnProduct->product->id ? 'selected' : '' }}>
-                                {{ $returnProduct->product->name }}
+                                {{ $returnProduct->product->name }}</option>
                                 @endforeach                            
                               </select>
                             @endif
                           </td>
-                          <td class="p-1">
+                          <td class="p-1" style="gap: 10px;"hidden>
+                              <select name="product_return_reason[]" class="form-control p-1 product_return_reason" >
+                                <option value =''>Select Return Reason</option>
+                                @foreach($returnReasons as $returnReason)
+                                <option value="{{$returnReason['name']}}" data-id="{{$returnReason['name']}}"{{ optional($sale->reason) == $returnReason['name'] ? 'selected' : '' }}>
+                                {{ $returnReason['name'] }}</option>
+                                @endforeach                            
+                              </select>
+                          </td>
+                          <td class="p-1" >
                             <input type="text" name="qty[]" value="{{$sale->qty}}" data-qty = "{{$sale->qty}}" data-id="{{$sale->product->id}}" data-prodname="{{$sale->product->name}}" class="form-control text-center p-1 fs-6 {{$sale->type == 'sales'? 'qty' :'return-qty'}}">
                             <input type="hidden" name="prev_qty[]" value="{{$sale->qty}}" >
                             <input type="hidden" name="type[]" value="{{$sale->type == 'sales'? 'sales' : 'returns'}}" class="form-control" >
@@ -218,6 +227,14 @@
                                 @endif
                               </select>
                             </td>
+                            <td class="p-1" style="gap: 10px;">
+                              <select id="return-product-reason" name="product_return_reason[]" class="form-control p-1 return-product-reason" >
+                                <option value =''>Select Return Reason</option>
+                                  @foreach($returnReasons as $returnReason)
+                                  <option value="{{$returnReason['name']}}">{{$returnReason['name']}}</option>
+                                  @endforeach
+                              </select>
+                            </td>
                             <td class="p-1">
                               <input type="text" name="qty[]"  class="form-control text-center p-1 return-qty">
                               <input type="hidden" name="type[]" value="returns" class="form-control" >
@@ -300,7 +317,7 @@
                     <input id="prod_tot_amt" type="text"  name="prod_tot_amt" readonly class="form-control"  min="0"/>
                   </div>
                   <div style="padding:18px;">
-                    <label class="form-label">Paid Amt</label>
+                    <label class="form-label">Previously Paid Amt</label>
                     <input id="prev_received_amt" type="text"  name="prev_received_amt" readonly value="{{number_format(($invoice->received_amt - $invoice->returned_amt), $decimalLength)}}" class="form-control"  min="0"/>
                   </div>
                   <div class="modal-body d-flex flex-column justify-content-center">
@@ -695,6 +712,7 @@
           return `<option value="${item.id}" data-id="${item.id}">${item.name}</option>`;
         }).join('');
 
+
         var newRow = `
           <tr>
             <td class="d-flex align-items-center" style="gap: 10px;"><b class="return-symbol" style="color: red;" hidden>R</b>
@@ -702,6 +720,14 @@
                 <option value =''>Select Return Product</option>
                 @foreach($returnProducts as $returnProduct)
                 <option value="{{$returnProduct->product_id}}" data-id="{{$returnProduct->product_id}}">{{ $returnProduct->product->name }}</option>
+                @endforeach
+              </select>
+            </td>
+            <td class="p-1">
+              <select id="return-product-reason" name="product_return_reason[]" class="form-control p-1 return-product-reason" data-toggle="tooltip" data-placement="top" aria-label="Select Return Reason">
+                <option value =''>Select Return Reason</option>
+                @foreach($returnReasons as $returnReason)
+                <option value="{{$returnReason['name']}}">{{ $returnReason['name'] }}</option>
                 @endforeach
               </select>
             </td>
@@ -762,9 +788,18 @@
             $(this).val(selectedValue);
             var inputValue = $(this).find('input').val();
             var selectValue = $(this).find('select').val();
+            var reasonValue = $(this).find('.return-product-reason').val();
 
             if ( selectValue.length == 0) {
               $('#return-table-error').html("Please Select the Product");
+              $('#return-table-error').show();
+              setTimeout(()=> {
+                $('#return-table-error').hide();
+              }, 3000);
+              allFilled = false; 
+              return false;
+            } else if (reasonValue.length == 0) {
+              $('#return-table-error').html("Please Select the Reason");
               $('#return-table-error').show();
               setTimeout(()=> {
                 $('#return-table-error').hide();
@@ -797,6 +832,7 @@
           if (allFilled) {
             returnSection.each(function() {
               $(this).find('td').last().html('<i class="fa fa-trash-o fa-sm btn btn-danger prod-remove"></i>');
+              $(this).find('.return-product-reason').parent().attr('hidden', true);
               $(this).find('input').attr('readonly', true);
               $(this).find('select').attr('disabled', true);
             });
@@ -879,6 +915,7 @@
           '<td class="p-1"><input type="text" name="qty[]" data-id="'+productID+'" data-prodname="' +productName+'" class="form-control text-center p-1 fs-6 qty" ><input type="hidden" name="type[]" value="sales" class="form-control" ></td>\n' +
           '<td hidden><input type="text" value="'+productPrice+'"  name="price[]" class="form-control p-1 fs-6 price" ></td>\n' +
           '<td class="p-1"><input type="text"  name="amount[]" class="form-control text-center p-1 fs-6 amount" ></td>\n' +
+          '<td hidden><input type="hidden" name="product_return_reason[]" class="form-control p-1 fs-6 product_return_reason" ></td>\n' +
           '<td hidden><input type="hidden" name="reason[]" class="form-control p-1 fs-6 reason" ></td>\n' +
           '<td align="center" class="p-1"><i class="fa fa-trash-o fa-sm btn btn-danger prod-remove"></i></td>\n'+
           '</tr>';

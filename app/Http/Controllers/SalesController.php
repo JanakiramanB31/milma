@@ -52,7 +52,7 @@ class SalesController extends Controller
           $toDate = now()->toDateString();
       }
 
-      $filteredSales =  Sales::with(['Customer', 'Product'])
+      $filteredSales =  Sales::with(['Customer', 'Product', "Invoice"])
         ->where('type', 'sales')
         ->when($fromDate == $toDate, function ($query) use ($fromDate) {
           return $query->whereDate('created_at', $fromDate);

@@ -71,26 +71,26 @@
                     </div>
                         <table class="table table-hover table-bordered" id="sampleTable">
                             <thead>
-                            <tr>
+                            <tr>                                
+                                <th>Date </th>
                                 <th>Company Name </th>
                                 <th>Product </th>
                                 <th>Qty </th>
                                 <th>Price</th>
                                 <th>Payment Type</th>
                                 <th>Total</th>
-                                <th>Date </th>
                             </tr>
                             </thead>
                             <tbody>
                             @foreach($sales as $sale)
                               <tr>  
+                                <td>{{ $sale->created_at->format('d-m-Y') }}</td>
                                 <td>{{ $sale->customer->company_name }}</td>
                                 <td>{{ $sale->product->name }}</td>
                                 <td>{{ $sale->qty }}</td>
                                 <td ><span>{{$currency}} </span>{{number_format($sale->price,  $decimalLength )}}</td>
                                 <td>{{ $sale->invoice->payment_type }}</td>
                                 <td ><span>{{$currency}} </span>{{number_format($sale->total_amount,  $decimalLength )}}</td>
-                                <td>{{ $sale->created_at->format('d-m-Y') }}</td>
                               </tr>
                             @endforeach
                             </tbody>
@@ -150,14 +150,13 @@
                 salesData.forEach(sale => {
                   $('#sampleTable tbody').append(`
                       <tr>
+                        <td >${new Date(sale.created_at).toLocaleDateString('en-GB')}</td>
                         <td >${sale.customer.company_name}</td>
                         <td >${sale.product.name}</td>
                         <td >${sale.qty}</td>
                         <td >${currency +parseFloat(sale.price).toFixed(decimalLength)}</td>
                         <td >${sale.invoice.payment_type}</td>
                         <td >${currency +parseFloat(sale.total_amount).toFixed(decimalLength)}</td>
-                        <td >${new Date(sale.created_at).toLocaleDateString('en-GB')}</td>
-                       
                       </tr>
                   `);
                 });

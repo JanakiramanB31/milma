@@ -12,7 +12,7 @@
           <option value=''>Select Route Number</option>
           @foreach($routes as $route)
           <option value="{{ $route['id'] }}" {{ old('route_id', $stockintransit->route_id) == $route['id'] ? 'selected' : '' }}>
-            {{ $route['route_number'] }}
+            {{$route['name']}} - {{ $route['route_number'] }}
           </option>
           @endforeach
         </select>

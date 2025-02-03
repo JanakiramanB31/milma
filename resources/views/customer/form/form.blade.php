@@ -131,7 +131,7 @@
       <select name="route_id" class="form-control @error('route_id') is-invalid @enderror">
         <option value =''>---Select Route---</option>
         @foreach($routes as $route)
-        <option value="{{$route->id}}" {{ old('route_id', $customer->route_id) == $route->id ? 'selected' : '' }}>{{$route->name}}</option>
+        <option value="{{$route->id}}" {{ old('route_id', $customer->route_id) == $route->id ? 'selected' : '' }}>{{$route->name}} - {{$route->route_number}}</option>
         @endforeach
       </select>
       @error('route_id')

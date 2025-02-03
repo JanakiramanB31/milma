@@ -58,10 +58,11 @@ class InvoiceController extends Controller
       $today = now()->toDateString();
       $routeEmptyError = null;
       $returnProducts = array();
+      $route = StockInTransit::where('user_id', $userID)->whereDate('created_at', $today)->first();
       $currency = config('constants.CURRENCY_SYMBOL');
       $returnReasons = config('constants.RETURN_REASON');
       $decimalLength = config('constants.DECIMAL_LENGTH');
-      $customers = Customer::where('status',1)->get();
+      $customers = Customer::where('route_id',$route->route_id)->where('status',1)->get();
       // $this->pr($customers);
       //     exit;   
       $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');

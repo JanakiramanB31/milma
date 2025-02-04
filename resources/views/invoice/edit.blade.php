@@ -205,6 +205,7 @@
                         <thead>
                           <tr>
                             <th scope="col" class="col-4">Product</th>
+                            <th scope="col" class="col-2" hidden>Reason</th>
                             <th scope="col" class="col-2">Qty</th>
                             <th scope="col" hidden>Price</th>
                             <th scope="col" class="col-5">Amt</th>
@@ -227,13 +228,8 @@
                                 @endif
                               </select>
                             </td>
-                            <td class="p-1" style="gap: 10px;">
-                              <select id="return-product-reason" name="product_return_reason[]" class="form-control p-1 return-product-reason" >
-                                <option value =''>Select Return Reason</option>
-                                  @foreach($returnReasons as $returnReason)
-                                  <option value="{{$returnReason['name']}}">{{$returnReason['name']}}</option>
-                                  @endforeach
-                              </select>
+                            <td class="p-1" style="gap: 10px;" hidden>
+                              <input id="return-product-reason" name="product_return_reason[]" class="form-control p-1 return-product-reason" />
                             </td>
                             <td class="p-1">
                               <input type="text" name="qty[]"  class="form-control text-center p-1 return-qty">
@@ -361,6 +357,39 @@
                 <div class="modal-footer  d-flex justify-content-center">
                   <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                   <button id="return-reason-entry-button" type="button" class="btn btn-primary">Save</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+           <!-- Return Reason PopUp Form -->
+           <div class="modal fade" id="returnProductReasonForm" tabindex="-1" aria-labelledby="returnProductReasonFormLabel" aria-hidden="true" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg p-5" role="document">
+              <div class="modal-content ">
+                <!-- Return Reason PopUp Form Header -->
+                <div class="modal-header">
+                  <h5 class="modal-title" id="returnProductReasonFormLabel">Reason</h5>
+                  <button type="button" class="btn-close btn btn-danger" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-remove"></i></button>
+                </div>
+                <!-- Return Reason PopUp Form Content -->
+                <div class="modal-body ">
+                  <div class="d-flex flex-column">
+                    <div>
+                    @foreach ($returnReasons as $returnReason)
+                    
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio{{$returnReason['name']}}" value="{{$returnReason['name']}}">
+                      <label class="form-check-label" for="inlineRadio{{$returnReason['name']}}">{{$returnReason['name']}}</label>
+                    </div>
+                    @endforeach
+                    </div>
+
+                  </div>
+                </div>
+                <!-- Return Reason PopUp Form Footer -->
+                <div class="modal-footer  d-flex justify-content-center">
+                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                  <button id="return-product-reason-entry-button" type="button" class="btn btn-primary">Save</button>
                 </div>
               </div>
             </div>
@@ -655,6 +684,8 @@
           } else {
             row.find('.return-price').val('');
           }
+          $('#returnProductReasonForm').modal('show');
+          $('#returnProductReasonForm').data('productID', selectedProductID);
         }
       });
 
@@ -723,13 +754,8 @@
                 @endforeach
               </select>
             </td>
-            <td class="p-1">
-              <select id="return-product-reason" name="product_return_reason[]" class="form-control p-1 return-product-reason" data-toggle="tooltip" data-placement="top" aria-label="Select Return Reason">
-                <option value =''>Select Return Reason</option>
-                @foreach($returnReasons as $returnReason)
-                <option value="{{$returnReason['name']}}">{{ $returnReason['name'] }}</option>
-                @endforeach
-              </select>
+            <td class="p-1" style="gap: 10px;" hidden>
+              <input id="return-product-reason" name="product_return_reason[]" class="form-control p-1 return-product-reason" />
             </td>
             <td>
               <input type="text"  name="qty[]" class="form-control text-center p-1 return-qty" />
@@ -1034,6 +1060,24 @@
             $(this).find('.return-reason').val(returnReason);
             $('#returnReasonForm').modal('hide');
             $('#return-reason-entry').val('');
+            found = true;
+            return false;
+          }
+        });
+      });
+
+      $(document).on('click', '#return-product-reason-entry-button', function () {
+        var returnReason = $('input[name="inlineRadioOptions"]:checked').val();
+        var productID = $('#returnProductReasonForm').data('productID');
+        console.log("returnReason", returnReason);
+        console.log("productID", productID)
+        var found = false;
+
+        $('#return-product-body').find('tr').each(function () {
+          var selectValue = $(this).find('select').val();
+          if (selectValue == productID) {
+            $(this).find('.return-product-reason').val(returnReason);
+            $('#returnProductReasonForm').modal('hide');
             found = true;
             return false;
           }

@@ -342,7 +342,6 @@
                 <!-- Return Reason PopUp Form Content -->
                 <div class="modal-body ">
                   <div class="d-flex flex-column">
-                    <label style="font-weight: bold;">Select Reason</label>
                     <div>
                     @foreach ($returnReasons as $returnReason)
                     

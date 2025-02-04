@@ -59,10 +59,14 @@ class InvoiceController extends Controller
       $routeEmptyError = null;
       $returnProducts = array();
       $route = StockInTransit::where('user_id', $userID)->whereDate('created_at', $today)->first();
+      $routeID = isset($route->route_id) ? $route->route_id : 0;
       $currency = config('constants.CURRENCY_SYMBOL');
       $returnReasons = config('constants.RETURN_REASON');
       $decimalLength = config('constants.DECIMAL_LENGTH');
-      $customers = Customer::where('route_id',$route->route_id)->where('status',1)->get();
+      $customers = Customer::where('status',1)
+      ->when($routeID, function ($query) use ($routeID) {
+        return $query->where('route_id', $routeID);
+      })->get();
       // $this->pr($customers);
       //     exit;   
       $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
@@ -151,7 +155,8 @@ class InvoiceController extends Controller
         'price' => 'required',
         'amount' => 'required',
       ]);
-
+      // $this->pr($request->all());
+      // exit;
      
       $userId = Auth::id();
       $cusID = $request->customer_id;

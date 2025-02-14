@@ -106,8 +106,51 @@ class HomeController extends Controller
     ]);
 }
 
+    public function add_profile(){
+      $userRoles = config('constants.USER_ROLES');
+      return view('profile.add_profile', compact('userRoles'));
+    }
+
+    public function store_profile(Request $request){
+      $request->validate([
+        'f_name' => 'required',
+        'l_name' => 'required',
+        'user_role' => 'required',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|min:8',
+        'confirm_password' => 'required|same:password',
+        'image' => 'file|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    ]);
+      $user = new User();
+      $user->f_name = $request->f_name;
+      $user->l_name = $request->l_name;
+      $user->email = $request->email;
+      $user->role = $request->user_role;
+
+      if ($request->hasFile('image')){
+        $imageName =request()->image->getClientOriginalName();
+        request()->image->move(public_path('images/user/'), $imageName);
+        $user->image = $imageName;
+      }
+
+      if ($request->filled(['password', 'confirm_password'])) {
+          // Validate password change fields
+          $request->validate([
+              'password' => 'required|min:8',
+              'confirm_password' => 'required|same:password',
+          ]); 
+          $user->password = Hash::make($request->password);
+      }
+      
+
+      $user->save();
+
+      return redirect()->back()->with('success', 'Profile Added successfully');
+    }
+
     public function edit_profile(){
-         return view('profile.edit_profile');
+      $userRoles = config('constants.USER_ROLES');
+      return view('profile.edit_profile', compact('userRoles'));
     }
 
     public function update_profile(Request $request, $id){
@@ -116,43 +159,44 @@ class HomeController extends Controller
         $user->f_name = $request->f_name;
         $user->l_name = $request->l_name;
         $user->email = $request->email;
+        
 
         if ($request->hasFile('image')){
-        $image_path ="images/user/".$user->image;
-        if (file_exists($image_path)){
-            unlink($image_path);
+          $image_path ="images/user/".$user->image;
+          if (file_exists($image_path)){
+              unlink($image_path);
+          }
+          $imageName =request()->image->getClientOriginalName();
+          request()->image->move(public_path('images/user/'), $imageName);
+          $user->image = $imageName;
         }
-        $imageName =request()->image->getClientOriginalName();
-        request()->image->move(public_path('images/user/'), $imageName);
-        $user->image = $imageName;
-    }
 
-    if ($request->filled(['current_password', 'new_password', 'confirm_password'])) {
-        // Validate password change fields
-        $request->validate([
-            'current_password' => 'required',
-            'new_password' => 'required|min:8|different:current_password',
-            'confirm_password' => 'required|same:new_password',
-        ]);
-    
-        // Verify if the entered current password matches the actual password
-        if (Hash::check($request->current_password, $user->password)) {
-            // Check if the new and confirm passwords match
-            if ($request->new_password !== $request->confirm_password) {
-                return redirect()->back()->with('error', 'New and confirm passwords do not match');
+        if ($request->filled(['current_password', 'new_password', 'confirm_password'])) {
+            // Validate password change fields
+            $request->validate([
+                'current_password' => 'required',
+                'new_password' => 'required|min:8|different:current_password',
+                'confirm_password' => 'required|same:new_password',
+            ]);
+        
+            // Verify if the entered current password matches the actual password
+            if (Hash::check($request->current_password, $user->password)) {
+                // Check if the new and confirm passwords match
+                if ($request->new_password !== $request->confirm_password) {
+                    return redirect()->back()->with('error', 'New and confirm passwords do not match');
+                }
+        
+                // Hash and update the new password
+                $user->password = Hash::make($request->new_password);
+            } else {
+                return redirect()->back()->with('error', 'Incorrect current password');
             }
-    
-            // Hash and update the new password
-            $user->password = Hash::make($request->new_password);
-        } else {
-            return redirect()->back()->with('error', 'Incorrect current password');
         }
-    }
-    
+        
 
-    $user->save();
+        $user->save();
 
-    return redirect()->back()->with('success', 'Profile updated successfully');
+        return redirect()->back()->with('success', 'Profile updated successfully');
     }
 
 

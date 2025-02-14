@@ -15,7 +15,8 @@ use App\Http\Controllers\SalesController;
 
 Auth::routes();
 
-
+Route::get('/add_profile', 'HomeController@add_profile')->name('add_profile');
+Route::post('/store_profile', 'HomeController@store_profile')->name('store_profile');
 Route::get('/edit_profile', 'HomeController@edit_profile')->name('edit_profile');
 Route::POST('/update_profile/{id}', 'HomeController@update_profile')->name('update_profile');
 Route::get('/password_change/', 'HomeController@update_password')->name('update_password');

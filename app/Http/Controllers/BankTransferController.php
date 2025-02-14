@@ -112,9 +112,11 @@ class BankTransferController extends Controller
         'invoice_id' => 'required',
         'reference_number' => 'required',
     ]);
+    $today = now()->format('Y-m-d H:i:s');
     // $data = $this->pr($request);
     $invoice = Invoice::findOrFail($id);
     $invoice->reference_number = $request->reference_number;
+    $invoice->ref_number_updated_at = $today;
     $invoice->save();
     // return redirect('invoice/'.$invoice->id)->with('message','Invoice Updated Successfully');
     return response()->json( [

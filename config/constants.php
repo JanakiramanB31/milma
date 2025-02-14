@@ -15,4 +15,8 @@ return [
         'EXP' => array('name'=>'Expired', 'short_name'=>'EXP'),
         'RS' => array('name'=>'Reduce Stock', 'short_name'=>'RS'),
     ],
+    'USER_ROLES' => [
+        'ADMIN' => array('id'=>'1', 'name'=>'Admin'),
+        'SALES' => array('id'=>'2', 'name'=>'Sales'),
+    ],
 ];

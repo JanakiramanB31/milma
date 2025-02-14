@@ -43,7 +43,7 @@
                   <select id="payment_type" name="payment_type" class="form-control">
                     <option value = ''>All Payment Types</option>
                     @foreach($paymentMethods as $paymentMethod)
-                    <option name="payment_type"  value="{{$paymentMethod}}">{{$paymentMethod}}</option>
+                    <option name="payment_type"  value="{{$paymentMethod}}" {{$paymentMethod == "Bank Transfer" ? "selected" : ""}}>{{$paymentMethod}}</option>
                     @endforeach
                   </select>
                   <div id="payment-type-error" class="text-danger"></div>
@@ -84,9 +84,9 @@
                       <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->balance_amt,  $decimalLength )}}</td>
                       <td class="d-flex justify-content-center" style="gap: 10px;">
                         <a class="btn btn-info btn-sm" href="{{ route('invoice.show', '') }}/{{$invoice->id}}"><i class="fa fa-eye" ></i></a>
-                        @if ($invoice->reference_number == null)
+                        @if (empty($invoice->reference_number) && $invoice->payment_type == "Bank Transfer")
                         <i class="fa  fa-check fa-sm btn btn-success payment-approve" data-id="{{$invoice->id}}" ></i>
-                        <i class="fa  fa-times fa-sm btn btn-danger payment-denied" data-id="{{$invoice->id}}" ></i>
+                        <!-- <i class="fa  fa-times fa-sm btn btn-danger payment-denied" data-id="{{$invoice->id}}" ></i> -->
                         @endif
                       </td>
                     </tr>
@@ -233,9 +233,8 @@
                         <td class="text-center">${currency +parseFloat(invoice.balance_amt).toFixed(decimalLength)}</td>
                         <td class="d-flex justify-content-center" style="gap: 10px;">
                           <a class="btn btn-info btn-sm" href="{{ route('invoice.show', '') }}/${parseInt(invoice.id)}"><i class="fa fa-eye" ></i></a>
-                          ${invoice.reference_number == null ?
-                          `<i class="fa  fa-check fa-sm btn btn-success payment-approve" data-id="${parseInt(invoice.id)}" ></i>
-                          <i class="fa  fa-times fa-sm btn btn-danger payment-denied" data-id="${parseInt(invoice.id)}" ></i>` : '' }
+                          ${invoice.reference_number == null && invoice.payment_type == "Bank Transfer" ?
+                          `<i class="fa  fa-check fa-sm btn btn-success payment-approve" data-id="${parseInt(invoice.id)}" ></i> ` : '' }
                         </td>
                       </tr>
                   `);

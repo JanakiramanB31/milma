@@ -150,6 +150,8 @@
             </ul> -->
         </li>
         @if(Auth::user()->role != 'admin')
+        <li ><a class="app-menu__item {{ request()->is('customer*') ? 'active' : ''}}" href="{{route('customer.index')}}" ><i class="app-menu__icon fa fa-users"></i><span class="app-menu__label">Customer</span></a>
+
         <!-- <li ><a class="app-menu__item {{ request()->is('/report') ? 'active' : ''}}" href="{{route('x_report')}}"><i class="app-menu__icon fa fa-file-text-o"></i><span class="app-menu__label">X-Report</span></a>
             <ul class="treeview-menu">
               <li><a class="treeview-item" href="{{route('x_report')}}"><i class="icon fa fa-circle-o"></i>X-Report</a></li>

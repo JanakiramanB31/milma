@@ -509,12 +509,13 @@ class ReportController extends Controller
               return $query->whereBetween('created_at', [$fromDate, $toDate]);
             })
             ->get();
+            // $this->pr($loadedProducts);exit;
 
         } else {
           $loadedProducts = StockInTransit::select('product_id','start_quantity','quantity')->where('user_id', $userID)->whereDate('created_at',$today)->get();
           $salesReturns = Returns::with('Product')->where('salesman_id', $userID)->whereDate('created_at',$today)->get();
         }
-        // print_r($loadedProducts);exit;
+        
         
 
       // foreach ($filteredInvoices as $invoice) {

@@ -48,7 +48,7 @@
                   <td>{{ str_repeat('*', strlen($customer->mobile) - 4) . substr($customer->mobile, -4) }}</td>
                   <!-- <td>{{ $customer->mobile }} </td> -->
                   <!-- <td>{{ $customer->details }} </td> -->
-                  @if($userRole == "admin" || ($userRole == "sales" && $customer->created_today ))
+                 
                   <td class="d-flex" style="gap: 10px;">
                     <a class="btn btn-primary btn-sm" href="{{route('customer.edit', $customer->id)}}"><i class="fa fa-edit" ></i></a>
                     <button class="btn btn-danger btn-sm waves-effect" type="submit" onclick="deleteTag({{ $customer->id }})">
@@ -59,9 +59,7 @@
                       @method('DELETE')
                     </form>
                   </td>
-                  @else
-                  <td></td>
-                  @endif
+                 
                 </tr>
                 @endforeach
               </tbody>

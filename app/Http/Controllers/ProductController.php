@@ -342,7 +342,7 @@ class ProductController extends Controller
     public function destroy($id)
     {
 
-      $product = Product::find($id);
+      $product = Product::findOrFail($id);
 
       if ($product) {
         $supplier = ProductSupplier::where('product_id', $id)->first();

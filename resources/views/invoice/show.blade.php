@@ -1,7 +1,7 @@
 
 
 @php
-$paperWidth = "500px";
+$paperWidth = "400px";
   $salesTotal = 0;
   $returnsTotal = 0;
 
@@ -162,26 +162,27 @@ $paperWidth = "500px";
   </main>
 @endsection
 
-
-<div class="wrapper wrapper-content animated fadeInRight" hidden>
-  <div class="row" id="xReport">
+<html>
+  <body style="float: left;width: 100%; ">
+<div style="margin: 0px !important;padding: 0px !important;float: left;" hidden>
+  <div style="margin: 0px;padding: 0;float: left;" id="xReport">
     <style>
       .currency {
         margin-right: 5px;
         float: right;
       }
     </style>
-    <div class="col-lg-12" style="margin: 10px 10px 10px 20px; width: {{ $paperWidth }}; text-align:center;">
-      <div class="ibox float-e-margins">
-        <div class="ibox-content">
+    <div style="float: left;margin: 0px;padding: 0; width: {{ $paperWidth }};">
+      <div >
+        <div >
           <div class="hr-line-dashed"></div>
-          <div class="pos-report">
+          <div style="float: left;">
             <h3 style="text-align: center;"><span style="text-align: center;">MILMA FOODS UK LIMITED</span></h3>
             <h4><span style="text-align: center;">Invoice</span></h4>
             <h5 style="font-size: 14px;">Taken: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5>
             <hr style="margin: 10px 20px; width: {{ $paperWidth }};"/>
             
-            <div style="margin: 10px 20px; width: {{ $paperWidth }}; text-align: left;">
+            <div style=" width: {{ $paperWidth }}; text-align: left;">
               <hr/>
             </div>
             <div class="hr-line-dashed"></div>
@@ -293,6 +294,8 @@ $paperWidth = "500px";
   <button class="btn btn-primary printbutton" id="print" >Print</button>
   <button><a class="btn btn-primary nextbutton " style="text-decoration: none;color: #000;" href="{{route('x_report')}}"><i class="fa fa-plus"></i> Close</a></button>
 </div>
+</body>
+</html>
 
 @push('js')
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>

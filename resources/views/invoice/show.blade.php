@@ -161,7 +161,7 @@ $paperWidth = "300px";
 @endsection
 
 <html>
-  <body style="float: left;width: 100%; ">
+  <body style="float: center;width: 100%; ">
 <div style="margin: 30px !important;padding: 0px !important;float: left;" hidden>
   <div style="margin: 0px;padding: 0;float: left;" id="xReport">
     <style>
@@ -175,8 +175,17 @@ $paperWidth = "300px";
         <div >
           <div class="hr-line-dashed"></div>
           <div style="float: left;">
+            <image  src={{asset('Milma_Logo.jpg')}} width='200px' height='100px'/>
             <h3 style="text-align: center;"><span style="text-align: center;">MILMA FOODS UK LIMITED</span></h3>
+            <div class="d-flex justify-content-center align-items-center">
+              <p style="margin: 0; padding: 0;">442, RAILWAY ARCHS</p>
+              <p style="margin: 0; padding: 0;">CRAMMER ROAD</p>
+              <p style="margin: 0; padding: 0;">LONDON</p>
+              <p style="margin: 0; padding: 0;">E7 OJN</p>
+              <p style="margin: 0; padding: 0;">TEL: 07469849031</p>
+            </div>
             <h4><span style="text-align: center;">Invoice</span></h4>
+            <h4><span style="text-align: center;">{{$invoice->customer->company_name}}</span></h4>
             <h5 style="font-size: 14px;">Printed On: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5>
             <hr style="margin: 10px 20px; width: {{ $paperWidth }};"/>
             
@@ -186,26 +195,34 @@ $paperWidth = "300px";
             <div class="hr-line-dashed"></div>
 
             <table class="table" style="margin: 10px 10px 10px 20px; width: {{ $paperWidth }}; text-align: left;">
-              <tr>
-                <td colspan="2">Receipt No. <b style="font-size: 14px;">#{{1000+$invoice->id}}</b></td>
-                <td colspan="2" style="text-align: end;">Payment: <b style="font-size: 14px;">{{$invoice->payment_type}}</b></td>
+            <tr>
+                <td colspan="2">Operator: </td>
+                <td colspan="2" style="text-align: end;"><b style="font-size: 14px;">{{Auth::user()->role}}</b></td>
+              </tr>
+            <tr>
+                <td colspan="2">Receipt No.</td>
+                <td colspan="2" style="text-align: end;"><b style="font-size: 14px;">#{{1000+$invoice->id}}</b></td>
               </tr>
               <tr>
-                <td >Date: </td>
-                <td colspan="3"style="text-align: end;"><b style="font-size: 14px;">{{$invoice->created_at->format('d-m-Y')}}</b></td>
+                <td colspan="2">Payment</td>
+                <td colspan="2" style="text-align: end;"><b style="font-size: 14px;">{{$invoice->payment_type}}</b></td>
+              </tr>
+              <tr>
+                <td colspan="2">Date:</td>
+                <td colspan="2"style="text-align: end;"><b style="font-size: 14px;">{{$invoice->created_at->format('d-m-Y')}}</b></td>
               </tr>    
               <tr>
                 <td colspan="4"><hr/><hr/></td>
               </tr>
-
+<!-- 
               <tr>
                 <td>To</td>
                 <td colspan="3">{{$invoice->customer->company_name}}</td>
-              </tr>
+              </tr> -->
 
-              <tr>
+             <!--  <tr>
                 <td colspan="4"><hr/><hr/></td>
-              </tr>
+              </tr> -->
             
               <tr>
                 <th>Product</th>
@@ -223,7 +240,7 @@ $paperWidth = "300px";
                     @else
                     <b style="color: red;">R</b>
                     @endif
-                    {{$sale->product->name}}
+                    <p style="font-family:'Times New Roman', Times, serif;font-size:16px;" >{{$sale->product->name}}</p>
                   </td>
                   <td>{{ $sale->qty }}{{$sale->product->unit->name}}</td>
                   <td class="text-right text-md-left ">{{$currency}} {{ number_format($sale->price, $decimalLength) }}</td>
@@ -276,6 +293,13 @@ $paperWidth = "300px";
               <tr>
                 <td colspan="4" style="text-align:center;">Thank you for shopping with us!</td>
               </tr>
+              <tr>
+                <td colspan="4"></td>
+              </tr>
+              <tr>
+                <td colspan="4" style="text-align:center;"><image  src={{asset('Milma_Web_QR_Code.png')}} width='80px' height='80px'/></td>
+              </tr>
+              
               <tr>
                 <td colspan="4"><hr/></td>
               </tr>

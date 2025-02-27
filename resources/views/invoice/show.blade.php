@@ -1,7 +1,5 @@
-
-
 @php
-$paperWidth = "400px";
+$paperWidth = "300px";
   $salesTotal = 0;
   $returnsTotal = 0;
 
@@ -33,7 +31,7 @@ $paperWidth = "400px";
                 <h2 class="page-header mb-0"><i class="fa fa-file"></i> MILMA</h2>
               </div>
               <div>
-                <h5 class="mb-0" style="white-space: nowrap;">Date:<p class="mx-1 mb-0 d-inline"></p>{{$invoice->created_at->format('d-m-Y H:i:s')}}</h5>
+                <p class="mb-0 d-inline" style="white-space: nowrap;">Date:<p class="mx-1 mb-0 d-inline"></p><b>{{$invoice->created_at->format('d-m-Y H:i:s')}}</b></p>
               </div>
             </div>
             <div class="row invoice-info">
@@ -49,8 +47,8 @@ $paperWidth = "400px";
                 </address>
               </div>
               <div class="col-4">
-                <b class="d-inline">Receipt ID:<p class="mx-1 mb-0 d-inline"></p> #{{1000+$invoice->id}}</b><br>
-                <b class="d-inline">Payment Type:<p class="mx-1 mb-0 d-inline"></p></b> {{$invoice->payment_type}}<br>
+                <b class="d-inline">Receipt No:<p class="mx-1 mb-0 d-inline"></p> #{{1000+$invoice->id}}</b><br>
+                <b class="d-inline">Payment:<p class="mx-1 mb-0 d-inline"></p></b> {{$invoice->payment_type}}<br>
                 <!-- <b class="d-inline">Order ID:</b> 4F3S8J<br> -->
                 <b class="d-inline">Payment Due:<p class="mx-1 mb-0 d-inline"></p></b> {{$invoice->created_at->format('d-m-Y')}}<br>
                 <!-- <b class="d-inline">Account:</b> 000-12345 -->
@@ -164,7 +162,7 @@ $paperWidth = "400px";
 
 <html>
   <body style="float: left;width: 100%; ">
-<div style="margin: 0px !important;padding: 0px !important;float: left;" hidden>
+<div style="margin: 30px !important;padding: 0px !important;float: left;" hidden>
   <div style="margin: 0px;padding: 0;float: left;" id="xReport">
     <style>
       .currency {
@@ -179,7 +177,7 @@ $paperWidth = "400px";
           <div style="float: left;">
             <h3 style="text-align: center;"><span style="text-align: center;">MILMA FOODS UK LIMITED</span></h3>
             <h4><span style="text-align: center;">Invoice</span></h4>
-            <h5 style="font-size: 14px;">Taken: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5>
+            <h5 style="font-size: 14px;">Printed On: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5>
             <hr style="margin: 10px 20px; width: {{ $paperWidth }};"/>
             
             <div style=" width: {{ $paperWidth }}; text-align: left;">
@@ -189,8 +187,8 @@ $paperWidth = "400px";
 
             <table class="table" style="margin: 10px 10px 10px 20px; width: {{ $paperWidth }}; text-align: left;">
               <tr>
-                <td colspan="2">ReceiptID: <b style="font-size: 14px;">#{{1000+$invoice->id}}</b></td>
-                <td colspan="2" style="text-align: end;">PaymentType: <b style="font-size: 14px;">{{$invoice->payment_type}}</b></td>
+                <td colspan="2">Receipt No. <b style="font-size: 14px;">#{{1000+$invoice->id}}</b></td>
+                <td colspan="2" style="text-align: end;">Payment: <b style="font-size: 14px;">{{$invoice->payment_type}}</b></td>
               </tr>
               <tr>
                 <td >Date: </td>
@@ -276,7 +274,7 @@ $paperWidth = "400px";
                 <td colspan="4"><hr/><hr/></td>
               </tr>
               <tr>
-                <td colspan="4" style="text-align:center;">**** Thank you for shopping with us! ****</td>
+                <td colspan="4" style="text-align:center;">Thank you for shopping with us!</td>
               </tr>
               <tr>
                 <td colspan="4"><hr/></td>

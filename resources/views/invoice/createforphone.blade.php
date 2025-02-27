@@ -24,14 +24,14 @@
           <!-- Page Header Section -->
           <div class="d-flex justify-content-between align-items-center">
             <h3 class="tile-title mb-0">{{$userRole == "admin" ? "Invoice" : "Receipt"}}</h3>
-            <h5 class="mb-0">Date: <p class="mx-1 mb-0 d-inline"></p>{{now()->format('d-m-Y')}}</h5>
+            <h5 class="mb-0"> <p class="d-inline" style="font-weight: 400;">Date:</p> <p class="mx-1 mb-0 d-inline"></p>{{now()->format('d-m-Y')}}</h5>
           </div>
-          <div class="d-flex justify-content-end align-items-center mt-2">
+          <!-- <div class="d-flex justify-content-end align-items-center mt-2">
             <div class="d-flex h-100 justify-content-center align-items-center">
               <p class="mb-0 ">Bal Amt:</p><p class="mb-0 mx-1 d-inline"></p>
               <b id="bal-amt-symbol" class="h5 mb-0 mr-1"></b><b id="bal-amt" class="h5 mb-0"></b>
             </div>
-          </div>
+          </div> -->
 
           <!-- Errors Section -->
           @if ($errors->any())
@@ -58,7 +58,7 @@
               @csrf
               <!-- Gathering Customer Name and Date -->
               <div class="row" >
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-12 mt-1">
                   <label class="control-label">Company Name</label>
                   <select name="customer_id" class="form-control select2" id="customer_name" data-live-search="true">
                     <option value = '0'>Select Customer</option>
@@ -77,7 +77,11 @@
               </div>
 
               <!-- Return Items Adding Button -->
-              <div class="d-flex justify-content-end mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex h-100 justify-content-center align-items-center">
+                  <p class="mb-0 ">Bal Amt:</p><p class="mb-0 mx-1 d-inline"></p>
+                  <b id="bal-amt-symbol" class="h5 mb-0 mr-1"></b><b id="bal-amt" class="h5 mb-0"></b>
+                </div>  
                 <button id="return-button-add" type="button" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#returnForm">
                   <i class="fa fa-plus"></i>
                   <span>Return</span>
@@ -88,7 +92,7 @@
               <div class="row">
 
                 <!-- Purchased Product Adding to Invoice Section --> 
-                <div class="col-md-5 mb-5">
+                <div class="col-md-5 mb-lg-5">
                   <div class="table-responsive">
                     <table class="d-table table table-striped " style="border-collapse: collapse;">
                       <thead>
@@ -100,7 +104,7 @@
                           <th scope="col" class="col-1">Action</th>
                         </tr>
                       </thead>
-                      <tbody id="product-section" style="height: 270px;overflow-y: auto;">
+                      <tbody id="product-section" style="height: 150px;overflow-y: auto;">
                       </tbody>
                       <tfoot>
                         <tr>
@@ -117,17 +121,17 @@
                 </div>
 
                 <!-- Total Products List -->
-                <div class="col-md-7 mb-5">
+                <div class="col-md-7 mb-3">
 
                   <!-- Products Search -->
-                  <div class="input-group mb-4" style="position: relative;">
+                  <!-- <div class="input-group mb-4" style="position: relative;">
                     <div class="input-group-prepend ">
                       <span class="input-group-text icon-container " style="border-right: none;background:transparent">
                         <i style="color: #6c757d;" class="fa fa-search"></i>
                       </span>
                     </div>
                     <input id="product-search" type="text" style="border-left: none;" class="form-control pl-0" placeholder="Search Products..."/>
-                  </div>
+                  </div> -->
 
                   
                   <!-- <select name="product_id[]" class="form-control productname mb-5">
@@ -138,7 +142,7 @@
                   </select> -->
 
                   <!-- Products List with Image -->
-                  <div class="overflow-y p-1 border border-primary rounded" style="height: 300px;overflow-y: auto;">
+                  <div class="overflow-y p-1 border border-primary rounded" style="height: 200px;overflow-y: auto;">
                     <div id="product-list" class="d-flex flex-wrap h-100 " style="gap: 20px;">
                       @if(count($products) == 0)
                         <div class="d-flex w-100 h-100 justify-content-center align-items-center">

@@ -1,5 +1,5 @@
 @php
-    $paperWidth = "320px";
+    $paperWidth = "300px";
     $salesData['selectedStartDate'] = \Carbon\Carbon::parse($salesData['selectedStartDate']);
     $salesData['selectedEndDate'] = \Carbon\Carbon::parse($salesData['selectedEndDate']);
 @endphp

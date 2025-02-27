@@ -1,5 +1,5 @@
 @php
-    $paperWidth = "400px";
+    $paperWidth = "300px";
 @endphp
 <div class="wrapper wrapper-content animated fadeInRight">
   <div class="row" id="xReport">

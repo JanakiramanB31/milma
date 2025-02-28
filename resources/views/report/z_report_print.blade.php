@@ -1,5 +1,5 @@
 @php
-    $paperWidth = "300px";
+    $paperWidth = "320px";
 @endphp
 <html>
   <head>
@@ -18,11 +18,11 @@
   <div class="row" id="xReport">
     
     <div style=" width: {{ $paperWidth }}; text-align:center;">
-      <div class="ibox float-e-margins">
-        <div class="ibox-content">
+      <div >
+        <div >
           <div class="hr-line-dashed" ></div>
           <div  >
-            <div class="d-flex justify-content-center align-items-center"style="margin: 10px 10px 10px 20px; width: {{ $paperWidth }};">
+            <div class="d-flex justify-content-center align-items-center"style="margin: 10px 0px 10px 0px; width: {{ $paperWidth }};">
               <h3 style="text-align: center;"class="boldfont">MILMA FOODS UK LIMITED</h3>
             </div>
            <!--  <h4><span style="text-align: center;">Z Report</span></h4> -->
@@ -42,7 +42,7 @@
               <hr/>
             </div>
             <div class="hr-line-dashed"></div>
-            <table id="invoice-table" class="table" style="margin: 10px 10px 10px 20px; width: {{ $paperWidth }}; text-align: left;" data-value="{{ json_encode($invoiceIDList) }}">
+            <table id="invoice-table" class="table" style="margin: 10px 0px 10px 0px; width: {{ $paperWidth }}; text-align: left;" data-value="{{ json_encode($invoiceIDList) }}">
             <tr>
               <th class="boldfont">SALE RETURN</th>
               <th class="boldfont">ITEM</th>

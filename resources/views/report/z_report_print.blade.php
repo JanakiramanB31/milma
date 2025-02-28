@@ -1,31 +1,41 @@
 @php
     $paperWidth = "300px";
 @endphp
-<div class="wrapper wrapper-content animated fadeInRight">
-  <div class="row" id="xReport">
-    <style>
+<html>
+  <head>
+  <style>
       .currency {
         margin-right: 5px;
         float: right;
       }
+      .boldfont {
+        font-weight: bolder;
+      }
     </style>
-    <div class="col-lg-12" style="margin: 10px 10px 10px 20px; width: {{ $paperWidth }}; text-align:center;">
+  </head>
+  <body>
+<div class="wrapper wrapper-content animated fadeInRight">
+  <div class="row" id="xReport">
+    
+    <div style=" width: {{ $paperWidth }}; text-align:center;">
       <div class="ibox float-e-margins">
         <div class="ibox-content">
           <div class="hr-line-dashed" ></div>
-          <div class="pos-report">
-            <h3 style="text-align: center;"><span style="text-align: center;">MILMA FOODS UK LIMITED</span></h3>
+          <div  >
+            <div class="d-flex justify-content-center align-items-center"style="margin: 10px 10px 10px 20px; width: {{ $paperWidth }};">
+              <h3 style="text-align: center;"class="boldfont">MILMA FOODS UK LIMITED</h3>
+            </div>
            <!--  <h4><span style="text-align: center;">Z Report</span></h4> -->
             <!-- <h5 style="font-size: 14px;">Taken: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5> -->
             <hr style="margin: 10px 20px; width: {{ $paperWidth }};"/>
             @if ($fromDate->format('d-m-Y') == $toDate->format('d-m-Y')) 
             <div class="d-flex align-items-space-between justify-content-space-between">
-              <b style="font-size: 14px;">Date: {{ \Carbon\Carbon::parse($fromDate)->format('d-m-Y') }}</b>
+              <b style="font-size: 14px;" class="boldfont">Date: {{ \Carbon\Carbon::parse($fromDate)->format('d-m-Y') }}</b>
             </div>
             @else
             <div class="d-flex align-items-space-between justify-content-space-between">
-              <b style="font-size: 14px;">From: {{ \Carbon\Carbon::parse($fromDate)->format('d-m-Y') }}</b>
-              <b style="font-size: 14px;">To: {{ \Carbon\Carbon::parse($toDate)->format('d-m-Y') }}</b>
+              <b style="font-size: 14px;" class="boldfont">From: {{ \Carbon\Carbon::parse($fromDate)->format('d-m-Y') }}</b>
+              <b style="font-size: 14px;" class="boldfont">To: {{ \Carbon\Carbon::parse($toDate)->format('d-m-Y') }}</b>
             </div>
             @endif
             <div style="margin: 10px 20px; width: {{ $paperWidth }}; text-align: left;">
@@ -34,66 +44,66 @@
             <div class="hr-line-dashed"></div>
             <table id="invoice-table" class="table" style="margin: 10px 10px 10px 20px; width: {{ $paperWidth }}; text-align: left;" data-value="{{ json_encode($invoiceIDList) }}">
             <tr>
-              <th>SALE RETURN</th>
-              <th>ITEM</th>
-              <th style="text-align: right;">GROSS</th>
+              <th class="boldfont">SALE RETURN</th>
+              <th class="boldfont">ITEM</th>
+              <th  class="boldfont" style="text-align: right;">GROSS</th>
             </tr>
             @php
                 $totalReturnsAmount = $salesReturns->sum('amount');
             @endphp
             @foreach($salesReturns as $salesReturn)
             <tr>
-              <td></td>
-              <td>{{$salesReturn->product->name}}</td>
-              <td style="text-align: right;"><span>{{$currency}} </span>{{number_format($salesReturn->amount,  $decimalLength )}}</td>
+              <td class="boldfont"></td>
+              <td class="boldfont">{{$salesReturn->product->name}}</td>
+              <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($salesReturn->amount,  $decimalLength )}}</td>
             </tr>
             @endforeach
             <tr>
               <td colspan="3"><hr /></td>
             </tr>
             <tr>
-              <th>TOTAL</th>
+              <th class="boldfont">TOTAL</th>
               <td></td>
-              <td style="text-align: right;"><span>{{$currency}} </span>{{number_format($totalReturnsAmount,  $decimalLength )}}</td>
+              <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($totalReturnsAmount,  $decimalLength )}}</td>
             </tr>
             <tr>
               <td colspan="3"><hr /></td>
             </tr>
             
             <tr>
-              <th>STOCK</th>
+              <th class="boldfont">STOCK</th>
               <td></td>
               <td></td>
             </tr>
             <tr></tr>
             <tr>
-              <th>Product</th>
-              <th>Start</th>
-              <th style="text-align: right;">End</th>
+              <th class="boldfont">Product</th>
+              <th class="boldfont">Start</th>
+              <th class="boldfont" style="text-align: right;">End</th>
             </tr>
             <tr>
               <td colspan="3"><hr /></td>
             </tr>
             @foreach ($loadedProducts as $loadedProduct)
               <tr>
-                <td>{{ $loadedProduct->product->name }}</td>
-                <td>{{ $loadedProduct->start_quantity }}</td>
-                <td style="text-align: right;">{{ $loadedProduct->quantity }}</td>
+                <td class="boldfont">{{ $loadedProduct->product->name }}</td>
+                <td class="boldfont">{{ $loadedProduct->start_quantity }}</td>
+                <td class="boldfont" style="text-align: right;">{{ $loadedProduct->quantity }}</td>
               </tr>
             @endforeach
             <tr>
               <td colspan="3"><hr/></td>
             </tr>
             <tr>
-              <th>RECEIPTS</th>
+              <th class="boldfont">RECEIPTS</th>
               <td></td>
               <td></td>
             </tr>
             <tr></tr>
             <tr>
-                <th>Company</th>
-                <th>Method</th>
-                <th style="text-align: right;">Received Amt</th>
+                <th class="boldfont">Company</th>
+                <th class="boldfont">Method</th>
+                <th class="boldfont" style="text-align: right;">Received Amt</th>
               </tr>
               <tr>
                 <td colspan="3"><hr/></td>
@@ -102,9 +112,9 @@
                 
                 @if ($invoice->payment_type == "Cash")
                 <tr>
-                  <td>{{$invoice->customer->company_name}}</td>
-                  <td>{{$invoice->payment_type}}</td>
-                  <td style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
+                  <td class="boldfont">{{$invoice->customer->company_name}}</td>
+                  <td class="boldfont">{{$invoice->payment_type}}</td>
+                  <td  class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
                 </tr>
                 @endif
               @endforeach
@@ -113,9 +123,9 @@
               </tr>
 
               <tr>
-                <td>Cash</td>
-                <td>Total</td>
-                <td style="text-align: right;"><span>{{$currency}} </span>{{$totalCashAmount}}</td>
+                <td class="boldfont">Cash</td>
+                <td class="boldfont">Total</td>
+                <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($totalCashAmount,  $decimalLength )}}</td>
               </tr>
               
               <tr>
@@ -127,9 +137,9 @@
                 @endphp
                 @if ($invoice->payment_type == "Bank Transfer")
                 <tr>
-                  <td>{{$invoice->customer->company_name}}</td>
-                  <td>Transfer</td>
-                  <td style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
+                  <td class="boldfont">{{$invoice->customer->company_name}}</td>
+                  <td class="boldfont">Transfer</td>
+                  <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
                 </tr>
                 @endif
               @endforeach
@@ -138,9 +148,9 @@
               </tr>
 
               <tr>
-                <td>Transfer</td>
-                <td>Total</td>
-                <td style="text-align: right;"><span>{{$currency}} </span>{{$totalTransferAmount}}</td>
+                <td class="boldfont">Transfer</td>
+                <td class="boldfont">Total</td>
+                <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($totalTransferAmount,  $decimalLength )}}</td>
               </tr>
               
               <tr>
@@ -159,6 +169,8 @@
     </div>
   </div>
 </div>
+</body>
+</html>
 
 <div class="hidden-print" style="margin-left:10px; text-align: center; width: {{ $paperWidth }};">
   <button class="btn btn-primary printbutton" id="print" >Print</button>

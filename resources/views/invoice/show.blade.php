@@ -161,20 +161,20 @@ $paperWidth = "300px";
 @endsection
 
 <html>
-  <body style="float: center;width: 100%; ">
-<div style="margin: 30px !important;padding: 0px !important;float: left;" hidden>
-  <div style="margin: 0px;padding: 0;float: left;" id="xReport">
+  <body style="width: 100%; ">
+<div style="margin: 0 0 0 30px !important;padding: 0px !important;" hidden>
+  <div style="font-family: monospace;"  id="xReport">
     <style>
       .currency {
         margin-right: 5px;
         float: right;
       }
     </style>
-    <div style="float: left;margin: 0px;padding: 0; width: {{ $paperWidth }};">
+    <div style="width: {{ $paperWidth }};">
       <div >
         <div >
-          <div class="hr-line-dashed"></div>
-          <div style="float: left;">
+          <div class="hr-line-dashed" style="width: 100%;"></div>
+          <div style="font-family: monospace;">
             <image  src={{asset('Milma_Logo.jpg')}} width='200px' height='100px'/>
             <h3 style="text-align: center;"><span style="text-align: center;">MILMA FOODS UK LIMITED</span></h3>
             <div class="d-flex justify-content-center align-items-center">
@@ -187,19 +187,19 @@ $paperWidth = "300px";
             <h4><span style="text-align: center;">Invoice</span></h4>
             <h4><span style="text-align: center;">{{$invoice->customer->company_name}}</span></h4>
             <h5 style="font-size: 14px;">Printed On: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5>
-            <hr style="margin: 10px 20px; width: {{ $paperWidth }};"/>
+            <hr   style="border: 1px solid black;"/>
             
-            <div style=" width: {{ $paperWidth }}; text-align: left;">
-              <hr/>
+            <div style=" text-align: left;">
+              <hr  style="border: 1px solid black;"/>
             </div>
             <div class="hr-line-dashed"></div>
 
-            <table class="table" style="margin: 10px 10px 10px 20px; width: {{ $paperWidth }}; text-align: left;">
-            <tr>
+            <table class="table" style="text-align: left;">
+              <tr>
                 <td colspan="2">Operator: </td>
-                <td colspan="2" style="text-align: end;"><b style="font-size: 14px;">{{Auth::user()->role}}</b></td>
+                <td colspan="2" style="text-align: end;"><b style="font-size: 14px;">{{Str::ucfirst(Auth::user()->role)}}</b></td>
               </tr>
-            <tr>
+              <tr>
                 <td colspan="2">Receipt No.</td>
                 <td colspan="2" style="text-align: end;"><b style="font-size: 14px;">#{{1000+$invoice->id}}</b></td>
               </tr>
@@ -212,9 +212,9 @@ $paperWidth = "300px";
                 <td colspan="2"style="text-align: end;"><b style="font-size: 14px;">{{$invoice->created_at->format('d-m-Y')}}</b></td>
               </tr>    
               <tr>
-                <td colspan="4"><hr/><hr/></td>
+                <td colspan="4"><hr  style="border: 1px solid black;"/><hr  style="border: 1px solid black;"/></td>
               </tr>
-<!-- 
+              <!--
               <tr>
                 <td>To</td>
                 <td colspan="3">{{$invoice->customer->company_name}}</td>
@@ -231,7 +231,7 @@ $paperWidth = "300px";
                 <th style="text-align: end;">Amt</th>
               </tr>
               <tr>
-                <td colspan="4"><hr/></td>
+                <td colspan="4"><hr  style="border: 1px solid black;"/></td>
               </tr>
               @foreach($sales as $sale)
                 <tr>
@@ -243,14 +243,14 @@ $paperWidth = "300px";
                     <p style="font-family:'Times New Roman', Times, serif;font-size:16px;" >{{$sale->product->name}}</p>
                   </td>
                   <td>{{ $sale->qty }}{{$sale->product->unit->name}}</td>
-                  <td class="text-right text-md-left ">{{$currency}} {{ number_format($sale->price, $decimalLength) }}</td>
-                  <td class="text-right text-md-left " style="text-align: end;">
+                  <td class="text-right text-md-left "  style="white-space: nowrap;"><b>{{$currency}} {{ number_format($sale->price, $decimalLength) }}</b></td>
+                  <td class="text-right text-md-left " style="text-align: end;white-space: nowrap;">
                     @if($sale->type == "sales")
                     <b></b>
                     @else
                     <b>(-)</b>
                     @endif
-                    {{$currency}} {{ number_format($sale->qty * $sale->price, $decimalLength) }}
+                    <b>{{$currency}} {{ number_format($sale->qty * $sale->price, $decimalLength) }}</b>
                   </td>
                   <div style="display: none">
                     {{$total }}
@@ -258,37 +258,37 @@ $paperWidth = "300px";
                 </tr>
               @endforeach
               <tr>
-                <td colspan="4"><hr/></td>
+                <td colspan="4"><hr style="border: 1px solid black;"/></td>
               </tr>
-                <tr>
-                  <td colspan="2" ><b>Total Amt</b></td>
-                  <td colspan="2" style="text-align: end;" class="text-right text-md-left">{{$currency}} {{ number_format($amount->total_amount, $decimalLength) }}</td>
-                </tr>
-                <tr >
-                  <td colspan="2" ><b>Amt Paid</b></td>
-                  <td colspan="2" style="text-align: end;" class="text-right text-md-left">{{$currency}} {{ number_format($amount->received_amt, $decimalLength) }}</td>
-                </tr>
-                @if(number_format($amount->prev_acc_bal_amt, $decimalLength)  > 0)
-                <tr>
-                  <td colspan="2" ><b>Prev Acc Bal Amt</b></td>
-                  <td colspan="2" style="text-align: end;" class="text-right text-md-left">{{$currency}} {{ number_format($amount->prev_acc_bal_amt, $decimalLength) }}</td>
-                </tr>
-                @endif
-                @if((number_format($amount->acc_bal_amt, $decimalLength) + number_format($currentBalAmt, $decimalLength))  > 0)
-                <tr>
-                  <td colspan="2" ><b>Acc Bal Amt</b></td>
-                  <td colspan="2" style="text-align: end;" class="text-right text-md-left">{{$currency}} {{number_format( $amount->acc_bal_amt + $currentBalAmt, $decimalLength) }}</td>
-                </tr>
-                @endif
+              <tr>
+                <td colspan="2" ><b>Total Amt</b></td>
+                <td colspan="2" style="text-align: end;" class="text-right text-md-left"><b>{{$currency}} {{ number_format($amount->total_amount, $decimalLength) }}</b></td>
+              </tr>
+              <tr >
+                <td colspan="2" ><b>Amt Paid</b></td>
+                <td colspan="2" style="text-align: end;" class="text-right text-md-left"><b>{{$currency}} {{ number_format($amount->received_amt, $decimalLength) }}</b></td>
+              </tr>
+              @if(number_format($amount->prev_acc_bal_amt, $decimalLength)  > 0)
+              <tr>
+                <td colspan="2" ><b>Prev Acc Bal Amt</b></td>
+                <td colspan="2" style="text-align: end;" class="text-right text-md-left"><b>{{$currency}} {{ number_format($amount->prev_acc_bal_amt, $decimalLength) }}</b></td>
+              </tr>
+              @endif
+              @if((number_format($amount->acc_bal_amt, $decimalLength) + number_format($currentBalAmt, $decimalLength))  > 0)
+              <tr>
+                <td colspan="2" ><b>Acc Bal Amt</b></td>
+                <td colspan="2" style="text-align: end;" class="text-right text-md-left"><b>{{$currency}} {{number_format( $amount->acc_bal_amt + $currentBalAmt, $decimalLength) }}</b></td>
+              </tr>
+              @endif
 
-                @if(($amount->received_amt - $totAmt ) > 0)
-                <tr>
-                  <td colspan="2" ><b>Bal Amt</b></td>
-                  <td colspan="2" style="text-align: end;" class="text-right text-lg-left">{{$currency}} {{ number_format($amount->received_amt - $totAmt , $decimalLength) }}</td>
-                </tr>
-                @endif
-                <tr>
-                <td colspan="4"><hr/><hr/></td>
+              @if(($amount->received_amt - $totAmt ) > 0)
+              <tr>
+                <td colspan="2" ><b>Bal Amt</b></td>
+                <td colspan="2" style="text-align: end;" class="text-right text-lg-left"><b>{{$currency}} {{ number_format($amount->received_amt - $totAmt , $decimalLength) }}</b></td>
+              </tr>
+              @endif
+              <tr>
+                <td colspan="4"><hr  style="border: 1px solid black;"/><hr  style="border: 1px solid black;"/></td>
               </tr>
               <tr>
                 <td colspan="4" style="text-align:center;">Thank you for shopping with us!</td>
@@ -301,7 +301,7 @@ $paperWidth = "300px";
               </tr>
               
               <tr>
-                <td colspan="4"><hr/></td>
+                <td colspan="4"><hr  style="border: 1px solid black;"/></td>
               </tr>
               
             </table>

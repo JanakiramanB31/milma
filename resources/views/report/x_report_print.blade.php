@@ -11,31 +11,37 @@
         margin-right: 5px;
         float: right;
       }
+      .boldfont {
+        font-weight: bolder;
+      }
+      th, td {
+        font-weight: bolder;
+      }
     </style>
-    <div class="col-lg-12" style="margin: 10px 10px 10px 20px; width: {{ $paperWidth }}; text-align:center;">
+    <div class="col-lg-12" style="width: {{ $paperWidth }}; text-align:center;">
       <div class="ibox float-e-margins">
         <div class="ibox-content">
           <div class="hr-line-dashed"></div>
-          <div class="pos-report">
-            <h3 style="text-align: center;"><span style="text-align: center;">MILMA FOODS UK LIMITED</span></h3>
-            <h4><span style="text-align: center;">X Report</span></h4>
-            <h5 style="font-size: 14px;">Taken: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5>
-            <hr style="margin: 10px 20px; width: {{ $paperWidth }};"/>
+          <div class="d-flex justify-content-center align-items-center" style="width: 100%;">
+            <h3 style="text-align: center;"><span style="text-align: center;"  class="boldfont">MILMA FOODS UK LIMITED</span></h3>
+            <h4><span style="text-align: center;"  class="boldfont">X Report</span></h4>
+            <!-- <h5 style="font-size: 14px;"  class="boldfont">Taken: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5> -->
+            <hr />
             @if ($salesData['selectedStartDate']->format('d-m-Y') == $salesData['selectedEndDate']->format('d-m-Y')) 
-            <div class="d-flex align-items-space-between justify-content-space-between">
-              <b style="font-size: 14px;">Date: {{ \Carbon\Carbon::parse($salesData['selectedStartDate'])->format('d-m-Y') }}</b>
+            <div class="d-flex align-items-space-between justify-content-space-between"  class="boldfont">
+              <b style="font-size: 14px;"  class="boldfont">Date: {{ \Carbon\Carbon::parse($salesData['selectedStartDate'])->format('d-m-Y') }}</b>
             </div>
             @else
             <div class="d-flex align-items-space-between justify-content-space-between">
-              <b style="font-size: 14px;">From: {{ \Carbon\Carbon::parse($salesData['selectedStartDate'])->format('d-m-Y') }}</b>
-              <b style="font-size: 14px;">To: {{ \Carbon\Carbon::parse($salesData['selectedEndDate'])->format('d-m-Y') }}</b>
+              <b style="font-size: 14px;"  class="boldfont">From: {{ \Carbon\Carbon::parse($salesData['selectedStartDate'])->format('d-m-Y') }}</b>
+              <b style="font-size: 14px;"  class="boldfont">To: {{ \Carbon\Carbon::parse($salesData['selectedEndDate'])->format('d-m-Y') }}</b>
             </div>
             @endif
-            <div style="margin: 10px 20px; width: {{ $paperWidth }}; text-align: left;">
+            <div style="text-align: left;">
               <hr/>
             </div>
             <div class="hr-line-dashed"></div>
-            <table class="table" style="margin: 10px 10px 10px 20px; width: {{ $paperWidth }}; text-align: left;">
+            <table class="table" style="width: {{$paperWidth}}; text-align: left;">
               <tr>
                 <th>No. of Cash Sales: </th>
                 <td class="currency">{{ $salesData['cashSalesCount'] }}</td>
@@ -62,15 +68,15 @@
 
               <tr>
                 <th>Cash Sales:</th>
-                <td class="currency">{{ $currency }} {{ $salesData['cashSalesAmount'] }}</td>
+                <td class="currency">{{ $currency }} {{ number_format($salesData['cashSalesAmount'], $decimalLength) }}</td>
               </tr>
               <tr>
                 <th>Bank Transfer Sales: </th>
-                <td class="currency">{{ $currency }} {{ $salesData['bankSalesAmount'] }}</td>
+                <td class="currency">{{ $currency }} {{ number_format($salesData['bankSalesAmount'], $decimalLength) }}</td>
               </tr>
               <tr>
                 <th>Credit Sales:</th>
-                <td class="currency">{{ $currency }} {{ $salesData['cardSalesAmount'] }}</td>
+                <td class="currency">{{ $currency }} {{ number_format($salesData['cardSalesAmount'], $decimalLength) }}</td>
               </tr>
 
               <tr>
@@ -79,11 +85,11 @@
              
               <tr>
                 <th>Total Sale Amt:</th>
-                <td class="currency">{{ $currency }} {{ $salesData['totalAmount'] + $salesData['cardSalesAmount'] }}</td>
+                <td class="currency">{{ $currency }} {{  number_format($salesData['totalAmount'] + $salesData['cardSalesAmount'], $decimalLength) }}</td>
               </tr>
               <tr>
                 <th>Amt of Credit Sales:</th>
-                <td class="currency">(-) {{ $currency }} {{ $salesData['cardSalesAmount'] }}</td>
+                <td class="currency">(-) {{ $currency }} {{  number_format($salesData['cardSalesAmount'], $decimalLength) }}</td>
               </tr>
               <tr>
                 <td colspan="2"><hr/></td>
@@ -91,7 +97,7 @@
               <tr>
                 <th>Total Amt: </th>
                 <td class="currency">
-                {{ $currency }} {{ $salesData['totalAmount'] }}
+                {{ $currency }} {{  number_format($salesData['totalAmount'], $decimalLength) }}
                 </td>
               </tr>
               <tr>
@@ -103,7 +109,7 @@
               </tr>
               <tr>
                 <th>Total Amt of Returns: </th>
-                <td class="currency">(-) {{ $currency }} {{ $salesData['returnAmount'] }}</td>
+                <td class="currency">(-) {{ $currency }} {{  number_format($salesData['returnAmount'], $decimalLength) }}</td>
               </tr>
               <tr>
                 <td colspan="2"><hr/></td>
@@ -111,7 +117,7 @@
               <tr>
                 <th>Total Net Amt: </th>
                 <td class="currency">
-                {{ $currency }} {{ $salesData['totalAmount'] }}
+                {{ $currency }} {{  number_format($salesData['totalAmount'], $decimalLength) }}
                 </td>
               </tr>
               <tr>
@@ -119,7 +125,7 @@
               </tr>
               <tr>
                 <th>Cash in Hand:</th>
-                <td class="currency">{{ $currency }} {{ $salesData['cashSalesAmount'] }}</td>
+                <td class="currency">{{ $currency }} {{  number_format($salesData['cashSalesAmount'], $decimalLength) }}</td>
               </tr>
               <tr>
                 <td colspan="2"><hr/></td>

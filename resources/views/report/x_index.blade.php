@@ -184,7 +184,7 @@
               var cardAmt = (response.cardSalesAmount || 0);
               var returnAmt = (response.returnType.total_amt || 0);
               console.log("Success", response);  
-              $('#salesCount').text(response.cashPayments.transaction_count + response.bankPayments.transaction_count+ creditTransactionCount);
+              $('#salesCount').text(response.cashPayments.transaction_count + response.bankPayments.transaction_count+ response.creditTransactionCount);
               $('#salesAmount').text(currency + response.saleType.total_amt.toFixed(decimalLength));
               $('#returnCount').text(response.returnType.qty_count);
               $('#returnAmount').text(currency + response.returnType.total_amt.toFixed(decimalLength));

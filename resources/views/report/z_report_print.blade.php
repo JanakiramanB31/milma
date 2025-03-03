@@ -22,12 +22,12 @@
         <div >
           <div class="hr-line-dashed" ></div>
           <div  >
-            <div class="d-flex justify-content-center align-items-center"style="margin: 10px 0px 10px 0px; width: {{ $paperWidth }};">
+            <div class="d-flex justify-content-center align-items-center"style="margin: 10px 20px 10px 0px; width: {{ $paperWidth }};">
               <h3 style="text-align: center;"class="boldfont">MILMA FOODS UK LIMITED</h3>
             </div>
            <!--  <h4><span style="text-align: center;">Z Report</span></h4> -->
             <!-- <h5 style="font-size: 14px;">Taken: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5> -->
-            <hr style="margin: 10px 20px; width: {{ $paperWidth }};"/>
+            <hr style="margin: 10px 20px 10px 0px; width: {{ $paperWidth }};"/>
             @if ($fromDate->format('d-m-Y') == $toDate->format('d-m-Y')) 
             <div class="d-flex align-items-space-between justify-content-space-between">
               <b style="font-size: 14px;" class="boldfont">Date: {{ \Carbon\Carbon::parse($fromDate)->format('d-m-Y') }}</b>
@@ -38,11 +38,11 @@
               <b style="font-size: 14px;" class="boldfont">To: {{ \Carbon\Carbon::parse($toDate)->format('d-m-Y') }}</b>
             </div>
             @endif
-            <div style="margin: 10px 20px; width: {{ $paperWidth }}; text-align: left;">
+            <div style="margin: 10px 20px 10px 0px; width: {{ $paperWidth }}; text-align: left;">
               <hr/>
             </div>
             <div class="hr-line-dashed"></div>
-            <table id="invoice-table" class="table" style="margin: 10px 0px 10px 0px; width: {{ $paperWidth }}; text-align: left;" data-value="{{ json_encode($invoiceIDList) }}">
+            <table id="invoice-table" class="table" style="margin: 10px 20px 10px 0px; width: {{ $paperWidth }}; text-align: left;" data-value="{{ json_encode($invoiceIDList) }}">
             <tr>
               <th class="boldfont">SALE RETURN</th>
               <th class="boldfont">ITEM</th>

@@ -74,7 +74,7 @@ class ProductController extends Controller
       // $this->pr($request->all());
       // exit;
          $request->validate([
-            'name' => 'required|min:3|unique:products|regex:/^[a-zA-Z ]+$/',
+            'name' => 'required|min:3|unique:products',
             'brand_name' => 'required',
             'sku_code' => 'required',
             'barcode' => 'required',
@@ -240,7 +240,7 @@ class ProductController extends Controller
       // $this->pr($request->all());
       //exit;
       $request->validate([
-        'name' => 'required|min:3|unique:products,name,' . $id . '|regex:/^[a-zA-Z ]+$/',
+        'name' => 'required|min:3|unique:products,name,' . $id,
         'brand_name' => 'required',
         'sku_code' => 'required',
         'barcode' => 'required',

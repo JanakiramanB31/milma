@@ -104,7 +104,7 @@
                           <th scope="col" class="col-1">Action</th>
                         </tr>
                       </thead>
-                      <tbody id="product-section" style="height: 150px;overflow-y: auto;">
+                      <tbody id="product-section" style="min-height: auto;max-height: 150px;overflow-y: auto;">
                       </tbody>
                       <tfoot>
                         <tr>
@@ -153,7 +153,12 @@
                         
                           <figure class="flex-{grow|shrink}-1">
                             <image class="product-select" data-qty="{{$product->quantity}}" data-id="{{$product->id}}" data-name="{{$product->name}}" src={{asset('images/product/' . $product->image)}} width='80px' height='80px'/>
-                            <figcaption style="width: 80px;"><p class="d-inline" style=" white-space: normal;word-wrap: break-word;overflow-wrap: break-word;">{{$product->name}}<p class="d-inline">-</p><b>{{$product->quantity}}</b><p class="d-inline">({{$product->unit->name}})</p></p></figcaption>
+                              <figcaption style="width: 80px;"><p class="d-inline" style=" white-space: normal;word-wrap: break-word;overflow-wrap: break-word;">{{$product->name}}
+                              @if(Auth::user()->role != 'admin')  
+                                <p class="d-inline">-</p>
+                                <b>{{$product->quantity}}</b><p class="d-inline">({{$product->unit->name}})</p></p>
+                              @endif
+                              </figcaption>
                           </figure>
                         @endforeach
                       @endif

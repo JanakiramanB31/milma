@@ -128,9 +128,6 @@
                   </div>
 
                   @foreach($products as $product)
-                    @php
-                      $prodMaxQuantity = array_key_exists($product->id, $supplierProdQuantities)?$supplierProdQuantities[$product->id]:0;
-                    @endphp
                     <div id="product-section2" style="display: flex;">
                       <div class="form-group col-md-6">
                         <input name="product_name[]" class="form-control prod-name @error('product_name') is-invalid @enderror" value="{{ old('product_name', $product->name) }}" readonly>
@@ -142,7 +139,7 @@
                         @enderror
                       </div>
                       <div class="form-group col-md-6">
-                        <input name="quantity[]" id="quantity-{{ $product->id }}" data-prodname="{{$product->name}}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ old('quantity.' . $product->id) }}"  type="text" placeholder="Enter Quantity" data-available = "{{$prodMaxQuantity}}" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
+                        <input name="quantity[]" id="quantity-{{ $product->id }}" data-prodname="{{$product->name}}" class="form-control quantity-input @error('quantity') is-invalid @enderror" value="{{ old('quantity.' . $product->id) }}"  type="text" placeholder="Enter Quantity" data-sku="{{ $product->sku_code }}"  data-barcode="{{ $product->barcode }}">
                         @error('quantity')
                         <span class="invalid-feedback" role="alert">
                           <strong>{{ $message }}</strong>
@@ -286,34 +283,15 @@
         var sku = $(this).data('sku');
         var barcode = $(this).data('barcode');
         var quantityValue = $(this).val();
-        var availableQuantity = $(this).data('available');
-        console.log(availableQuantity);
         $('#product-section1').show();
         $('#sku_code').text(sku);
         $('#barcode').text(barcode);
-       /*  if ( quantityValue && availableQuantity == 0) {
-          $('#quantity-error').text('Out of Stock').show();
-          $('#add_button').prop('disabled', true);
-          $('#check-button').attr('disabled', true);
-        } else */ 
         if (quantityValue < 0) {
           $('#quantity-error').css("display", "block");
           $('#quantity-error').text('Please enter non-negative quantities.').show();
           $('#add_button').prop('disabled', true);
           $('#check-button').attr('disabled', true);
-        }
-        /* else if (quantityValue >= 0 && quantityValue <= availableQuantity) {
-          $('#quantity-error').hide();
-          $('#add_button').prop('disabled', false);
-          $('#check-button').attr('disabled', false);
-          $('#product-section1').show();
-          $('#sku_code').text(sku);
-          $('#barcode').text(barcode);
-        } else if (quantityValue > availableQuantity) {
-          $('#add_button').prop('disabled', true);
-          $('#check-button').attr('disabled', true);
-          $('#quantity-error').text('Quantity exceeds the available stock.').show();
-        } */ else {
+        } else {
           $('#add_button').prop('disabled', false);
           $('#check-button').attr('disabled', false);
           $('#product-section1').hide();
@@ -341,21 +319,12 @@
         $('.quantity-input').each(function() {
           var quantityValue = $(this).val();
           var productName = $(this).data('prodname');
-          var availableQuantity = $(this).data('available');
 
           if (quantityValue < 0) {
             $('#quantity-error').text(`Please enter non-negative quantities for ${productName}`).show();
             allValidated = false;
             return false;
-          } /* else if (quantityValue && availableQuantity == 0) {
-            $('#quantity-error').text(`${productName} is Out of Stock`).show();
-            allValidated = false;
-            return false;
-          } else if (quantityValue > availableQuantity) {
-            $('#quantity-error').text(`${productName} quantity exceeds available stock.`).show();
-            allValidated = false;
-            return false;
-          }  */else {
+          } else {
             $('#quantity-error').hide();
             allValidated = true;
             return true;

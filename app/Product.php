@@ -18,10 +18,6 @@ class Product extends Model
         return $this->belongsTo('App\Tax');
     }
 
-    public function additionalProduct(){
-        return $this->hasMany('App\ProductSupplier');
-    }
-
     public function sale(){
         return $this->hasMany('App\Sale');
     }

@@ -186,49 +186,7 @@
     
   </div>
 
-  <div class="tile">
 
-    <div id="example-2" class="content">
-      <div class="row mb-2">
-        <div class="col-md-4">Supplier</div>
-        <div class="col-md-4">Price</div>
-        <div class="col-md-4">Qty</div>
-      </div>
-      <div class="group row">
-      
-      @foreach(old('supplier_id', $productSupplierIds) as $index => $oldSupplierId)
-      @php
-        $SupplierPrice = old('supplier_price', $productSupplierPrices)[$index];
-        $SupplierPrice = ($SupplierPrice)?$SupplierPrice: 0;
-        $SupplierQuantity = old('quantity',$productSupplierQuantity)[$index];
-        $SupplierQuantity = ($SupplierQuantity)? $SupplierQuantity :'';
-      @endphp
-      
-        <div class="form-group col-md-4">
-          <select name="supplier_id[]" class="form-control" >
-            <option value=''>Select Supplier</option>
-            @foreach($suppliers as $supplier)
-            <option value="{{$supplier->id}}" {{ $supplier->id == $oldSupplierId ? 'selected' : '' }}>{{$supplier->name}} </option>
-            @endforeach
-          </select>
-        </div>
-        <div class="form-group col-md-4">
-          <input name="supplier_price[]" value="{{ $SupplierPrice ? number_format($SupplierPrice, $decimalLength) : '' }}" class="form-control prod-rate-price @error('supplier_price') is-invalid @enderror" type="text" placeholder="Purchase Price">
-          <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : '' }}</span>
-        </div>
-        <div class="form-group col-md-4">
-          <input name="quantity[]" id="quantity"  class="form-control @error('quantity')  is-invalid @enderror" value="{{$SupplierQuantity}}"  type="number" placeholder="Enter Quantity">
-          <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : '' }}</span>
-          <div class="invalid-feedback" role="alert" id="quantity-error" style="display: none;"></div>
-        </div>
-        @endforeach
-        <!-- <div class="form-group col-md-2">
-          <button type="button" id="btnAdd-2" class="btn btn-success btn-sm float-right"><i class="fa fa-plus"></i></button>
-          <button type="button" class="btn btn-danger btn-sm btnRemove float-right"><i class="fa fa-trash"></i></button>
-        </div> -->
-      </div>
-    </div>
-  </div>
 
   <!-- Product Price Entry -->
 
@@ -296,33 +254,12 @@
   $(document).ready(function() {
 
     //Accept Only Float Number Price In Quantity Field 
-    $(document).on('input', '.prod-sup-price, .prod-rate-price , .base_rate', function() {
+    $(document).on('input', '.prod-sup-price, .base_rate', function() {
       this.value = this.value.replace(/[^0-9.]/g, '');
       
       const parts = this.value.split('.');
       if (parts.length > 2) {
         this.value = parts[0] + '.' + parts.slice(1).join('');
-      }
-    });
-
-    $('#quantity').on('input', function() {
-      var quantityValue = $(this).val();
-
-      if (quantityValue < 0) {
-        $('#quantity').addClass("is-invalid");
-        $('#quantity-error').css("display", "block");
-        $('#quantity-error').text('Please enter non-negative quantities.').show();
-        $('#submit-data').attr("disabled", true);
-      } /* else if (quantityValue == 0) {
-        $('#quantity').addClass("is-invalid");
-        $('#quantity-error').css("display", "block");
-        $('#quantity-error').text('Please enter quantities.').show();
-        $('#submit-data').attr("disabled", true);
-      } */
-      else {
-        $('#quantity').removeClass("is-invalid");
-        $('#quantity-error').css("display", "none");
-        $('#submit-data').attr("disabled", false);
       }
     });
 

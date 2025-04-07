@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use App\Product;
-use App\ProductSupplier;
-use App\Supplier;
 use App\Tax;
 use App\Unit;
 use App\Rate;
@@ -23,14 +21,13 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::where('status',1)->get();
-        $additional = ProductSupplier::with('product')->get();
         $currency = config('constants.CURRENCY_SYMBOL');
         $decimalLength = config('constants.DECIMAL_LENGTH');
         // $this->pr($additional->toArray());
         // // $this->pr($additional->products->toArray());
         // exit;
         $rates = Rate::all();
-        return view('product.index', compact('products','additional', 'rates','currency','decimalLength'));
+        return view('product.index', compact('products', 'rates','currency','decimalLength'));
     }
 
     /**
@@ -41,7 +38,7 @@ class ProductController extends Controller
     public function create()
     {
        
-        $suppliers =Supplier::all();
+        // $suppliers =Supplier::all();
         $categories = Category::all();
         $currency = config('constants.CURRENCY_SYMBOL');
         $decimalLength = config('constants.DECIMAL_LENGTH');
@@ -49,17 +46,14 @@ class ProductController extends Controller
         $units = Unit::all();
         $rates = Rate::all();
         $stockTypes = config('constants.STOCK_TYPES');
-        $productSupplierIds = array('0');
-        $productSupplierPrices = array('0');
         $product = new Product();
         $editPage = false;
         $submitURL = route('product.store');
         
         $productRateIds = array('0');
         $productPrices =array('0');
-        $productSupplierQuantity = array('0');
         //  echo '<pre>'; print_r($stockTypes); echo '</pre>'; exit;
-        return view('product.create', compact('product','decimalLength', 'currency','productSupplierQuantity','productSupplierIds','productSupplierPrices','categories','taxes','units','suppliers', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices'));
+        return view('product.create', compact('product','decimalLength', 'currency','categories','taxes','units', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices'));
     }
 
     /**
@@ -95,19 +89,7 @@ class ProductController extends Controller
             'status' => 'required'
          ]);
 
-         $supplierIds = [];
-
-         foreach($request->supplier_id as $key => $supplier_id){
-          // $this->pr($request->all());
-          // exit;
-          if (in_array($supplier_id, $supplierIds)) {
-            return redirect()->back()->withErrors(['supplier_id' => 'This supplier type has been added multiple times.'])->withInput();
-          }
-            $supplierIds[] = $supplier_id;
-
-        }
-
-         $rateIds = [];
+        $rateIds = [];
         foreach($request->rate_id as $key => $rate_id){
           // $this->pr($request->all());
           // exit;
@@ -153,24 +135,14 @@ class ProductController extends Controller
 
 
         $product->save();
-
-        foreach($supplierIds as $key => $supplier_id){
-            $supplier = new ProductSupplier();
-            $supplier->product_id = $product->id;
-            $supplier->supplier_id = $request->supplier_id[$key];
-            $supplier->price = $request->supplier_price[$key];
-            $supplier->quantity = $request->quantity[$key];
-            $supplier->save();
-        }
-
         
         foreach($rateIds as $key => $rate_id){
           if ($rate_id) {
-          $product_price = new ProductPrice();
-          $product_price->product_id = $product->id;
-          $product_price->rate_id = $request->rate_id[$key];
-          $product_price->price = $request->product_price[$key];
-          $product_price->save();
+            $product_price = new ProductPrice();
+            $product_price->product_id = $product->id;
+            $product_price->rate_id = $request->rate_id[$key];
+            $product_price->price = $request->product_price[$key];
+            $product_price->save();
           }
       }
 
@@ -197,13 +169,11 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $productId = $id; // The specific product ID you want to retrieve associated ProductSupplier record for
-        $additional = ProductSupplier::where('product_id', $productId)->first();
+        $productId = $id; // The specific product ID you want to retrieve
         $currency = config('constants.CURRENCY_SYMBOL');
         $decimalLength = config('constants.DECIMAL_LENGTH');
         $product =Product::findOrFail($id);
-        // echo '<pre>'; print_r($product); echo '</pre>'; exit;
-        $suppliers =Supplier::all();
+        // echo '<pre>'; print_r($product); echo '</pre>'; exit
         $categories = Category::all();
         $taxes = Tax::all();
         $units = Unit::all();
@@ -211,11 +181,6 @@ class ProductController extends Controller
         $comRateIdAndPrices = ProductPrice::where('product_id', $productId)->pluck('price','rate_id')->toArray();
         $productRateIds = array_keys($comRateIdAndPrices);
         $productPrices = array_values($comRateIdAndPrices);
-        $productSupplierIdAndPrices = ProductSupplier::where('product_id', $productId)->pluck('price','supplier_id')->toArray();
-        $productSupplierQuantities = ProductSupplier::where('product_id', $productId)->pluck('quantity','supplier_id')->toArray();
-        $productSupplierIds = array_keys($productSupplierIdAndPrices);
-        $productSupplierPrices = array_values($productSupplierIdAndPrices);
-        $productSupplierQuantity = array_values($productSupplierQuantities);
         // $this->pr($comRateIdAndPrices);
         // $this->pr($productRateIds);
         // $this->pr($productPrices);
@@ -223,7 +188,7 @@ class ProductController extends Controller
         $stockTypes = config('constants.STOCK_TYPES');
         $editPage = true;
         $submitURL = route('product.update',$product->id);
-        return view('product.edit', compact('additional','decimalLength', 'currency','productSupplierIds','productSupplierQuantity','productSupplierPrices','suppliers','categories','taxes','units','product', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices' ));
+        return view('product.edit', compact('decimalLength', 'currency','categories','taxes','units','product', 'rates', 'stockTypes','editPage','submitURL', 'productRateIds', 'productPrices' ));
     }
 
     /**
@@ -289,48 +254,34 @@ class ProductController extends Controller
       }
       $product->save();
 
-      $supplierIDs = $request->supplier_id;
-      // $this->pr($supplierIDs);
-      //exit;
       $rateIds =$request->rate_id;
       // $this->pr($rateIds);
       // $this->pr($request->product_price);
       // exit;
 
-    foreach ($supplierIDs as $key => $supplierID) {
-        $supplier = ProductSupplier::where('product_id', $id)
-            ->where('supplier_id', $supplierID)
-            ->first();
-        $supplier->price = $request->supplier_price[$key];
-        $supplier->quantity = $request->quantity[$key];
-        $supplier->save();
-    }
+      foreach($rateIds as $key => $rate_id){
+        if ($rate_id && $request->product_price[$key]) {
+          $product_price = ProductPrice::where('product_id', $id)->where('rate_id', $rate_id)->first();
+          // $this->pr($product_price);
+          // exit;
+          if (!$product_price) {
+            // Create a new ProductPrice entry if it doesn't exist
+            $product_price = new ProductPrice();
+            $product_price->product_id = $id;
+            $product_price->rate_id = $rate_id;
+        }
+          $product_price->price = $request->product_price[$key];
+          $product_price->save();
 
-    foreach($rateIds as $key => $rate_id){
-      if ($rate_id && $request->product_price[$key]) {
-        $product_price = ProductPrice::where('product_id', $id)->where('rate_id', $rate_id)->first();
-        // $this->pr($product_price);
-        // exit;
-        if (!$product_price) {
-          // Create a new ProductPrice entry if it doesn't exist
-          $product_price = new ProductPrice();
-          $product_price->product_id = $id;
-          $product_price->rate_id = $rate_id;
+          $existingRateIds = ProductPrice::where('product_id', $id)->pluck('rate_id')->toArray();
+          $rateIdsToDelete = array_diff($existingRateIds, array_filter($rateIds));
+          ProductPrice::where('product_id', $id)->whereIn('rate_id', $rateIdsToDelete)->delete();
+        }
       }
-        $product_price->price = $request->product_price[$key];
-        $product_price->save();
 
-        $existingRateIds = ProductPrice::where('product_id', $id)->pluck('rate_id')->toArray();
-        $rateIdsToDelete = array_diff($existingRateIds, array_filter($rateIds));
-        ProductPrice::where('product_id', $id)->whereIn('rate_id', $rateIdsToDelete)->delete();
-      }
+
+      return redirect()->back()->with('message', 'Product has been updated successfully');
     }
-  //   if (empty($rateIds)) {
-  //     ProductPrice::where('product_id', $id)->delete();
-  // }
-
-    return redirect()->back()->with('message', 'Product has been updated successfully');
-}
 
 
     /**
@@ -345,12 +296,6 @@ class ProductController extends Controller
       $product = Product::findOrFail($id);
 
       if ($product) {
-        $supplier = ProductSupplier::where('product_id', $id)->first();
-
-        if ($supplier) {
-          $supplier->delete();
-        }
-
         $product->delete();
       }
       return redirect()->back();

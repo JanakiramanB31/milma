@@ -36,7 +36,7 @@
                     <!-- <th>Qty</th> -->
                     <!-- <th>Serial</th>
                     <th>Sales Price</th> -->
-                    <th>Purchase Price</th>
+                    <th>Base Price</th>
                     <!-- <th>Supplier</th> -->
                     <th>Image</th>
                     <th>Actions</th>
@@ -46,10 +46,10 @@
                   @foreach($products as $product)
                   <tr>
                     <td>{{$product->name}}</td>
-                    <td>{{$product->pmodel}}</td>
+                    <td>{{$product->model ?? "N/A"}}</td>
                     <!-- <td>{{$product->serial_number}}</td>
                     <td>{{$product->sales_price}}</td> -->
-                    <td><span>{{$currency}}</span>{{number_format($product->price, $decimalLength)}}</td>
+                    <td><span>{{$currency}}</span>{{number_format($product->base_rate, $decimalLength)}}</td>
                     <td>
                       <img width="40px" title="No Image" src="{{ asset('images/product/' . ($product->image ?? 'default_image.png')) }}">
                     </td>

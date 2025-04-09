@@ -70,7 +70,7 @@ class ProductController extends Controller
          $request->validate([
             'name' => 'required|min:3|unique:products',
             // 'brand_name' => 'required',
-            'sku_code' => 'required',
+            // 'sku_code' => 'required',
             // 'barcode' => 'required',
             // 'model' => 'required|min:3',
             'category_id' => 'required',
@@ -207,7 +207,7 @@ class ProductController extends Controller
       $request->validate([
         'name' => 'required|min:3|unique:products,name,' . $id,
         // 'brand_name' => 'required',
-        'sku_code' => 'required',
+        // 'sku_code' => 'required',
         // 'barcode' => 'required',
         // 'model' => 'required|min:3',
         'category_id' => 'required',

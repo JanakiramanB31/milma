@@ -88,7 +88,7 @@
       <select name="stock_type" class="form-control @error('stock_type') is-invalid @enderror">
         <option value = ''>---Select Stock Type---</option>
         @foreach($stockTypes as $stockType)
-        <option value="{{$stockType['short_name']}}" {{ old('stock_type', $product->stock_type) == $stockType['short_name'] ? 'selected' : '' }}>{{$stockType['name']}}</option>
+        <option value="{{$stockType['short_name']}}" {{ old('stock_type', $product->stock_type ?? array_values($stockTypes)[0]['short_name'] ) == $stockType['short_name'] ? 'selected' : '' }}>{{$stockType['name']}}</option>
         @endforeach
       </select>
       @error('stock_type')
@@ -116,6 +116,7 @@
       <label class="control-label">Tax </label>
       <select name="tax_id" class="form-control @error('tax_id') is-invalid @enderror">
         <option value = ''>---Select Tax---</option>
+        <option value="0" selected>0 %</option>
         @foreach($taxes as $tax)
         <option value="{{$tax->id}}" {{ old('tax_id', $product->tax_id) == $tax->id ? 'selected' : '' }}>{{$tax->name}} %</option>
         @endforeach
@@ -151,7 +152,7 @@
       <label class="radio control-label">Stock in Transit Display</label>
       <div class="controls">
         <div class="custom-control custom-radio custom-control-inline">
-          <input type="radio" id="sit_status1" name="sit_status" class="custom-control-input" value="1" {{ (old('sit_status', $product->sit_status)=="1")? "checked" : "" }}>
+          <input type="radio" id="sit_status1" name="sit_status" class="custom-control-input" value="1" {{ (old('sit_status', $product->sit_status ?? "1")=="1")? "checked" : "" }}>
           <label class="custom-control-label" for="sit_status1">Visible</label>
         </div>
         <div class="custom-control custom-radio custom-control-inline">
@@ -169,7 +170,7 @@
       <label class="radio control-label">Status</label>
       <div class="controls">
         <div class="custom-control custom-radio custom-control-inline">
-          <input type="radio" id="status1" name="status" class="custom-control-input" value="1" {{ (old('status', $product->status)=="1")? "checked" : "" }}>
+          <input type="radio" id="status1" name="status" class="custom-control-input" value="1" {{ (old('status', $product->status ?? "1")=="1")? "checked" : "" }}>
           <label class="custom-control-label" for="status1">Active</label>
         </div>
         <div class="custom-control custom-radio custom-control-inline">
@@ -196,24 +197,6 @@
         <div class="col-md-5">Rate</div>
         <div class="col-md-5">Price</div>
       </div>
-      <div class="rate_type_group row" style="display: none;">
-          <div class="form-group col-md-5" >
-            <select name="rate_id[]" class="form-control">
-              <option value = ''>Select Rate Type</option>
-              @foreach($rates as $rate)
-              <option value="{{$rate->id}}">{{$rate->type}}</option>
-              @endforeach
-            </select>
-          </div>
-          <div class="form-group col-md-5" >
-            <input name="product_price[]" class="form-control prod-sup-price @error('product_price') is-invalid @enderror" type="text" placeholder="Product Price">
-            <span class="text-danger">{{ $errors->has('additional_body') ? $errors->first('body') : ''  }}</span>
-          </div>
-          <div class="form-group rate_btn_group d-flex col-md-2" style="gap: 5px;">
-            <button type="button"  class="rate_btn_add btn btn-success btn-sm float-right"><i class="fa fa-plus"></i></button>
-            <button type="button" class="rate_btn_remove btn btn-danger btn-sm btnRemove float-right"><i class="fa fa-trash"></i></button>
-          </div>
-        </div>
         @foreach(old('rate_id', $productRateIds) as $index => $oldRateId)
           <div class="row rate_type_group">
         

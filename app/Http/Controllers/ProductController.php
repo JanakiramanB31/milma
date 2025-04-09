@@ -69,10 +69,10 @@ class ProductController extends Controller
       // exit;
          $request->validate([
             'name' => 'required|min:3|unique:products',
-            'brand_name' => 'required',
+            // 'brand_name' => 'required',
             'sku_code' => 'required',
-            'barcode' => 'required',
-            'model' => 'required|min:3',
+            // 'barcode' => 'required',
+            // 'model' => 'required|min:3',
             'category_id' => 'required',
             
             'unit_id' => 'required',
@@ -82,7 +82,7 @@ class ProductController extends Controller
             'sit_status' => 'required',
             'image' => 'file|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'tax_id' => 'required',
-            'moq_number' => 'required|numeric|min:1',
+            // 'moq_number' => 'required|numeric|min:1',
             'base_rate' => 'required',
             'rate_id' => 'required',
             'sit_status'=> 'required',
@@ -206,10 +206,10 @@ class ProductController extends Controller
       //exit;
       $request->validate([
         'name' => 'required|min:3|unique:products,name,' . $id,
-        'brand_name' => 'required',
+        // 'brand_name' => 'required',
         'sku_code' => 'required',
-        'barcode' => 'required',
-        'model' => 'required|min:3',
+        // 'barcode' => 'required',
+        // 'model' => 'required|min:3',
         'category_id' => 'required',
         'unit_id' => 'required',
         'rate_id' => 'required',
@@ -218,7 +218,7 @@ class ProductController extends Controller
         'sit_status' => 'required',
         'image' => 'file|mimes:jpeg,png,jpg,gif,svg|max:2048',
         'tax_id' => 'required',
-        'moq_number' => 'required|numeric|min:1',
+        // 'moq_number' => 'required|numeric|min:1',
         'base_rate' => 'required'
       ]);
       // $this->pr($request->all());

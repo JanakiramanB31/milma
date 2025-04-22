@@ -78,17 +78,21 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
       $request->validate([
-        'name' => 'required|min:3|regex:/^[a-zA-Z ]+$/',
-        'address' => 'required|min:3',
-        'mobile' => 'required|min:3|unique:customers|digits:11',
-        'email' => 'required|email|unique:customers',
-        'company_name' => 'required|min:3',
-        'contact_person' => 'required|min:3',
-        'post_code' => 'required|min:3|max:8',
+        'name' => 'required|regex:/^[a-zA-Z ]+$/',
+
+        'address' => 'required',
+
+        // 'mobile' => 'required|unique:customers|digits:11',
+        // 'email' => 'required|email|unique:customers',
+
+        'company_name' => 'required',
+        // 'contact_person' => 'required|min:3',
+        'post_code' => 'required',
+
         'customer_type_parent_id' =>'required',
         'rate_id' => 'required',
-        'route_id' => 'required',
-        'status' => 'required',
+        // 'route_id' => 'required',
+        // 'status' => 'required',
       ]);
         
       $userID = Auth::id();
@@ -159,16 +163,16 @@ class CustomerController extends Controller
     public function update(Request $request, $id)
     {
       $request->validate([
-        'name' => 'required|min:3|regex:/^[a-zA-Z ]+$/',
-        'address' => 'required|min:3',
-        'mobile' => 'required|min:3|unique:customers,name,' . $id . '|digits:11',
-        'company_name' => 'required|min:3',
-        'contact_person' => 'required|min:3',
-        'post_code' => 'required|min:3|max:8',
+        'name' => 'required|regex:/^[a-zA-Z ]+$/',
+        'address' => 'required',
+        // 'mobile' => 'required|min:3|unique:customers,name,' . $id . '|digits:11',
+        'company_name' => 'required',
+        // 'contact_person' => 'required|min:3',
+        'post_code' => 'required',
         'customer_type_parent_id' =>'required',
         'rate_id' => 'required',
-        'route_id' => 'required',
-        'status' => 'required',
+        // 'route_id' => 'required',
+        // 'status' => 'required',
       ]);
 
       $userID = Auth::id();

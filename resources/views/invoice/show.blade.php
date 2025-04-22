@@ -43,7 +43,7 @@ $paperWidth = "300px";
                   <strong>{{$invoice->customer->company_name}}</strong>
                   <br>{{$invoice->customer->address}}
                   <br>Phone: {{$invoice->customer->mobile ? $invoice->customer->mobile : "12345678"}}
-                  <br>Email:<p class="mx-1 mb-0 d-inline"></p><p style=" white-space: normal;word-wrap: break-word;overflow-wrap: break-word;">{{$invoice->customer->email ? $invoice->customer->email : "abc@gmail.com"}}</p>
+                  <br>Email:<p class="mx-1 mb-0 d-inline"></p><p style=" white-space: normal;word-wrap: break-word;overflow-wrap: break-word;">{{$invoice->customer->email ? $invoice->customer->email : "mail@email.com"}}</p>
                 </address>
               </div>
               <div class="col-4">

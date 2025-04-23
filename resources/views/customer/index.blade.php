@@ -44,8 +44,18 @@
                 <tr>
                   <td>{{$serialNo++}}.</td>
                   <td>{{ $customer->company_name }} </td>
-                  <td>{{ $customer->contact_person ? ($customer->contact_person[0] . (strlen($customer->contact_person) > 2 ? str_repeat('*', strlen($customer->contact_person) - 2) : '') . $customer->contact_person[-1] ) : "N/A"}}</td>
-                  <td>{{ $customer->mobile ? str_repeat('*', strlen($customer->mobile) - 4) . substr($customer->mobile, -4) : "N/A"}}</td>
+                  <td>
+    @php
+        $name = $customer->contact_person ?? null;
+    @endphp
+
+    {{ !empty($name) && strlen($name) > 2
+        ? $name[0] . str_repeat('*', strlen($name) - 2) . $name[strlen($name) - 1]
+        : (!empty($name) ? $name : 'N/A')
+    }}
+</td>
+                  <td>    {{ isset($customer->mobile) && strlen($customer->mobile) > 0 ? str_repeat('*', strlen($customer->mobile)) : 'N/A' }}
+                  </td>
                   <!-- <td>{{ $customer->mobile }} </td> -->
                   <!-- <td>{{ $customer->details }} </td> -->
                  

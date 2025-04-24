@@ -161,7 +161,8 @@
 
     <!-- Rate Type -->
     <div class="form-group col-md-12">
-      <label class="control-label">Rate</label>
+      <label class="control-label">Rate</label><i id="rate_info" class="fa fa-info-circle mx-2" aria-hidden="true"></i>
+
       <select name="rate_id" class="form-control @error('rate_id') is-invalid @enderror">
         <option value =''>---Select rate---</option>
         @foreach($rates as $rate)
@@ -206,7 +207,38 @@
         <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>{{$editPage ? "Update" : "Add"}}</button>
       </div>
     </div>
+
+    
   </form> 
+  <div class="modal fade" id="productRateListPopup" tabindex="-1" aria-labelledby="productRateListPopupLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content ">
+          <!-- Received Amount PopUp Form Header -->
+          <div class="modal-header d-flex justify-content-center">
+            <h3 class="modal-title text-center" id="productRateListPopupLabel">Products Rate List</h3>
+          </div>
+          <div style="padding:18px;">
+            <label class="form-label">Products</label>
+            <select id="product_id" name="product_id" class="form-control">
+              <option value = ''>Select the Product</option>
+              @foreach($products as $product)
+              <option name="product_id"  value="{{$product->id}}" @if(count($products) == 1) selected @endif >{{$product->name}}</option>
+              @endforeach
+            </select>
+            <div id="productRateListTable" class="table-responsive">
+              <div id="product-table-error" class="text-danger"></div>
+            </div>
+            <div id="product-error" class="text-danger"></div>
+          </div>
+          
+          
+          <!-- Received Amount PopUp Form Footer -->
+          <div class="modal-footer d-flex justify-content-end">
+            <button type="button" id="model-close" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -214,6 +246,110 @@
   $(document).ready(function() {
     $('#customer-close-btn').on('click' , function () {
       window.location.href =  '{{ route("customer.index") }}'
+    });
+
+    $('#rate_info').on('click', async function () {
+      $(this).css('cursor', 'pointer');
+      $('#productRateListPopup').modal('show');
+
+      const productID = $('#product_id').val();
+      console.log("ProductID", productID)
+      if (productID) {
+        const data = await fetchProductRateIDs(productID);
+        console.log("data", data);
+        let rows = '';
+        if (data?.length > 0) {
+          rows = data?.map(item => `
+            <tr>
+              <td id="" class="col-4">${item.name} (${item.type})</td>
+              <td class="col-2">${item.price}</td>
+            </tr>
+          `).join('');
+        } else {
+          rows = `<tr><td colspan="2">No rate data found</td></tr>`;
+        }
+        var tableData = `
+          <table class="d-table table table-striped " style="border-collapse: collapse;">
+            <thead>
+              <tr>
+                <th scope="col" class="col-4">Rate Type</th>
+                <th scope="col" class="col-2">Amt</th>
+              </tr>
+            </thead>
+              <tbody style="min-height: auto;max-height: 150px;overflow-y: auto;">
+                ${rows}
+              </tbody>
+          </table>
+        `;
+        console.log(tableData);
+        $('#productRateListTable').html(tableData);
+      }
+    });
+
+    $('#product_id').on('change', async function () {
+
+      const productID = $(this).val();
+      console.log("ProductID", productID)
+      const data = await fetchProductRateIDs(productID);
+      console.log("data", data);
+      let rows = '';
+      if (data?.length > 0) {
+        rows = data?.map(item => `
+          <tr>
+            <td id="" class="col-4">${item.name} (${item.type})</td>
+            <td class="col-2">${item.price}</td>
+          </tr>
+        `).join('');
+      } else {
+        rows = `<tr><td colspan="2">No rate data found</td></tr>`;
+      }
+      var tableData = `
+        <table class="d-table table table-striped " style="border-collapse: collapse;">
+          <thead>
+            <tr>
+              <th scope="col" class="col-4">Rate Type</th>
+              <th scope="col" class="col-2">Amt</th>
+            </tr>
+          </thead>
+            <tbody style="min-height: auto;max-height: 150px;overflow-y: auto;">
+              ${rows}
+            </tbody>
+        </table>
+      `;
+      console.log(tableData);
+      $('#productRateListTable').html(tableData);
+    });
+
+    async function fetchProductRateIDs(productID) {
+      if(productID) {
+        return new Promise((resolve, reject) => {
+         $.ajax({
+          url: '{{ route("customer.fetchProductRateIDs",":id") }}'.replace(':id', productID),
+          type: 'POST',
+          data: {
+            _token: '{{ csrf_token() }}' 
+          },
+          success: function(response) {
+            console.log("Fetched Rate IDs:", response);
+            resolve(response);
+          },
+          error: function(xhr) {
+            var errorMessage =  'An error occurred. Please try again.';
+            $('#error-message').html(errorMessage).show();
+            reject([]); 
+          }
+        });
+        });
+      } else {
+        console.log("Failed");
+        return [];
+      }
+    }
+
+    $('#model-close').on('click', async function () {
+
+      $('#productRateListPopup').modal('hide');
+
     });
   });
 </script>

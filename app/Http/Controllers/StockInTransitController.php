@@ -100,8 +100,8 @@ class StockInTransitController extends Controller
         $stockInTransit->route_id = $request->route_id;
         $stockInTransit->vehicle_id = $request->vehicle_id;
         $stockInTransit->product_id = $productID;
-        $stockInTransit->start_quantity = $quantities[$key];
-        $stockInTransit->quantity = $quantities[$key];
+        $stockInTransit->start_quantity = $quantities[$key] ?? 0;
+        $stockInTransit->quantity = $quantities[$key] ?? 0;
         $stockInTransit->save();
       }
       return redirect()->route('invoice.create')->with('message', 'Stock In Transit Details Added Successfully');

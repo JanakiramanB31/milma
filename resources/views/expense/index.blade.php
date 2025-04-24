@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Customer | ')
+@section('title', 'Expense | ')
 @section('content')
   @include('partials.header')
   @include('partials.sidebar')
@@ -17,7 +17,7 @@
           </ul>
       </div> -->
     <div class="">
-      <a class="btn btn-primary" href="{{route('customer.create')}}"><i class="fa fa-plus"></i>Customer</a>
+      <a class="btn btn-primary" href="{{route('expense.create')}}"><i class="fa fa-plus"></i>Expense</a>
     </div>
 
     <div class="row mt-2">
@@ -28,11 +28,9 @@
               <thead>
                 <tr>
                   <th>S No.</th>
-                  <th>Company Name </th>
-                  <th>Contact Person </th>
-                  <th>Contact Number </th>
-                  <!-- <th>Contact</th> -->
-                  <!-- <th>Details</th> -->
+                  <th>Expense Type </th>
+                  <th>Amt </th>
+                  <th>Date </th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -40,34 +38,35 @@
                 @php 
                   $serialNo = 1; 
                 @endphp
-                @foreach( $customers as $customer)
+                @foreach( $expenses as $expense)
                 <tr>
                   <td>{{$serialNo++}}.</td>
-                  <td>{{ $customer->company_name }} </td>
-                  <td>
-                    @php
-                        $name = $customer->contact_person ?? null;
-                    @endphp
-                    {{ !empty($name) && strlen($name) > 2
-                        ? $name[0] . str_repeat('*', strlen($name) - 2) . $name[strlen($name) - 1]
-                        : (!empty($name) ? $name : 'N/A')
-                    }}
-                  </td>
-                  <td>    
-                    {{ isset($customer->mobile) && strlen($customer->mobile) > 0 ? str_repeat('*', strlen($customer->mobile)) : 'N/A' }}
-                  </td>
-                  <!-- <td>{{ $customer->mobile }} </td> -->
-                  <!-- <td>{{ $customer->details }} </td> -->
+                  @php
+                    $typeName = '';
+                    if ($expense->expense_type_id == 0) {
+                      $typeName = $expense->other_expense_details;
+                    } else {
+                      foreach ($expenseTypes as $type) {
+                        if ($type['id'] === $expense->expense_type_id) {
+                          $typeName = $type['name'];
+                          break;
+                        }
+                      }
+                    }
+                  @endphp
+                  <td>{{ $typeName }} </td>
+                  <td><span>{{$currency}} </span>{{ number_format($expense->expense_amt,  $decimalLength) }} </td>
+                  <td>{{ date('d-m-Y', strtotime($expense->expense_date)) }} </td>
                  
                   <td class="d-flex" style="gap: 10px;">
-                    <a class="btn btn-primary btn-sm" href="{{route('customer.edit', $customer->id)}}"><i class="fa fa-edit" ></i></a>
-                    <button class="btn btn-danger btn-sm waves-effect" type="submit" onclick="deleteTag({{ $customer->id }})">
+                    <a class="btn btn-primary btn-sm" href="{{route('expense.edit', $expense->id)}}"><i class="fa fa-edit" ></i></a>
+                    <!-- <button class="btn btn-danger btn-sm waves-effect" type="submit" onclick="deleteTag({{ $expense->id }})">
                       <i class="fa fa-trash"></i>
                     </button>
-                    <form id="delete-form-{{ $customer->id }}" action="{{ route('customer.destroy',$customer->id) }}" method="POST" style="display: none;">
+                    <form id="delete-form-{{ $expense->id }}" action="{{ route('expense.destroy',$expense->id) }}" method="POST" style="display: none;">
                       @csrf
                       @method('DELETE')
-                    </form>
+                    </form> -->
                   </td>
                  
                 </tr>

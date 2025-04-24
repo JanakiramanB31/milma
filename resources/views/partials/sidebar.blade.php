@@ -33,7 +33,12 @@
             </ul> -->
         </li>
 
-        <li><a class="app-menu__item {{ request()->is('sales') ? 'active' : ''}}" href="{{route('sales')}}"><i class="app-menu__icon fa fa-dollar"></i><span class="app-menu__label">View Sales</span></a></li>
+        <li ><a class="app-menu__item {{ request()->is('price*') ? 'active' : ''}}" href="{{route('price.index')}}" ><i class="app-menu__icon fa fa-money"></i><span class="app-menu__label">Price</span></a>
+            <!-- <ul class="treeview-menu">
+                <li><a class="treeview-item" href="{{route('price.create')}}"><i class="icon fa fa-circle-o"></i> Add Price</a></li>
+                <li><a class="treeview-item" href="{{route('price.index')}}"><i class="icon fa fa-circle-o"></i> Manage Prices</a></li>
+            </ul> -->
+        </li>
 
         <li ><a class="app-menu__item {{ request()->is('supplier*') ? 'active' : ''}}" href="{{route('supplier.index')}}" ><i class="app-menu__icon fa fa-truck"></i><span class="app-menu__label">Supplier</span></a>
             <!-- <ul class="treeview-menu">
@@ -41,6 +46,26 @@
                 <li><a class="treeview-item" href="{{route('supplier.index')}}"><i class="icon fa fa-circle-o"></i> Manage Suppliers</a></li>
             </ul> -->
         </li>
+
+        <li><a class="app-menu__item {{ request()->is('sales') ? 'active' : ''}}" href="{{route('sales')}}"><i class="app-menu__icon fa fa-dollar"></i><span class="app-menu__label">View Sales</span></a></li>
+        
+        <li><a class="app-menu__item {{ request()->is('bt_list') ? 'active' : ''}}" href="{{route('bt_list.index')}}"><i class="app-menu__icon fa fa-dollar"></i><span class="app-menu__label">Payment List</span></a></li>
+
+        <li><a class="app-menu__item {{ request()->is('invoice*') ? 'active' : ''}}" href="{{route('invoice.index')}}" ><i class="app-menu__icon fa fa-file"></i><span class="app-menu__label">Receipt</span></a>
+            <!-- <ul class="treeview-menu">
+                <li><a class="treeview-item " href="{{route('invoice.create')}}"><i class="icon fa fa-plus"></i>Create Invoice </a></li>
+                <li><a class="treeview-item" href="{{route('invoice.index')}}"><i class="icon fa fa-edit"></i>Manage Invoices</a></li>
+            </ul> -->
+        </li>
+
+        <li><a class="app-menu__item {{ request()->is('stockintransit*') ? 'active' : ''}}" href="{{route('stockintransit.index')}}"><i class="app-menu__icon fa fa-archive"></i><span class="app-menu__label">Stock In Transit</span></a>
+            <!-- <ul class="treeview-menu">
+                <li><a class="treeview-item" href="{{route('stockintransit.create')}}"><i class="icon fa fa-circle-o"></i> Add Stock In Transit</a></li>
+                <li><a class="treeview-item" href="{{route('stockintransit.index')}}"><i class="icon fa fa-circle-o"></i> Manage Stock In Transits</a></li>
+            </ul> -->
+        </li>
+
+        <li ><a class="app-menu__item {{ request()->is('expense*') ? 'active' : ''}}" href="{{route('expense.index')}}" ><i class="app-menu__icon fa fa-money"></i><span class="app-menu__label">Expenses</span></a>
 
         <li class="treeview"><a class="app-menu__item {{ request()->is('/report') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-file-text-o"></i><span class="app-menu__label">Reports</span><i class="treeview-indicator fa fa-angle-right"></i></a>
             <ul class="treeview-menu">
@@ -50,7 +75,6 @@
             </ul>
         </li>
 
-        <li><a class="app-menu__item {{ request()->is('bt_list') ? 'active' : ''}}" href="{{route('bt_list.index')}}"><i class="app-menu__icon fa fa-dollar"></i><span class="app-menu__label">Bank Transfer List</span></a></li>
 
         <li><a class="app-menu__item {{ request()->is('tax*') ? 'active' : ''}}" href="{{route('tax.index')}}"><i class="app-menu__icon fa fa-percent"></i><span class="app-menu__label">Tax</span></a>
            <!--  <ul class="treeview-menu">
@@ -120,12 +144,7 @@
             </ul> -->
         </li>
 
-        <li ><a class="app-menu__item {{ request()->is('price*') ? 'active' : ''}}" href="{{route('price.index')}}" ><i class="app-menu__icon fa fa-money"></i><span class="app-menu__label">Price</span></a>
-            <!-- <ul class="treeview-menu">
-                <li><a class="treeview-item" href="{{route('price.create')}}"><i class="icon fa fa-circle-o"></i> Add Price</a></li>
-                <li><a class="treeview-item" href="{{route('price.index')}}"><i class="icon fa fa-circle-o"></i> Manage Prices</a></li>
-            </ul> -->
-        </li>
+        
 
         <li ><a class="app-menu__item {{ request()->is('company*') ? 'active' : ''}}" href="{{route('company.index')}}" ><i class="app-menu__icon fa fa-building"></i><span class="app-menu__label">Company</span></a>
             <!-- <ul class="treeview-menu">
@@ -135,7 +154,7 @@
         </li>
         @endif
         
-        
+        @if(Auth::user()->role != 'admin')
         <li><a class="app-menu__item {{ request()->is('invoice*') ? 'active' : ''}}" href="{{route('invoice.index')}}" ><i class="app-menu__icon fa fa-file"></i><span class="app-menu__label">Receipt</span></a>
             <!-- <ul class="treeview-menu">
                 <li><a class="treeview-item " href="{{route('invoice.create')}}"><i class="icon fa fa-plus"></i>Create Invoice </a></li>
@@ -149,7 +168,7 @@
                 <li><a class="treeview-item" href="{{route('stockintransit.index')}}"><i class="icon fa fa-circle-o"></i> Manage Stock In Transits</a></li>
             </ul> -->
         </li>
-        @if(Auth::user()->role != 'admin')
+        
         <li ><a class="app-menu__item {{ request()->is('customer*') ? 'active' : ''}}" href="{{route('customer.index')}}" ><i class="app-menu__icon fa fa-users"></i><span class="app-menu__label">Customer</span></a>
 
         <!-- <li ><a class="app-menu__item {{ request()->is('/report') ? 'active' : ''}}" href="{{route('x_report')}}"><i class="app-menu__icon fa fa-file-text-o"></i><span class="app-menu__label">X-Report</span></a>
@@ -157,6 +176,9 @@
               <li><a class="treeview-item" href="{{route('x_report')}}"><i class="icon fa fa-circle-o"></i>X-Report</a></li>
             </ul>
         </li> -->
+
+        <li ><a class="app-menu__item {{ request()->is('expense*') ? 'active' : ''}}" href="{{route('expense.index')}}" ><i class="app-menu__icon fa fa-money"></i><span class="app-menu__label">Expenses</span></a>
+
         <li><a class="treeview-item" href="{{route('z_report')}}"><i class="app-menu__icon fa fa-file-text-o"></i>Z-Report</a></li>
         @endif
 

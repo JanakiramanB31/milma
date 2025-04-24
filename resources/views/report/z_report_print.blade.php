@@ -156,12 +156,69 @@
               <tr>
                 <td colspan="3"><hr/><hr/></td>
               </tr>
+
+              <tr>
+              <th class="boldfont">EXPENSES</th>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr></tr>
+            <tr>
+              <th class="boldfont">Type</th>
+              <th class="boldfont"></th>
+              <th class="boldfont" style="text-align: right;">Amt</th>
+            </tr>
+            <tr>
+                <td colspan="3"><hr/></td>
+              </tr>
+            @foreach($expenses as $expense)
+            @php
+              $typeName = '';
+              if ($expense->expense_type_id == 0) {
+                $typeName = $expense->other_expense_details;
+              } else {
+                foreach ($expenseTypes as $type) {
+                  if ($type['id'] === $expense->expense_type_id) {
+                    $typeName = $type['name'];
+                    break;
+                  }
+                }
+              }
+            @endphp
+            
+            <tr>
+              <td class="boldfont">{{$typeName}}</td>
+              <td class="boldfont"></td>
+              <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($expense->expense_amt,  $decimalLength )}}</td>
+            </tr>
+            @endforeach
+
+            <tr>
+                <td colspan="3"><hr/></td>
+              </tr>
+
+              @php
+                $totalExpense = collect($expenses)->sum('expense_amt');
+              @endphp
+
+              <tr>
+                <td class="boldfont">Expense</td>
+                <td class="boldfont">Total</td>
+                <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($totalExpense,  $decimalLength )}}</td>
+              </tr>
+
+            <tr>
+              <td colspan="3"><hr/><hr/></td>
+            </tr>
+
               <tr>
                 <td colspan="3" style="text-align: center;">**** END OF SHIFT REPORT ****</td>
               </tr>
               <tr>
                 <td colspan="3"><hr/><hr/></td>
               </tr>
+              
+            
             </table>
           </div>
         </div>

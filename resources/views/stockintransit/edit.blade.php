@@ -116,7 +116,7 @@
                   @php
                   $prdQuantity = array_key_exists($product->id, $productIDsAndQuantities)?$productIDsAndQuantities[$product->id]:0;
                   $stockInTransitID = array_key_exists($product->id, $stockInTransitIDs)?$stockInTransitIDs[$product->id]:'';
-                  $prodMaxQuantity = array_key_exists($product->id, $supplierProdQuantities)?$supplierProdQuantities[$product->id]:0;
+                  $prodMaxQuantity = 0;
                   @endphp
                   <div id="product-section2" style="display: flex;">
                     <div class="form-group col-4 px-1">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Expense;
 use App\Invoice;
 use App\Product;
 use App\Returns;
@@ -465,6 +466,14 @@ class ReportController extends Controller
         $toDate = now()->endOfDay()->toDateString();
       }
 
+      $expenseTypes = config('constants.EXPENSE_TYPES');
+      $expenses = Expense::when($fromDate == $toDate, function ($query) use ($fromDate) {
+        return $query->whereDate('created_at', $fromDate);
+      })
+      ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+        return $query->whereBetween('created_at', [$fromDate, $toDate]);
+      })->get();
+
       $filteredInvoices = Invoice::with('Customer', 'Sales.product')
         ->where('print_status', '0')
         ->when($fromDate == $toDate, function ($query) use ($fromDate) {
@@ -531,7 +540,7 @@ class ReportController extends Controller
       //   }
       // }
    
-      return view('report.z_report_print', compact('filteredInvoices','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount','loadedProducts','salesReturns'));
+      return view('report.z_report_print', compact('filteredInvoices', 'expenseTypes','expenses','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount','loadedProducts','salesReturns'));
     }
 
     public function zReportInvoiceUpdate(Request $request)

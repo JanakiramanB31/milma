@@ -19,4 +19,7 @@ return [
         'ADMIN' => array('id'=>'1', 'name'=>'Admin'),
         'SALES' => array('id'=>'2', 'name'=>'Sales'),
     ],
+    'EXPENSE_TYPES' => [
+        ['id' => 1, 'name' => 'Petrol']
+    ]
 ];

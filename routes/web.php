@@ -74,9 +74,12 @@ Route::group(['middleware' => 'App\Http\Middleware\SuperAdminMiddleware', 'prefi
 Route::get('/', 'StockInTransitController@index')->name('home');
 Route::get('/home', 'StockInTransitController@index')->name('home');
 Route::resource('invoice', 'InvoiceController');
+Route::resource('expense', 'ExpenseController');
 
 Route::group(['middleware' => ['auth']], function() {
 Route::resource('customer', 'CustomerController')->middleware('check.customer.permissions');
+Route::post('customer/fetchProductRateIDs/{id}', 'CustomerController@fetchProductRateIDs')->name('customer.fetchProductRateIDs');
+
 });
 
 

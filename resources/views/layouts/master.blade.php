@@ -2,22 +2,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
+    <meta name="description" content="Rooted in tradition, our dosa batter brings the authentic taste of South India to your kitchen. Made with the finest ingredients and time-honored recipes, it ensures perfect dosas every time. Enjoy the convenience of homemade dosas without compromising on quality or flavor.">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Twitter meta-->
 
 
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:site" content="@pratikborsadiya">
-    <meta property="twitter:creator" content="@pratikborsadiya">
+    <meta property="twitter:site" content="@milma">
+    <meta property="twitter:creator" content="@milma">
     <!-- Open Graph Meta-->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Admin">
-    <meta property="og:title" content="Vali - Free Bootstrap 4 admin theme">
-    <meta property="og:url" content="http://pratikborsadiya.in/blog/vali-admin">
-    <meta property="og:image" content="http://pratikborsadiya.in/blog/vali-admin/hero-social.png">
-    <meta property="og:description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
+    <meta property="og:title" content="Milma Foods UK Ltd">
+    <meta property="og:url" content="https://milma.co.uk/">
+    <meta property="og:image" content="https://milma.co.uk/">
+    <meta property="og:description" content="Rooted in tradition, our dosa batter brings the authentic taste of South India to your kitchen. Made with the finest ingredients and time-honored recipes, it ensures perfect dosas every time. Enjoy the convenience of homemade dosas without compromising on quality or flavor.">
     <title>@yield('title')Milma</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">

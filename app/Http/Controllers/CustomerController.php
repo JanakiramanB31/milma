@@ -7,6 +7,8 @@ use App\Supplier;
 use App\Rate;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomerType;
+use App\Product;
+use App\ProductPrice;
 use App\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -64,9 +66,10 @@ class CustomerController extends Controller
       $rates = Rate::all();
       $routes = Route::all();
       $customer = new Customer();
+      $products = Product::where('status', 1)->get();
       $submitURL = route('customer.store');
       $editPage =false;
-      return view('customer.create',compact('customerTypes','routes','saleTypes','rates','customer','submitURL','editPage'));
+      return view('customer.create',compact('customerTypes','products','routes','saleTypes','rates','customer','submitURL','editPage'));
     }
 
     /**
@@ -127,6 +130,25 @@ class CustomerController extends Controller
       //
     }
 
+    public function fetchProductRateIDs(Request $request, $id)
+    {
+      $productPrices = ProductPrice::with('rate')->where('product_id', $id)->get();
+
+      $rateDetails = [];
+      foreach ($productPrices as $productPrice) {
+        if ($productPrice->rate) {
+          $rateDetails[] = [
+            'id' => $productPrice->rate->id,
+            'name' => $productPrice->rate->name,
+            'price' => $productPrice->price,
+            'type' => $productPrice->rate->type,
+          ];
+        }
+      }
+
+      return response()->json($rateDetails);
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -148,9 +170,10 @@ class CustomerController extends Controller
       $routes = Route::all();
       $customer = Customer::findOrFail($id);
       $submitURL = route('customer.update', $customer->id);
+      $products = Product::where('status', 1)->get();
       $editPage =true;
       
-      return view('customer.edit', compact('customer','routes','customerTypes','saleTypes','rates','submitURL','editPage'));
+      return view('customer.edit', compact('customer','routes', 'products','customerTypes','saleTypes','rates','submitURL','editPage'));
     }
 
     /**

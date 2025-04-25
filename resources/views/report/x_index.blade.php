@@ -102,14 +102,14 @@
                     <td></td>
                     <td ></td>
                     <td><b>Total Expenses</b></td>
-                    <td class="d-flex justify-content-end"><span class="mr-1" >(-)</span><p class=" mb-0" id="totExpenseAmount"><span>{{ $currency }}</span> {{ number_format($returnType['total_amt'],  $decimalLength ) }}</p></td>
+                    <td class="d-flex justify-content-end"><span class="mr-1" >(-)</span><p class=" mb-0" id="totExpenseAmount"><span>{{ $currency }}</span> {{ number_format($totalExpAmt,  $decimalLength ) }}</p></td>
                   </tr>
 
                   <tr>
                     <td></td>
                     <td ></td>
                     <td><b>Total Net Amount</b></td>
-                    <td ><p class="float-right mb-0" id="totalNetAmount"><span>{{ $currency }}</span> {{ number_format(($cashPayments['total_received_amt'] + $bankPayments['total_received_amt']),  $decimalLength ) }}</p></td>
+                    <td ><p class="float-right mb-0" id="totalNetAmount"><span>{{ $currency }}</span> {{ number_format(($cashPayments['total_received_amt'] + $bankPayments['total_received_amt'] - $totalExpAmt),  $decimalLength ) }}</p></td>
                   </tr>
                 </tbody>
               </table>

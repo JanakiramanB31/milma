@@ -178,7 +178,7 @@
                 $typeName = $expense->other_expense_details;
               } else {
                 foreach ($expenseTypes as $type) {
-                  if ($type['id'] === $expense->expense_type_id) {
+                  if ($type['id'] == $expense->expense_type_id) {
                     $typeName = $type['name'];
                     break;
                   }

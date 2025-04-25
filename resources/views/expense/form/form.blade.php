@@ -39,10 +39,13 @@
       @enderror
     </div>
 
+    @php
+      $expenseAmt = $expense->expense_amt ? number_format($expense->expense_amt, $decimalLength) : '';
+    @endphp
     <!-- Expense Amount -->
     <div class="form-group col-md-12">
       <label class="control-label">Amount</label>
-      <input id="expense_amt" name="expense_amt" class="form-control @error('expense_amt') is-invalid @enderror" value="{{ isset($editPage) ? old('expense_amt', number_format($expense->expense_amt, $decimalLength)) : old('expense_amt') }}" type="text" placeholder="Enter the Expense Amount">
+      <input id="expense_amt" name="expense_amt" class="form-control @error('expense_amt') is-invalid @enderror" value="{{old('expense_amt', $expenseAmt)}}" type="text" placeholder="Enter the Expense Amount">
       @error('expense_amt')
       <span class="invalid-feedback" role="alert">
         <strong>{{ $message }}</strong>

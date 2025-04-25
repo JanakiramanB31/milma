@@ -76,7 +76,8 @@ class ReportController extends Controller
         return $item->balance_amt > 0;  
       });
 
-      
+      $expenses = Expense::select('expense_amt')->whereDate('expense_date', $selectedDate)->get()->toArray();
+      $totalExpAmt = collect($expenses)->sum('expense_amt');      
       
       $totalCreditAmount = $creditPayments->sum('balance_amt'); 
       $creditTransactionCount = $creditPayments->count();
@@ -86,7 +87,7 @@ class ReportController extends Controller
 
       // echo '<pre>'; print_r($totalAmt); echo '</pre>';exit;
      
-      return view('report.x_index', compact('cashPayments', 'bankPayments', 'saleType', 'returnType','routes','totalCreditAmount', 'creditTransactionCount','currency','decimalLength','paymentMethods'));
+      return view('report.x_index', compact('cashPayments', 'totalExpAmt', 'bankPayments', 'saleType', 'returnType','routes','totalCreditAmount', 'creditTransactionCount','currency','decimalLength','paymentMethods'));
     }
 
     public function fetchByDate(Request $request, $date)

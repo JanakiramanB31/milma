@@ -114,10 +114,18 @@
               <tr>
                 <td colspan="2"><hr/></td>
               </tr>
+
+              <tr>
+                <th>Total Amt of Expenses: </th>
+                <td class="currency">(-) {{ $currency }} {{  number_format($salesData['totExpenseAmount'], $decimalLength) }}</td>
+              </tr>
+              <tr>
+                <td colspan="2"><hr/></td>
+              </tr>
               <tr>
                 <th>Total Net Amt: </th>
                 <td class="currency">
-                {{ $currency }} {{  number_format($salesData['totalAmount'], $decimalLength) }}
+                {{ $currency }} {{  number_format($salesData['totalNetAmount'], $decimalLength) }}
                 </td>
               </tr>
               <tr>

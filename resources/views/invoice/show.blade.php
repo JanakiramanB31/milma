@@ -162,12 +162,15 @@ $paperWidth = "300px";
 
 <html>
   <body style="width: 100%; ">
-<div style="margin: 0 0 0 30px !important;padding: 0px !important;" hidden>
+  <div style="margin: 0 0 0 30px !important;padding: 0px !important;" hidden>
   <div style="font-family: monospace;"  id="xReport">
     <style>
       .currency {
         margin-right: 5px;
         float: right;
+      }
+      td, th, p, h4, h5 {
+        font-size: 16px;
       }
     </style>
     <div style="width: {{ $paperWidth }};">
@@ -186,7 +189,7 @@ $paperWidth = "300px";
             </div>
             <h4><span style="text-align: center;">Invoice</span></h4>
             <h4><span style="text-align: center;">{{$invoice->customer->company_name}}</span></h4>
-            <h5 style="font-size: 14px;">Printed On: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5>
+            <h5 style="font-size: 16px;">Printed On: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5>
             <hr   style="border: 1px solid black;"/>
             
             <div style=" text-align: left;">
@@ -197,19 +200,19 @@ $paperWidth = "300px";
             <table class="table" style="text-align: left;">
               <tr>
                 <td colspan="2">Operator: </td>
-                <td colspan="2" style="text-align: end;"><b style="font-size: 14px;">{{Str::ucfirst(Auth::user()->role)}}</b></td>
+                <td colspan="2" style="text-align: end;"><b style="font-size: 16px;">{{Str::ucfirst(Auth::user()->role)}}</b></td>
               </tr>
               <tr>
                 <td colspan="2">Receipt No.</td>
-                <td colspan="2" style="text-align: end;"><b style="font-size: 14px;">#{{1000+$invoice->id}}</b></td>
+                <td colspan="2" style="text-align: end;"><b style="font-size: 16px;">#{{1000+$invoice->id}}</b></td>
               </tr>
               <tr>
                 <td colspan="2">Payment</td>
-                <td colspan="2" style="text-align: end;"><b style="font-size: 14px;">{{$invoice->payment_type}}</b></td>
+                <td colspan="2" style="text-align: end;"><b style="font-size: 16px;">{{$invoice->payment_type}}</b></td>
               </tr>
               <tr>
                 <td colspan="2">Date:</td>
-                <td colspan="2"style="text-align: end;"><b style="font-size: 14px;">{{$invoice->created_at->format('d-m-Y')}}</b></td>
+                <td colspan="2"style="text-align: end;"><b style="font-size: 16px;">{{$invoice->created_at->format('d-m-Y')}}</b></td>
               </tr>    
               <tr>
                 <td colspan="4"><hr  style="border: 1px solid black;"/><hr  style="border: 1px solid black;"/></td>

@@ -106,6 +106,19 @@ class ReportController extends Controller
           $fromDate = now()->toDateString();
           $toDate = now()->toDateString();
       }
+
+      $expenses = Expense::select('expense_amt')->when($fromDate == $toDate, function ($query) use ($fromDate) {
+        return $query->whereDate('expense_date', $fromDate);
+      })
+      ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+        return $query->whereBetween('expense_date', [$fromDate, $toDate]);
+      })->get()->toArray();
+
+      $totExpenses = collect($expenses)->sum('expense_amt');
+
+      // $this->pr($totExpenses);
+      // $this->pr($expenses);
+      // exit;
       
 
       $saleTypesandTotalAmounts = Sale::select('type', 'qty', 'total_amount')
@@ -185,6 +198,7 @@ class ReportController extends Controller
         'totalCreditAmount' => $totalCreditAmount, 
         'creditTransactionCount' => $creditTransactionCount, 
         "bankPayments" => $bankPayments,
+        'totalExpenses' => $totExpenses
       ];
 
       return response()->json( $filteredData );
@@ -193,6 +207,8 @@ class ReportController extends Controller
     public function x_report_print($data) 
     {
       $salesData = json_decode($data, true);
+      // $this->pr($salesData);
+      // exit;
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       return view('report.x_report_print', compact('salesData','currency','decimalLength'));
@@ -467,12 +483,7 @@ class ReportController extends Controller
       }
 
       $expenseTypes = config('constants.EXPENSE_TYPES');
-      $expenses = Expense::when($fromDate == $toDate, function ($query) use ($fromDate) {
-        return $query->whereDate('created_at', $fromDate);
-      })
-      ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
-        return $query->whereBetween('created_at', [$fromDate, $toDate]);
-      })->get();
+      
 
       $filteredInvoices = Invoice::with('Customer', 'Sales.product')
         ->where('print_status', '0')
@@ -520,9 +531,23 @@ class ReportController extends Controller
             ->get();
             // $this->pr($loadedProducts);exit;
 
+            $expenses = Expense::when($fromDate == $toDate, function ($query) use ($fromDate) {
+              return $query->whereDate('created_at', $fromDate);
+            })
+            ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+              return $query->whereBetween('created_at', [$fromDate, $toDate]);
+            })->get();
+
         } else {
           $loadedProducts = StockInTransit::select('product_id','start_quantity','quantity')->where('user_id', $userID)->whereDate('created_at',$today)->get();
           $salesReturns = Returns::with('Product')->where('salesman_id', $userID)->whereDate('created_at',$today)->get();
+
+          $expenses = Expense::where('user_id', $userID)->when($fromDate == $toDate, function ($query) use ($fromDate) {
+            return $query->whereDate('created_at', $fromDate);
+          })
+          ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+            return $query->whereBetween('created_at', [$fromDate, $toDate]);
+          })->get();
         }
         
         

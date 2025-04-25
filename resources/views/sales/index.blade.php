@@ -46,9 +46,9 @@
                         <label class="control-label">Company</label>
                         <select name="company_name" id='company_name' class="form-control">
                           <option value=''>All Companies</option>
-                          @foreach ($salesWithCompanies as $companyName => $sales)
-                          <option value="{{ $companyName }}" >
-                            {{ $companyName }}
+                          @foreach ($customers as $customer)
+                          <option value="{{ $customer->company_name }}" >
+                            {{ $customer->company_name }}
                           </option>
                           @endforeach
                           </option>
@@ -60,9 +60,9 @@
                         <label class="form-label">Product</label>
                         <select id="prod_name" name="prod_name" class="form-control">
                           <option value = ''>All Products</option>
-                          @foreach ($salesWithProducts as $productName => $sales)
-                          <option value="{{ $productName }}" >
-                            {{ $productName }}
+                          @foreach ($products as $product)
+                          <option value="{{ $product->name }}" >
+                            {{ $product->name }}
                           </option>
                           @endforeach
                         </select>

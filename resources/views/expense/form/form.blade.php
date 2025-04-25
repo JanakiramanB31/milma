@@ -50,10 +50,13 @@
       @enderror
     </div>
 
+    @php
+      $date = $expense->expense_date ? date('Y-m-d', strtotime($expense->expense_date)) : null;
+    @endphp
     <!-- Expense Date -->
     <div class="form-group col-md-12">
       <label class="control-label">Date</label>
-      <input name="expense_date" class="form-control @error('expense_date') is-invalid @enderror" value="{{old('expense_date', date('Y-m-d', strtotime($expense->expense_date)) ?? \Carbon\Carbon::now()->toDateString())}}" type="date" placeholder="Select the Expense Date">
+      <input name="expense_date" class="form-control @error('expense_date') is-invalid @enderror" value="{{old('expense_date', $date ?? \Carbon\Carbon::now()->toDateString())}}" type="date" placeholder="Select the Expense Date">
       @error('expense_date')
       <span class="invalid-feedback" role="alert">
         <strong>{{ $message }}</strong>

@@ -3,6 +3,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Customer;
+use App\Product;
 use App\Sales;
 use Illuminate\Http\Request;
 
@@ -14,18 +16,20 @@ class SalesController extends Controller
         $sales = Sales::where('type', 'sales')->whereDate('created_at', $fromDate)->get(); // Include products related to sales
         $currency = config('constants.CURRENCY_SYMBOL');
         $decimalLength = config('constants.DECIMAL_LENGTH');
-        $salesWithCompanies = $sales->groupBy(function ($sale) {
-            return $sale->Customer->company_name ;
-        });
+        // $salesWithCompanies = $sales->groupBy(function ($sale) {
+        //     return $sale->Customer->company_name ;
+        // });
+        $customers = Customer::all();
+        $products = Product::all();
 
-        $salesWithProducts = $sales->groupBy(function ($sale) {
-          return $sale->Product->name ;
-        });
+        // $salesWithProducts = $sales->groupBy(function ($sale) {
+        //   return $sale->Product->name ;
+        // });
 
         // $this->pr($sales);
         // exit;
         
-        return view('sales.index', compact('sales','salesWithCompanies','salesWithProducts','currency','decimalLength'));
+        return view('sales.index', compact('sales','customers','products','currency','decimalLength'));
     }
 
     public function filterSalesData(Request $request)

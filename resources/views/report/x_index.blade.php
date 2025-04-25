@@ -97,6 +97,14 @@
                     <td><b>Total Amount of Return Orders</b></td>
                     <td class="d-flex justify-content-end"><span class="mr-1" >(-)</span><p class=" mb-0" id="returnAmount"><span>{{ $currency }}</span> {{ number_format($returnType['total_amt'],  $decimalLength ) }}</p></td>
                   </tr>
+
+                  <tr>
+                    <td></td>
+                    <td ></td>
+                    <td><b>Total Expenses</b></td>
+                    <td class="d-flex justify-content-end"><span class="mr-1" >(-)</span><p class=" mb-0" id="totExpenseAmount"><span>{{ $currency }}</span> {{ number_format($returnType['total_amt'],  $decimalLength ) }}</p></td>
+                  </tr>
+
                   <tr>
                     <td></td>
                     <td ></td>
@@ -183,6 +191,7 @@
               var totalAmt = (response.saleType.total_amt || 0);
               var cardAmt = (response.cardSalesAmount || 0);
               var returnAmt = (response.returnType.total_amt || 0);
+              var totalExpenses = (response.totalExpenses || 0);
               console.log("Success", response);  
               $('#salesCount').text(response.cashPayments.transaction_count + response.bankPayments.transaction_count+ response.creditTransactionCount);
               $('#salesAmount').text(currency + response.saleType.total_amt.toFixed(decimalLength));
@@ -196,7 +205,9 @@
               $('#cardSalesAmount').text(currency + response.totalCreditAmount.toFixed(decimalLength));
               $('#cardSalesAmount2').text(currency + response.totalCreditAmount.toFixed(decimalLength));
               $('#totalAmount').text(currency + (totalAmt + cardAmt - response.totalCreditAmount).toFixed(decimalLength));
-              $('#totalNetAmount').text(currency + (totalAmt + cardAmt - response.totalCreditAmount - returnAmt).toFixed(decimalLength));
+              $('#totExpenseAmount').text(currency + (totalExpenses).toFixed(decimalLength));
+
+              $('#totalNetAmount').text(currency + (totalAmt + cardAmt - response.totalCreditAmount - returnAmt - totalExpenses).toFixed(decimalLength));
                   
             } catch(error) {
               console.log("Failed",error);
@@ -226,7 +237,9 @@
       let returnCount = $('#returnCount').text();
       let returnAmount = $('#returnAmount').text().replace("£", "").replace(" ", "").replace("(","").replace(")","").replace("-","");
       let totalAmount = $('#totalAmount').text().replace("£", "").replace(" ", "").replace("(","").replace(")","").replace("-","");
-      let totalNetAmount = $('#totalNetAmount').text().replace("£", "").replace(" ", "").replace("(","").replace(")","").replace("-","");
+      let totalExpAmount = $('#totExpenseAmount').text().replace("£", "").replace(" ", "").replace("(","").replace(")","").replace("-","");
+
+      let totalNetAmount = $('#totalNetAmount').text().replace("£", "").replace(" ", "").replace("(","").replace(")",""); //.replace("-","");
       console.log("cardSalesCount", cardSalesCount)
       const data = {
         "selectedStartDate": selectedStartDate,
@@ -241,6 +254,7 @@
         "returnCount": returnCount,
         "returnAmount": returnAmount,
         "totalAmount": totalAmount,
+        "totExpenseAmount": totalExpAmount,
         "totalNetAmount": totalNetAmount
       }
       console.log(data)

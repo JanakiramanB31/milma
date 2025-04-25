@@ -137,6 +137,12 @@ class ExpenseController extends Controller
    */
   public function destroy($id)
   {
-    //
+
+    $expense = Expense::findOrFail($id);
+
+    if ($expense) {
+      $expense->delete();
+    }
+    return redirect()->back();
   }
 }

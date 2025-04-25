@@ -60,13 +60,16 @@
                  
                   <td class="d-flex" style="gap: 10px;">
                     <a class="btn btn-primary btn-sm" href="{{route('expense.edit', $expense->id)}}"><i class="fa fa-edit" ></i></a>
-                    <!-- <button class="btn btn-danger btn-sm waves-effect" type="submit" onclick="deleteTag({{ $expense->id }})">
+                   
+                    @if(Auth::user()->role == 'admin' || $expense->created_at->isToday())
+                    <button class="btn btn-danger btn-sm waves-effect" type="submit" onclick="deleteTag({{ $expense->id }})">
                       <i class="fa fa-trash"></i>
                     </button>
                     <form id="delete-form-{{ $expense->id }}" action="{{ route('expense.destroy',$expense->id) }}" method="POST" style="display: none;">
                       @csrf
                       @method('DELETE')
-                    </form> -->
+                    </form>
+                    @endif
                   </td>
                  
                 </tr>

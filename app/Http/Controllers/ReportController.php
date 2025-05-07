@@ -370,9 +370,11 @@ class ReportController extends Controller
       $formattedDate = now()->toDateString();
       $routes = Route::all();
       $invoiceWithCustomer = Invoice::with('Customer')->get(); 
-
+      // echo '<pre>'; print_r($invoiceWithCustomer); echo '</pre>';
+     
       $customerInfo = $invoiceWithCustomer->map(function ($invoice) {
-          return $invoice->Customer->company_name; 
+          // return $invoice->Customer->company_name; 
+          return $invoice->Customer->company_name ?? '--';
       });
       $groupedInvoices = $invoiceWithCustomer->groupBy(function ($invoice) {
         return $invoice->Customer ? $invoice->Customer->company_name : 'Unknown Company';

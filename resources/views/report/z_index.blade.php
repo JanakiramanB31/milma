@@ -83,7 +83,7 @@
                       <tr>
                         <td class="text-center">{{1000+$invoice->id}}</td>
                         <td class="text-center">{{$invoice->created_at->format('d-m-Y')}}</td>
-                        <td class="text-center">{{$invoice->customer->company_name}}</td>
+                        <td class="text-center">{{$invoice->customer->company_name ?? 'N/A'}}</td>
                         <td>
                           @foreach($invoice->sales as $key => $sale)
                             {{ $sale->product->name }}

@@ -221,8 +221,8 @@
               <tr>
                 <th>Total Amt of Expenses: </th>
                 <td class="boldfont"></td>
-                <td class="boldfont" style="text-align: right;">
-                <span>(-) {{$currency}} </span> {{  number_format($totalExpense , $decimalLength) }}
+                <td class="boldfont" style="text-align: right;white-space: nowrap;">
+                <span >(-) {{$currency}} </span> {{  number_format($totalExpense , $decimalLength) }}
                 </td>
               </tr>
 

@@ -211,6 +211,35 @@
               <td colspan="3"><hr/><hr/></td>
             </tr>
 
+            <tr>
+                <th>Total Amt of Cash: </th>
+                <td></td>
+                <td class="boldfont" style="text-align: right;">
+                <span>{{$currency}} </span> {{  number_format($totalCashAmount , $decimalLength) }}
+                </td>
+              </tr>
+              <tr>
+                <th>Total Amt of Expenses: </th>
+                <td class="boldfont"></td>
+                <td class="boldfont" style="text-align: right;">
+                <span>(-) {{$currency}} </span> {{  number_format($totalExpense , $decimalLength) }}
+                </td>
+              </tr>
+
+            @php
+              $netAmt = $totalCashAmount - $totalExpense
+            @endphp
+
+              <tr>
+                <th>Cash in Hand: </th>
+                <td class="boldfont"></td>
+                <td class="boldfont" style="text-align: right;">
+                <span>{{$currency}} </span> {{  number_format($netAmt , $decimalLength) }}
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3"><hr/></td>
+
               <tr>
                 <td colspan="3" style="text-align: center;">**** END OF SHIFT REPORT ****</td>
               </tr>

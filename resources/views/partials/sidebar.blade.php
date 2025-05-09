@@ -47,8 +47,11 @@
             </ul> -->
         </li>
 
+        @if(env('SALES_VISIBLE') == 'true')
         <li><a class="app-menu__item {{ request()->is('sales') ? 'active' : ''}}" href="{{route('sales')}}"><i class="app-menu__icon fa fa-dollar"></i><span class="app-menu__label">View Sales</span></a></li>
-        
+        @else
+        <li><a class="app-menu__item {{ request()->is('sales') ? 'active' : ''}}" href="#"><i class="app-menu__icon fa fa-dollar"></i><span class="app-menu__label">View Sales</span></a></li>
+        @endif
         <li><a class="app-menu__item {{ request()->is('bt_list') ? 'active' : ''}}" href="{{route('bt_list.index')}}"><i class="app-menu__icon fa fa-dollar"></i><span class="app-menu__label">Payment List</span></a></li>
 
         <li><a class="app-menu__item {{ request()->is('invoice*') ? 'active' : ''}}" href="{{route('invoice.index')}}" ><i class="app-menu__icon fa fa-file"></i><span class="app-menu__label">Receipt</span></a>
@@ -67,13 +70,16 @@
 
         <li ><a class="app-menu__item {{ request()->is('expense*') ? 'active' : ''}}" href="{{route('expense.index')}}" ><i class="app-menu__icon fa fa-money"></i><span class="app-menu__label">Expenses</span></a>
 
-        <li class="treeview"><a class="app-menu__item {{ request()->is('/report') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-file-text-o"></i><span class="app-menu__label">Reports</span><i class="treeview-indicator fa fa-angle-right"></i></a>
-            <ul class="treeview-menu">
-              <li><a class="treeview-item" href="{{route('x_report')}}"><i class="icon fa fa-circle-o"></i>X-Report</a></li>
-              <li><a class="treeview-item" href="{{route('overall_report')}}"><i class="icon fa fa-circle-o"></i>Overall-Report</a></li>
-              <li><a class="treeview-item" href="{{route('z_report')}}"><i class="icon fa fa-circle-o"></i>Z-Report</a></li>
-            </ul>
-        </li>
+            <li class="treeview"><a class="app-menu__item {{ request()->is('/report') ? 'active' : ''}}" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-file-text-o"></i><span class="app-menu__label">Reports</span><i class="treeview-indicator fa fa-angle-right"></i></a>
+            @if(env('REPORT_VISIBLE') == 'true')
+                <ul class="treeview-menu">
+                    <li><a class="treeview-item" href="{{route('x_report')}}"><i class="icon fa fa-circle-o"></i>X-Report</a></li>
+                    <li><a class="treeview-item" href="{{route('overall_report')}}"><i class="icon fa fa-circle-o"></i>Overall-Report</a></li>
+                    <li><a class="treeview-item" href="{{route('z_report')}}"><i class="icon fa fa-circle-o"></i>Z-Report</a></li>
+                </ul>
+            @endif
+            </li>
+        
 
 
         <li><a class="app-menu__item {{ request()->is('tax*') ? 'active' : ''}}" href="{{route('tax.index')}}"><i class="app-menu__icon fa fa-percent"></i><span class="app-menu__label">Tax</span></a>

@@ -164,7 +164,7 @@
                               @foreach($invoices as $invoice)
                               <tr>
                                 <td class="text-center">{{$invoice->id}}</td>
-                                <td class="text-center">{{$invoice->customer->name}}</td>
+                                <td class="text-center">{{$invoice->customer->name ?? 'N/A'}}</td>
                                 <td class="text-center">{{$invoice->payment_type}}</td>
                                 <td class="text-center">{{$invoice->total_amount}}</td>
                                 <td class="text-center">{{$invoice->received_amt}}</td>

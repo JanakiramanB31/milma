@@ -274,7 +274,7 @@ class ReportController extends Controller
       $invoiceWithCustomer = Invoice::with('Customer')->get(); 
 
       $customerInfo = $invoiceWithCustomer->map(function ($invoice) {
-          return $invoice->Customer->company_name; 
+          return $invoice->Customer->company_name ?? '--'; 
       });
       $groupedInvoices = $invoiceWithCustomer->groupBy(function ($invoice) {
         return $invoice->Customer ? $invoice->Customer->company_name : 'Unknown Company';

@@ -293,6 +293,9 @@
                       <input id="prev_credit_amt" type="text"  name="prev_credit_amt" class="form-control" min="0" readonly/>
                       <div id="prev_credit_amt_error" class="text-danger"></div>
                     </div>
+
+                    
+
                     <!-- Received Amount PopUp Form Content -->
                     <div class="modal-body d-none flex-column justify-content-center">
                       <label id="cus_received_amt_label" class="form-label">Amount</label>
@@ -304,6 +307,13 @@
                       <input id="received_amt" type="text"  name="received_amt" class="form-control" style=" padding:20px;font-size:20px;" min="0"/>
                       <div id="received-amt-error" class="text-danger"></div>
                     </div>
+
+                    <div style="padding: 1rem;" id="show_credit_amt_on_print" class="modal-body form-check flex-column justify-content-center">
+                      <input id="show_credit_amt" style="transform: scale(1.5); margin-right: 0.5rem;margin-left: 0.5rem;" type="checkbox" name="show_credit_amt" />  
+                      <label for="show_credit_amt" class="form-check-label">Show Bal. Amount on Print</label>
+                      <div id="show_credit_amt_error" class="text-danger"></div>
+                    </div>
+
                     <!-- Received Amount PopUp Form Footer -->
                     <div class="modal-footer d-flex justify-content-center">
                       <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>

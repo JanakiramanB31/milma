@@ -152,6 +152,7 @@ class InvoiceController extends Controller
         'price' => 'required',
         'amount' => 'required',
       ]);
+      // echo "Checkbox".$request->show_credit_amt;
       // $this->pr($request->all());
       // exit;
      
@@ -179,15 +180,19 @@ class InvoiceController extends Controller
       $invoice = new Invoice();
       $invoice->customer_id = $request->customer_id;
       $invoice->user_id = $userId;
+      $invoice->show_credit_amt_on_print = $request->show_credit_amt == "on" ? true : false;
       $invoice->payment_type = $request->payment_type;
       if ($request->received_amt < 0) {
         $invoice->received_amt = 0.00;
+        $invoice->paid_amt = 0.00;
       } else {
-        $invoice->received_amt = $request->payment_type == "Credit" ? "0" : $request->received_amt;
+        $receivedAmt =  $request->payment_type != "Cash" ? "0" : $request->received_amt;
+        $invoice->received_amt = $receivedAmt;
+        $invoice->paid_amt = $request->received_amt;
       }
       $invoice->acc_bal_amt = $request->acc_bal_amt;
 
-      if ($request->payment_type == "Credit") {
+      if ($request->payment_type != "Cash") {
         $invoice->balance_amt = $request->acc_bal_amt + $request->received_amt;
       } else if (($request->total + $request->acc_bal_amt) > $request->received_amt) {
         $invoice->balance_amt = $balAmt; 
@@ -392,10 +397,15 @@ class InvoiceController extends Controller
       $invoice->customer_id = $request->customer_id;
       $invoice->user_id = $userId;
       $invoice->payment_type = $request->payment_type;
-      $invoice->received_amt = $request->payment_type == "Credit" ? $request->prev_received_amt : ($request->received_amt);
+      $invoice->show_credit_amt_on_print = $request->show_credit_amt == "on" ? true : false;
+      $receivedAmt = $request->payment_type != "Cash" ? $request->prev_received_amt : ($request->received_amt);
+      $invoice->received_amt = $receivedAmt;
+      $invoice->paid_amt = $request->received_amt;
       $invoice->acc_bal_amt = $request->acc_bal_amt;
 
-      if ($request->payment_type == "Credit") {
+      //if ($request->payment_type == "Credit") {
+      if ($request->payment_type != "Cash") {
+
         $invoice->balance_amt = $request->acc_bal_amt + $request->received_amt;
       } else if (($request->total + $request->acc_bal_amt) > ($request->prev_received_amt + $request->received_amt)) {
         $invoice->balance_amt = $balAmt; 
@@ -486,7 +496,16 @@ class InvoiceController extends Controller
     {
       Sales::where('invoice_id', $id)->delete();
       $invoice = Invoice::findOrFail($id);
+      $cusID = $invoice->customer_id;  //Storing the Customer ID before Deleting Invoice
       $invoice->delete();
+
+      //Fetching the Last non-deleted Record for storing customer's account balance amount
+      $prevInvoice = Invoice::where('customer_id', $cusID)->where('deleted_at', null)->orderBy('created_at', 'desc')->first();
+      $prevInvoice->balance_amt = $invoice->balance_amt;
+      //$this->pr($prevInvoice);
+      $prevInvoice->save();
+      //exit;
+      
       return redirect()->back();
     }
 }

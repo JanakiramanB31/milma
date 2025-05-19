@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Customer;
 use App\Invoice;
 use Illuminate\Http\Request;
 
@@ -110,16 +111,52 @@ class BankTransferController extends Controller
     {
       $request->validate([
         'invoice_id' => 'required',
-        'reference_number' => 'required',
+        'received_date' => 'required',
     ]);
     $today = now()->format('Y-m-d H:i:s');
+    // $this->pr($request->all());
+    // exit;
     // $data = $this->pr($request);
     $invoice = Invoice::findOrFail($id);
-    $invoice->reference_number = $request->reference_number;
+    // $this->pr($invoice);
+    // echo "new";
+    if ($invoice->paid_amt == null) {
+      $invoice->paid_amt = $invoice->received_amt;
+    }
+    $invoice->received_amt = $invoice->paid_amt;
+    $balance = floatval($invoice->balance_amt) - floatval($invoice->paid_amt);
+    $invoice->balance_amt = ($balance > 0) ? $balance : 0;
+    $invoice->amt_received_at = $request->received_date;
+    $invoice->reference_number = $request->reference_number ?? null;
     $invoice->ref_number_updated_at = $today;
     $invoice->save();
+
+    $cusID = $invoice->customer_id;
+
+    $customer = Customer::findOrFail($cusID);
+    $cusPrevBalAmt = floatval($customer->previous_balance) - floatval($invoice->paid_amt);
+    $customer->previous_balance = ($cusPrevBalAmt > 0) ? $cusPrevBalAmt : 0;
+    $customer->save();
+    //$this->pr($invoice);
+
+    
+    $oldInvoice = Invoice::where('customer_id', $cusID)->orderBy('created_at', 'desc')->first();
+
+    if ($oldInvoice->id != $invoice->id) {
+      $prevBalAmt = floatval($oldInvoice->prev_acc_bal_amt) - floatval($invoice->paid_amt);
+      $oldInvoice->prev_acc_bal_amt = ($prevBalAmt > 0) ? $prevBalAmt : 0;
+      $accBalAmt = floatval($oldInvoice->acc_bal_amt) - floatval($invoice->paid_amt);
+      $oldInvoice->acc_bal_amt = ($accBalAmt > 0) ? $accBalAmt : 0;
+      $balance = floatval($oldInvoice->balance_amt) - floatval($invoice->paid_amt);
+      $oldInvoice->balance_amt = $balance ? $balance : 0;
+      $oldInvoice->save();
+      //$this->pr($invoice);
+    }
+    //exit;
+    //$invoice->save();
     // return redirect('invoice/'.$invoice->id)->with('message','Invoice Updated Successfully');
     return response()->json( [
+      //'data' => $this->pr($invoice),
       'success' => true,
       'message' => 'Reference number updated successfully.',
   ]); 

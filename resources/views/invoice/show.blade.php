@@ -62,7 +62,8 @@ $paperWidth = "300px";
                       <th>Product</th>
                       <th>Qty</th>
                       <th >Price</th>
-                      <th class="text-left" >Amt</th>
+                      <th class="text-right" >Amt</th>
+                      <th style="width: 150px;"></th>
                     </tr>
                   </thead>
                   
@@ -81,7 +82,7 @@ $paperWidth = "300px";
                       </td>
                       <td>{{ $sale->qty }}{{$sale->product->unit->name}}</td>
                       <td class="text-right text-md-left ">{{$currency}} {{ number_format($sale->price, $decimalLength) }}</td>
-                      <td class="text-right text-md-left ">
+                      <td  class="text-right text-md-right">
                         @if($sale->type == "sales")
                         <b></b>
                         @else
@@ -89,6 +90,7 @@ $paperWidth = "300px";
                         @endif
                         {{$currency}} {{ number_format($sale->qty * $sale->price, $decimalLength) }}
                       </td>
+                      <td ></td>
                       <div style="display: none">
                         {{$total }}
                       </div>
@@ -99,29 +101,63 @@ $paperWidth = "300px";
                     <tr>
                       <td></td>
                       <td></td>
-                      <td style="text-align: end;"><b>Total Amt</b></td>
-                      <td class="text-right text-md-left"><b class="total"  >{{$currency}} {{ number_format($amount->total_amount, $decimalLength) }}</b></td>
+                      <td style="text-align: end;"><b>Total {{ $invoice->prev_acc_bal_amt > 0 ? "Gross" : ""}} Amt</b></td>
+                      <td class="text-right text-md-right"><b class="total"  >{{$currency}} {{ number_format($amount->total_amount, $decimalLength) }}</b></td>
+                      <td ></td>
                     </tr>
+
+                    @if(number_format($amount->prev_acc_bal_amt, $decimalLength)  <= 0)
                     <tr >
-                      <td></td>
+                      <td ></td>
                       <td></td>
                       <td style="text-align: end;"><b>Amt Paid</b></td>
-                      <td class="text-right text-md-left"><b class="total">{{$currency}} {{ number_format($amount->received_amt, $decimalLength) }}</b></td>
-                    </tr>
-                    @if(number_format($amount->prev_acc_bal_amt, $decimalLength)  > 0)
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td style="text-align: end;"><b>Prev Acc Bal Amt</b></td>
-                      <td class="text-right text-md-left"><b class="total"  >{{$currency}} {{ number_format($amount->prev_acc_bal_amt, $decimalLength) }}</b></td>
+                      <td class="text-right text-md-right"><b class="total">{{$currency}} {{ number_format($amount->received_amt, $decimalLength) }}</b></td>
+                      <td ></td>
                     </tr>
                     @endif
+
+                    @if(number_format($amount->prev_acc_bal_amt, $decimalLength)  > 0)
+                    <tr >
+                      <td style="border-bottom: 1px solid black;"></td>
+                      <td style="border-bottom: 1px solid black;"></td>
+                      <td style="text-align: end;border-bottom: 1px solid black;"><b>Prev Acc Bal Amt</b></td>
+                      <td class="text-right text-md-right" style="border-bottom: 1px solid black;"><b class="total"  >{{$currency}} {{ number_format($amount->prev_acc_bal_amt, $decimalLength) }}</b></td>
+                      <td style="border-bottom: 1px solid black;"></td>
+                    </tr >
+                    
+
+                    <!-- <tr>
+                      <td colspan="4"><hr/><hr/></td>
+                    </tr> -->
+
+                  @php
+                    $totalAmt = number_format($amount->total_amount, $decimalLength) + number_format($amount->prev_acc_bal_amt, $decimalLength);
+                  @endphp
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td style="text-align: end;"><b>Total Amt</b></td>
+                    <td style="text-align: end;" class="text-right text-md-right"><b>{{$currency}} {{ number_format($totalAmt, $decimalLength) }}</b></td>
+                    <td ></td>
+                  </tr>
+                  
+
+                    <tr >
+                      <td style="border-bottom: 1px solid black;"></td>
+                      <td style="border-bottom: 1px solid black;"></td>
+                      <td style="text-align: end;border-bottom: 1px solid black;"><b>Amt Paid</b></td>
+                      <td style="border-bottom: 1px solid black;" class="text-right text-md-right"><b class="total">(-) {{$currency}} {{ number_format($amount->received_amt, $decimalLength) }}</b></td>
+                      <td style="border-bottom: 1px solid black;"></td>
+                    </tr>
+                    @endif
+                   
                     @if((number_format($amount->acc_bal_amt, $decimalLength) + number_format($currentBalAmt, $decimalLength))  > 0)
                     <tr>
                       <td></td>
                       <td></td>
                       <td style="text-align: end;"><b>Acc Bal Amt</b></td>
-                      <td class="text-right text-md-left"><b class="total"  >{{$currency}} {{number_format( $amount->acc_bal_amt + $currentBalAmt, $decimalLength) }}</b></td>
+                      <td class="text-right text-md-right"><b class="total"  >{{$currency}} {{number_format( $amount->acc_bal_amt + $currentBalAmt, $decimalLength) }}</b></td>
+                      <td ></td>
                     </tr>
                     @endif
 
@@ -130,7 +166,8 @@ $paperWidth = "300px";
                       <td></td>
                       <td></td>
                       <td style="text-align: end;"><b>Bal Amt</b></td>
-                      <td class="text-right text-lg-left"><b class="total">{{$currency}} {{ number_format($amount->received_amt - $totAmt , $decimalLength) }}</b></td>
+                      <td class="text-right text-lg-right"><b class="total">{{$currency}} {{ number_format($amount->received_amt - $totAmt , $decimalLength) }}</b></td>
+                      <td ></td>
                     </tr>
                     @endif
                   </tfoot>
@@ -264,32 +301,53 @@ $paperWidth = "300px";
                 <td colspan="4"><hr style="border: 1px solid black;"/></td>
               </tr>
               <tr>
-                <td colspan="2" ><b>Total Amt</b></td>
+                <td colspan="2" ><b>Total {{ $invoice->show_credit_amt_on_print == 1 ? "Gross" : ""}} Amt</b></td>
                 <td colspan="2" style="text-align: end;" class="text-right text-md-left"><b>{{$currency}} {{ number_format($amount->total_amount, $decimalLength) }}</b></td>
               </tr>
-              <tr >
-                <td colspan="2" ><b>Amt Paid</b></td>
-                <td colspan="2" style="text-align: end;" class="text-right text-md-left"><b>{{$currency}} {{ number_format($amount->received_amt, $decimalLength) }}</b></td>
-              </tr>
+              @if($invoice->show_credit_amt_on_print == 1)
               @if(number_format($amount->prev_acc_bal_amt, $decimalLength)  > 0)
               <tr>
                 <td colspan="2" ><b>Prev Acc Bal Amt</b></td>
                 <td colspan="2" style="text-align: end;" class="text-right text-md-left"><b>{{$currency}} {{ number_format($amount->prev_acc_bal_amt, $decimalLength) }}</b></td>
               </tr>
               @endif
+
+              <tr>
+                <td colspan="4"><hr  style="border: 1px solid black;"/><hr  style="border: 1px solid black;"/></td>
+              </tr>
+
+              @php
+                $totalAmt = number_format($amount->total_amount, $decimalLength) + number_format($amount->prev_acc_bal_amt, $decimalLength);
+              @endphp
+              <tr>
+                <td colspan="2" ><b>Total Amt</b></td>
+                <td colspan="2" style="text-align: end;" class="text-right text-md-left"><b>{{$currency}} {{ number_format($totalAmt, $decimalLength) }}</b></td>
+              </tr>
+
+              <tr >
+                <td colspan="2" ><b>Amt Paid</b></td>
+                <td colspan="2" style="text-align: end;" class="text-right text-md-left"><b> (-) {{$currency}} {{ number_format($amount->received_amt, $decimalLength) }}</b></td>
+              </tr>
+
+               <tr>
+                <td colspan="4"><hr  style="border: 1px solid black;"/><hr  style="border: 1px solid black;"/></td>
+              </tr>
+
               @if((number_format($amount->acc_bal_amt, $decimalLength) + number_format($currentBalAmt, $decimalLength))  > 0)
               <tr>
                 <td colspan="2" ><b>Acc Bal Amt</b></td>
                 <td colspan="2" style="text-align: end;" class="text-right text-md-left"><b>{{$currency}} {{number_format( $amount->acc_bal_amt + $currentBalAmt, $decimalLength) }}</b></td>
               </tr>
               @endif
+              @endif
 
               @if(($amount->received_amt - $totAmt ) > 0)
               <tr>
-                <td colspan="2" ><b>Bal Amt</b></td>
+                <td colspan="2" ><b>Amt to be Returned</b></td>
                 <td colspan="2" style="text-align: end;" class="text-right text-lg-left"><b>{{$currency}} {{ number_format($amount->received_amt - $totAmt , $decimalLength) }}</b></td>
               </tr>
               @endif
+
               <tr>
                 <td colspan="4"><hr  style="border: 1px solid black;"/><hr  style="border: 1px solid black;"/></td>
               </tr>

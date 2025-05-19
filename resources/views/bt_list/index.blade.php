@@ -84,7 +84,7 @@
                       <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->balance_amt,  $decimalLength )}}</td>
                       <td class="d-flex justify-content-center" style="gap: 10px;">
                         <a class="btn btn-info btn-sm" href="{{ route('invoice.show', '') }}/{{$invoice->id}}"><i class="fa fa-eye" ></i></a>
-                        @if (empty($invoice->reference_number) && $invoice->payment_type == "Bank Transfer")
+                        @if (empty($invoice->amt_received_at) && $invoice->payment_type == "Bank Transfer")
                         <i class="fa  fa-check fa-sm btn btn-success payment-approve" data-id="{{$invoice->id}}" ></i>
                         <!-- <i class="fa  fa-times fa-sm btn btn-danger payment-denied" data-id="{{$invoice->id}}" ></i> -->
                         @endif
@@ -124,8 +124,13 @@
             </div>
             <!--paymentApproveForm PopUp Form Content -->
             <div class="modal-body ">
+
               <div>
-                <label>Enter Reference Number</label>
+                <label id="received_date_label" class="form-label">Received Date</label>
+                  <input id="received_date" name="received_date" type="date" class="form-control" value="{{ date('Y-m-d') }}"/>
+              </div>
+              <div>
+                <label class="form-label" style="margin-top: 5px;">Enter Reference Number</label>
                 <textarea id="reference-number-entry" name="popup-reason" class="reference-number-popup form-control-lg col-12"></textarea>
               </div>
             </div>
@@ -233,7 +238,7 @@
                         <td class="text-center">${currency +parseFloat(invoice.balance_amt).toFixed(decimalLength)}</td>
                         <td class="d-flex justify-content-center" style="gap: 10px;">
                           <a class="btn btn-info btn-sm" href="{{ route('invoice.show', '') }}/${parseInt(invoice.id)}"><i class="fa fa-eye" ></i></a>
-                          ${invoice.reference_number == null && invoice.payment_type == "Bank Transfer" ?
+                          ${invoice.amt_received_at == null && invoice.payment_type == "Bank Transfer" ?
                           `<i class="fa  fa-check fa-sm btn btn-success payment-approve" data-id="${parseInt(invoice.id)}" ></i> ` : '' }
                         </td>
                       </tr>
@@ -258,21 +263,32 @@
 
     $(document).on('click', '#reference-number-entry-button', function () {
       var referenceNumber = $('#reference-number-entry').val();
+      var receivedDate = $('#received_date').val();
       var invoiceID =  $('#paymentApproveForm').data('invoice-id');
-      console.log(referenceNumber, invoiceID);
+      console.log(referenceNumber, invoiceID, receivedDate);
       let selectedStartDate = $('#startDate').val();
       let selectedEndDate = $('#endDate').val();
+      let today = new Date().toISOString().split('T')[0];
       var paymentMethod = $('#payment_type').find('option:selected').val();
       const data1 = {
           "fromDate": selectedStartDate,
           "toDate": selectedEndDate,
           "paymentMethod": paymentMethod
         }
-      if (referenceNumber.trim() == '') {
+      if (!receivedDate) {
         Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Reference number cannot be empty!',
+            text: 'Received Date cannot be empty!',
+        });
+        return;
+      }
+
+      if (receivedDate > today) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Received Date cannot be in the future',
         });
         return;
       }
@@ -282,6 +298,7 @@
         type: 'POST',
         data: {
           invoice_id: invoiceID,
+          received_date: receivedDate,
           reference_number: referenceNumber,
           _token: '{{ csrf_token() }}'
         },

@@ -110,7 +110,7 @@
               </tr>
               @foreach ($filteredInvoices as $companyName => $invoice) 
                 
-                @if ($invoice->payment_type == "Cash")
+                @if ($invoice->payment_type == $paymentMethods[0])
                 <tr>
                   <td class="boldfont">{{$invoice->customer->company_name}}</td>
                   <td class="boldfont">{{$invoice->payment_type}}</td>
@@ -132,14 +132,11 @@
                 <td colspan="3"><hr/><hr/></td>
               </tr>
               @foreach ($filteredInvoices as $companyName => $invoice) 
-                @php
-                    $totalAmount = $filteredInvoices->sum('total_amount');
-                @endphp
-                @if ($invoice->payment_type == "Bank Transfer")
+                @if ($invoice->payment_type == $paymentMethods[1])
                 <tr>
                   <td class="boldfont">{{$invoice->customer->company_name}}</td>
                   <td class="boldfont">Transfer</td>
-                  <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
+                  <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->paid_amt,  $decimalLength )}}</td>
                 </tr>
                 @endif
               @endforeach
@@ -151,6 +148,29 @@
                 <td class="boldfont">Transfer</td>
                 <td class="boldfont">Total</td>
                 <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($totalTransferAmount,  $decimalLength )}}</td>
+              </tr>
+              
+              <tr>
+                <td colspan="3"><hr/><hr/></td>
+              </tr>
+               @foreach ($filteredInvoices as $companyName => $invoice) 
+                
+                @if ($invoice->payment_type == $paymentMethods[2])
+                <tr>
+                  <td class="boldfont">{{$invoice->customer->company_name}}</td>
+                  <td class="boldfont">Credit</td>
+                  <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->paid_amt,  $decimalLength )}}</td>
+                </tr>
+                @endif
+              @endforeach
+              <tr>
+                <td colspan="3"><hr/></td>
+              </tr>
+
+              <tr>
+                <td class="boldfont">Credit</td>
+                <td class="boldfont">Total</td>
+                <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($totalCreditAmount,  $decimalLength )}}</td>
               </tr>
               
               <tr>

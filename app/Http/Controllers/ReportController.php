@@ -34,7 +34,7 @@ class ReportController extends Controller
       }
       $userID = Auth::id();
       $userRole = Auth::user()->role;
-      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
+      $paymentMethods = config('constants.PAYMENT_METHODS');
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       $routes = Route::all();
@@ -82,8 +82,8 @@ class ReportController extends Controller
       $totalCreditAmount = $creditPayments->sum('balance_amt'); 
       $creditTransactionCount = $creditPayments->count();
 
-      $cashPayments = $saleProductspaymentTypesandAmounts->get('Cash', ['total_received_amt' => 0, 'transaction_count' => 0]);
-      $bankPayments = $saleProductspaymentTypesandAmounts->get('Bank Transfer', ['total_received_amt' => 0, 'transaction_count' => 0]);
+      $cashPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[0], ['total_received_amt' => 0, 'transaction_count' => 0]);
+      $bankPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[1], ['total_received_amt' => 0, 'transaction_count' => 0]);
 
       // echo '<pre>'; print_r($totalAmt); echo '</pre>';exit;
      
@@ -95,6 +95,7 @@ class ReportController extends Controller
       $userID = Auth::id();
       $userRole = Auth::user()->role;
       $queryCondition = $userRole == 'admin' ? [] : ['user_id', $userID];
+      $paymentMethods = config('constants.PAYMENT_METHODS');
       $data = $request->input('date'); 
       $fromDate = $data['fromDate'];
       $currency = config('constants.CURRENCY_SYMBOL');
@@ -187,8 +188,8 @@ class ReportController extends Controller
       $totalCreditAmount = $creditPayments->sum('balance_amt'); 
       $creditTransactionCount = $creditPayments->count();
 
-      $cashPayments = $saleProductspaymentTypesandAmounts->get('Cash', ['total_received_amt' => 0, 'transaction_count' => 0]);
-      $bankPayments = $saleProductspaymentTypesandAmounts->get('Bank Transfer', ['total_received_amt' => 0, 'transaction_count' => 0]);
+      $cashPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[0], ['total_received_amt' => 0, 'transaction_count' => 0]);
+      $bankPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[1], ['total_received_amt' => 0, 'transaction_count' => 0]);
 
       $filteredData = [
         'currency'=> $currency,
@@ -218,9 +219,10 @@ class ReportController extends Controller
     public function y_index()
     {
       $today = now()->toDateString();
-      $cash_invoices = Invoice::where('payment_type', 'Cash')->whereDate('created_at', $today)->count();
-      $bank_invoices = Invoice::where('payment_type', 'Bank Transfer')->whereDate('created_at', $today)->count();
-      $card_invoices = Invoice::where('payment_type', 'Credit')->whereDate('created_at', $today)->count();
+      $paymentMethods = config('constants.PAYMENT_METHODS');
+      $cash_invoices = Invoice::where('payment_type', $paymentMethods[0])->whereDate('created_at', $today)->count();
+      $bank_invoices = Invoice::where('payment_type', $paymentMethods[1])->whereDate('created_at', $today)->count();
+      $card_invoices = Invoice::where('payment_type', $paymentMethods[2])->whereDate('created_at', $today)->count();
       
       $saleProducts = Sale::select('product_id', 'qty')->get();
 
@@ -266,7 +268,7 @@ class ReportController extends Controller
 
     public function overall_report()
     {
-      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
+      $paymentMethods = config('constants.PAYMENT_METHODS');
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       $formattedDate = now()->toDateString();
@@ -297,7 +299,7 @@ class ReportController extends Controller
 
     public function fetchCompanyInvoices(Request $request)
     {
-      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
+      $paymentMethods = config('constants.PAYMENT_METHODS');
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       $data = json_decode($request->input('data'), true);
@@ -364,7 +366,7 @@ class ReportController extends Controller
       $userID = Auth::id();
       $userRole = Auth::user()->role;
 
-      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
+      $paymentMethods = config('constants.PAYMENT_METHODS');
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       $formattedDate = now()->toDateString();
@@ -400,7 +402,7 @@ class ReportController extends Controller
 
     public function zReportCompanyInvoices(Request $request)
     {
-      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
+      $paymentMethods = config('constants.PAYMENT_METHODS');
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       $data = json_decode($request->input('data'), true);
@@ -463,7 +465,8 @@ class ReportController extends Controller
     {
       $userID = Auth::id();
       $userRole = Auth::user()->role;
-      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
+      $paymentMethods = config('constants.PAYMENT_METHODS');
+      //print_r( $paymentMethods);
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       $data = json_decode(urldecode($data), true);
@@ -506,13 +509,19 @@ class ReportController extends Controller
 
         $invoiceIDList = $filteredInvoices->pluck('id');
 
-        $totalCashAmount = $filteredInvoices->where('payment_type', 'Cash')->sum(function ($invoice) {
+        $totalCashAmount = $filteredInvoices->where('payment_type', $paymentMethods[0])->sum(function ($invoice) {
           return $invoice->received_amt - $invoice->returned_amount;
         });
       
-        $totalTransferAmount = $filteredInvoices->where('payment_type', 'Bank Transfer')->sum(function ($invoice) {
-            return $invoice->received_amt - $invoice->returned_amount;
+        $totalTransferAmount = $filteredInvoices->where('payment_type', $paymentMethods[1])->sum(function ($invoice) {
+            return $invoice->paid_amt - $invoice->returned_amount;
         });
+
+        $totalCreditAmount = $filteredInvoices->where('payment_type', $paymentMethods[2])->sum(function ($invoice) {
+            return $invoice->paid_amt - $invoice->returned_amount;
+        });
+
+        //echo $totalCreditAmount;
 
         if ($userRole == 'admin') {
           $loadedProducts = StockInTransit::select('product_id','start_quantity','quantity')
@@ -568,7 +577,7 @@ class ReportController extends Controller
       //   }
       // }
    
-      return view('report.z_report_print', compact('filteredInvoices', 'expenseTypes','expenses','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount','loadedProducts','salesReturns'));
+      return view('report.z_report_print', compact('filteredInvoices', 'paymentMethods', 'expenseTypes','expenses','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount', 'totalCreditAmount','loadedProducts','salesReturns'));
     }
 
     public function zReportInvoiceUpdate(Request $request)

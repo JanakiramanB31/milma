@@ -67,7 +67,7 @@ class InvoiceController extends Controller
       // })->get();
       // $this->pr($customers);
       //     exit;   
-      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
+      $paymentMethods = config('constants.PAYMENT_METHODS');
       if ($userRole == 'admin') {
         $products = Product::where('status',1)->get();
         
@@ -158,6 +158,7 @@ class InvoiceController extends Controller
      
       $userId = Auth::id();
       $cusID = $request->customer_id;
+      $paymentMethods = config('constants.PAYMENT_METHODS');
       $today = now()->toDateString();
       $data = $request->all();
       $returnTotal = 0;
@@ -186,13 +187,13 @@ class InvoiceController extends Controller
         $invoice->received_amt = 0.00;
         $invoice->paid_amt = 0.00;
       } else {
-        $receivedAmt =  $request->payment_type != "Cash" ? "0" : $request->received_amt;
+        $receivedAmt =  $request->payment_type != $paymentMethods[0] ? "0" : $request->received_amt;
         $invoice->received_amt = $receivedAmt;
         $invoice->paid_amt = $request->received_amt;
       }
       $invoice->acc_bal_amt = $request->acc_bal_amt;
 
-      if ($request->payment_type != "Cash") {
+      if ($request->payment_type != $paymentMethods[0]) {
         $invoice->balance_amt = $request->acc_bal_amt + $request->received_amt;
       } else if (($request->total + $request->acc_bal_amt) > $request->received_amt) {
         $invoice->balance_amt = $balAmt; 
@@ -331,7 +332,7 @@ class InvoiceController extends Controller
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       $routeEmptyError = null;
-      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
+      $paymentMethods = config('constants.PAYMENT_METHODS');
       $customers = Customer::where('status',1)->get();
       $invoice = Invoice::findOrFail($id);
       $sales = Sale::where('invoice_id', $id)->get();
@@ -387,6 +388,7 @@ class InvoiceController extends Controller
       $this->pr($request->all());
       // exit;
       $userId = Auth::id();
+      $paymentMethods = config('constants.PAYMENT_METHODS');
       $cusID = $request->customer_id;
       $today = now()->toDateString();
 
@@ -398,13 +400,13 @@ class InvoiceController extends Controller
       $invoice->user_id = $userId;
       $invoice->payment_type = $request->payment_type;
       $invoice->show_credit_amt_on_print = $request->show_credit_amt == "on" ? true : false;
-      $receivedAmt = $request->payment_type != "Cash" ? $request->prev_received_amt : ($request->received_amt);
+      $receivedAmt = $request->payment_type != $paymentMethods[0] ? $request->prev_received_amt : ($request->received_amt);
       $invoice->received_amt = $receivedAmt;
       $invoice->paid_amt = $request->received_amt;
       $invoice->acc_bal_amt = $request->acc_bal_amt;
 
       //if ($request->payment_type == "Credit") {
-      if ($request->payment_type != "Cash") {
+      if ($request->payment_type != $paymentMethods[0]) {
 
         $invoice->balance_amt = $request->acc_bal_amt + $request->received_amt;
       } else if (($request->total + $request->acc_bal_amt) > ($request->prev_received_amt + $request->received_amt)) {

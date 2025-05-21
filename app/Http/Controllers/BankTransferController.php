@@ -15,11 +15,11 @@ class BankTransferController extends Controller
      */
     public function index()
     {
-      $paymentMethods = array('Cash', 'Bank Transfer', 'Credit');
+      $paymentMethods = config('constants.PAYMENT_METHODS');
       $formattedDate = now()->toDateString();
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
-      $filteredInvoices = Invoice::with('Customer')->whereDate('created_at', $formattedDate)->where('payment_type', 'Bank Transfer')->get();
+      $filteredInvoices = Invoice::with('Customer')->whereDate('created_at', $formattedDate)->where('payment_type', $paymentMethods[1])->get();
       return view('bt_list.index', compact('currency', 'decimalLength', 'filteredInvoices','paymentMethods'));
     }
 

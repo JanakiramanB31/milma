@@ -283,7 +283,7 @@
                       <select id="payment_type" name="payment_type" class="form-control">
                         <option value = ''>Select Payment Type</option>
                         @foreach($paymentMethods as $paymentMethod)
-                        <option name="payment_type"  value="{{$paymentMethod}}" @if($paymentMethod == 'Cash') selected @endif>{{$paymentMethod}}</option>
+                        <option name="payment_type"  value="{{$paymentMethod}}" @if($paymentMethod == $paymentMethods[0]) selected @endif>{{$paymentMethod}}</option>
                         @endforeach
                       </select>
                       <div id="payment-type-error" class="text-danger"></div>

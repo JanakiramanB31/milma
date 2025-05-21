@@ -21,5 +21,6 @@ return [
     ],
     'EXPENSE_TYPES' => [
         ['id' => 1, 'name' => 'Petrol']
-    ]
+    ],
+    'PAYMENT_METHODS' => array('Cash', 'Bank Transfer', 'Credit'),
 ];

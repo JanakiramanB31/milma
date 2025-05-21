@@ -54,7 +54,7 @@
             @foreach($salesReturns as $salesReturn)
             <tr>
               <td class="boldfont"></td>
-              <td class="boldfont">{{$salesReturn->product->name}}</td>
+              <td class="boldfont">{{$salesReturn->product->name ?? "N/A"}}</td>
               <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($salesReturn->amount,  $decimalLength )}}</td>
             </tr>
             @endforeach
@@ -86,7 +86,7 @@
             </tr>
             @foreach ($loadedProducts as $loadedProduct)
               <tr>
-                <td class="boldfont">{{ $loadedProduct->product->name }}</td>
+                <td class="boldfont">{{ $loadedProduct->product->name ?? "N/A" }}</td>
                 <td class="boldfont">{{ $loadedProduct->start_quantity }}</td>
                 <td class="boldfont" style="text-align: right;">{{ $loadedProduct->quantity }}</td>
               </tr>
@@ -109,14 +109,36 @@
                 <td colspan="3"><hr/></td>
               </tr>
               @foreach ($filteredInvoices as $companyName => $invoice) 
-                
-                @if ($invoice->payment_type == $paymentMethods[0])
+
+              @php
+                if ($invoice->payment_type == $paymentMethods[1]) {
+                  $creditCash = number_format($invoice->customer->previous_balance ?? 0, $decimalLength) - number_format($invoice->paid_amt, $decimalLength);
+                } else {
+                  $creditCash = number_format($invoice->customer->previous_balance ?? 0, $decimalLength);
+                }
+              @endphp
+
+               
+
+                @if($creditCash > "0.00" && ($invoice->payment_type == $paymentMethods[0]))
+                  <tr>
+                    <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
+                    <td class="boldfont">C Cash <p style="margin: 0; font-size :13px;font-weight:400;"><span>{{$currency}} </span>{{number_format($invoice->customer->previous_balance, $decimalLength)}}</p></td>
+                    <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
+                  </tr>
+
+                @else
+                  @if ($invoice->payment_type == $paymentMethods[0])
                 <tr>
-                  <td class="boldfont">{{$invoice->customer->company_name}}</td>
+                  <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
                   <td class="boldfont">{{$invoice->payment_type}}</td>
                   <td  class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
                 </tr>
                 @endif
+                @endif
+
+                
+                
               @endforeach
               <tr>
                 <td colspan="3"><hr/></td>
@@ -132,9 +154,10 @@
                 <td colspan="3"><hr/><hr/></td>
               </tr>
               @foreach ($filteredInvoices as $companyName => $invoice) 
+               
                 @if ($invoice->payment_type == $paymentMethods[1])
                 <tr>
-                  <td class="boldfont">{{$invoice->customer->company_name}}</td>
+                  <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
                   <td class="boldfont">Transfer</td>
                   <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->paid_amt,  $decimalLength )}}</td>
                 </tr>
@@ -154,10 +177,9 @@
                 <td colspan="3"><hr/><hr/></td>
               </tr>
                @foreach ($filteredInvoices as $companyName => $invoice) 
-                
                 @if ($invoice->payment_type == $paymentMethods[2])
                 <tr>
-                  <td class="boldfont">{{$invoice->customer->company_name}}</td>
+                  <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
                   <td class="boldfont">Credit</td>
                   <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->paid_amt,  $decimalLength )}}</td>
                 </tr>

@@ -186,8 +186,8 @@
                       <tr>
                         <td class="text-center">${1000+(invoice.id)}</td>
                         <td class="text-center">${new Date(invoice.created_at).toLocaleDateString('en-GB')}</td>
-                        <td class="text-center">${invoice.customer.company_name}</td>
-                        <td class="text-center">${invoice.sales.map(item => item.product.name).join(', ')}</td>
+                        <td class="text-center">${invoice?.customer?.company_name}</td>
+                        <td class="text-center">${invoice.sales.map(item => item?.product?.name).join(', ')}</td>
                         <td class="text-center">${invoice.payment_type}</td>
                         <td class="text-center">${currency +parseFloat(invoice.total_amount).toFixed(decimalLength)}</td>
                         <td class="text-center">${currency +parseFloat(invoice.received_amt).toFixed(decimalLength)}</td>

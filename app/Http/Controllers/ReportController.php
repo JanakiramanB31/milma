@@ -561,21 +561,6 @@ class ReportController extends Controller
             return $query->whereBetween('created_at', [$fromDate, $toDate]);
           })->get();
         }
-        
-        
-
-      // foreach ($filteredInvoices as $invoice) {
-      //   if ($invoice->routeID == $routeID) {
-      //     $userID = $invoice->user_id;
-      //     $stockInTransit = StockInTransit::where('user_id', $userID)->where('route_id', $routeID)->first();
-  
-      //     if ($stockInTransit) {
-      //       return response()->json( $stockInTransit);
-      //     } else {
-      //       return response()->json(['message' => 'No stock in transit found for this route and user.'], 404);
-      //     }
-      //   }
-      // }
    
       return view('report.z_report_print', compact('filteredInvoices', 'paymentMethods', 'expenseTypes','expenses','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount', 'totalCreditAmount','loadedProducts','salesReturns'));
     }

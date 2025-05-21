@@ -26,20 +26,22 @@
               <div>
                 <label  for="startDate">Date :</label>
                 <div class="row">
-                  <div class="col-6  mb-2">
+                  <div class="col-5  mb-2">
                     <input id="startDate" name="startDate" type="date" class="form-control" value="{{ date('Y-m-d') }}" @if(Auth::user()->role != 'admin') readonly @endif/>
                   </div>
-                  <div class=" d-flex justify-content-center align-items-center">
+                  <div class="col-1 d-flex justify-content-center align-items-center">
                     <p>To</p>
                   </div>
-                  <div class="col-5 mb-2">
+                  <div class="col-6 mb-2">
                     <input id="endDate" name="endDate" type="date" class="form-control" value="{{ date('Y-m-d') }}"@if(Auth::user()->role != 'admin') readonly @endif/>
                   </div>
-
-                  <div class="ml-2">
-                  <button class="btn btn-success" id="print">Print</button>
-                </div>
                  
+                </div>
+                <div class=" d-flex justify-content-between align-items-center">
+                  <button class="btn btn-success" id="print">Print</button>
+                  <div style="text-align: right;">
+                    <span style="white-space: nowrap;"><b>*A</b> - Approved,</span>  <span style="white-space: nowrap;"><b>N/A</b> - Not Approved,</span>  <span style="white-space: nowrap;"><b>R</b> - Received,</span>  <span style="white-space: nowrap;"><b>C</b> - Credit</span>
+                  </div>
                 </div>
               </div>
               <div class="row">
@@ -67,6 +69,7 @@
                         <th class="text-center">Company Name </th>
                         <th class="text-center">Product Name</th>
                         <th class="text-center">Payment Type </th>
+                        <th class="text-center">Payment Status</th>
                         <th class="text-center">Total Amt</th>
                         <th class="text-center">Received Amt</th>
                         <th class="text-center">Acc Bal Amt</th>
@@ -79,7 +82,18 @@
                       @endphp
                     <tbody>
                     @foreach ($filteredInvoices as $companyName => $invoice) 
-                      
+                      @php
+                        if ($invoice->payment_type == $paymentMethods[0]) {
+                            $paymentStatus = "R";
+                        } elseif ($invoice->payment_type == $paymentMethods[2]) {
+                            $paymentStatus = "C";
+                        } elseif ($invoice->payment_type == $paymentMethods[1]) {
+                            $paymentStatus = $invoice->amt_receiced_at != null ? "A" : "N/A";
+                        } else {
+                            $paymentStatus = "N/A";
+                        }
+                      @endphp
+  
                       <tr>
                         <td class="text-center">{{1000+$invoice->id}}</td>
                         <td class="text-center">{{$invoice->created_at->format('d-m-Y')}}</td>
@@ -93,6 +107,7 @@
                           @endforeach
                         </td>
                         <td class="text-center">{{$invoice->payment_type}}</td>
+                        <td class="text-center">{{$paymentStatus}}</td>
                         <td class="text-center"><span>{{$currency}} </span>{{ number_format($invoice->total_amount,  $decimalLength )}}</td>
                         <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
                         <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->acc_bal_amt,  $decimalLength )}}</td>
@@ -105,6 +120,7 @@
                     </tbody>
                     <tfoot>
                       <tr>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>

@@ -72,14 +72,15 @@
                   @endphp
                   <tbody>
                   @foreach ($filteredInvoices as $companyName => $invoice) 
-                    
+
+                                 
                     <tr>
                       <td class="text-center">{{1000+$invoice->id}}</td>
                       <td class="text-center">{{$invoice->created_at->format('d-m-Y')}}</td>
                       <td class="text-center">{{$invoice->customer->company_name}}</td>
                       <td class="text-center">{{$invoice->payment_type}}</td>
                       <td class="text-center"><span>{{$currency}} </span>{{ number_format($invoice->total_amount,  $decimalLength )}}</td>
-                      <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
+                      <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->paid_amt,  $decimalLength )}}</td>
                       <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->acc_bal_amt,  $decimalLength )}}</td>
                       <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->balance_amt,  $decimalLength )}}</td>
                       <td class="d-flex justify-content-center" style="gap: 10px;">

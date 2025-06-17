@@ -112,15 +112,17 @@
 
               @php
                 if ($invoice->payment_type == $paymentMethods[1]) {
-                  $creditCash = number_format($invoice->customer->previous_balance ?? 0, $decimalLength) - number_format($invoice->paid_amt, $decimalLength);
+                  $previousBalance = (float)($invoice->customer->previous_balance ?? 0);
+                  $paidAmount = (float)($invoice->paid_amt ?? 0);
+                  $creditCash = $previousBalance - $paidAmount;
                 } else {
-                  $creditCash = number_format($invoice->customer->previous_balance ?? 0, $decimalLength);
-                }
+                  $creditCash = (float)($invoice->customer->previous_balance ?? 0);
+                }               
               @endphp
 
                
 
-                @if($creditCash > "0.00" && ($invoice->payment_type == $paymentMethods[0]))
+                @if($creditCash > 0.00 && ($invoice->payment_type == $paymentMethods[0]))
                   <tr>
                     <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
                     <td class="boldfont">C Cash <p style="margin: 0; font-size :13px;font-weight:400;"><span>{{$currency}} </span>{{number_format($invoice->customer->previous_balance, $decimalLength)}}</p></td>
@@ -136,9 +138,6 @@
                 </tr>
                 @endif
                 @endif
-
-                
-                
               @endforeach
               <tr>
                 <td colspan="3"><hr/></td>

@@ -12,7 +12,6 @@ $paperWidth = "300px";
   }
   $total = $salesTotal - $returnsTotal; 
   $currentBalAmt = $amount->total_amount - $amount->received_amt;
-  $amount->acc_bal_amt + number_format($currentBalAmt);
   $totAmt = $amount->total_amount + $amount->acc_bal_amt;
 @endphp
 @extends('layouts.master')
@@ -131,7 +130,7 @@ $paperWidth = "300px";
                     </tr> -->
 
                   @php
-                    $totalAmt = number_format($amount->total_amount, $decimalLength) + number_format($amount->prev_acc_bal_amt, $decimalLength);
+                    $totalAmt = $amount->total_amount + $amount->prev_acc_bal_amt ?? 0;
                   @endphp
                   <tr>
                     <td></td>
@@ -151,7 +150,7 @@ $paperWidth = "300px";
                     </tr>
                     @endif
                    
-                    @if((number_format($amount->acc_bal_amt, $decimalLength) + number_format($currentBalAmt, $decimalLength))  > 0)
+                    @if(($amount->acc_bal_amt + $currentBalAmt)  > 0)
                     <tr>
                       <td></td>
                       <td></td>

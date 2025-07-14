@@ -42,6 +42,9 @@ Route::group(['middleware' => 'App\Http\Middleware\SuperAdminMiddleware', 'prefi
   Route::get('/report/z_report/print/{data?}', 'ReportController@zReportPrintCompanyInvoices')->name('zReportPrintCompanyInvoices');
   Route::post('/report/z_report/print/update', 'ReportController@zReportInvoiceUpdate')->name('zReportInvoiceUpdate');
 
+  Route::get('/report/m_report', 'ReportController@m_index')->name('m_report');
+  Route::post('/report/m_report/fetch_company_invoice', 'ReportController@mReportCompanyInvoices')->name('mReportCompanyInvoices');
+  Route::get('/report/m_report/print/{data?}', 'ReportController@mReportPrintCompanyInvoices')->name('mReportPrintCompanyInvoices');
 
   Route::resource('category', 'CategoryController');
   Route::resource('subcategory', 'SubcategoryController');

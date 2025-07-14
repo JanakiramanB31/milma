@@ -400,6 +400,42 @@ class ReportController extends Controller
 
     }
 
+    public function m_index() {
+      $date = now()->startOfDay()->toDateString();
+      $userID = Auth::id();
+      $userRole = Auth::user()->role;
+
+      $paymentMethods = config('constants.PAYMENT_METHODS');
+      $currency = config('constants.CURRENCY_SYMBOL');
+      $decimalLength = config('constants.DECIMAL_LENGTH');
+      $formattedDate = now()->toDateString();
+      $routes = Route::all();
+      $invoiceWithCustomer = Invoice::with('Customer')->get(); 
+     
+      $customerInfo = $invoiceWithCustomer->map(function ($invoice) {
+        return $invoice->Customer->company_name ?? '--';
+      });
+      $groupedInvoices = $invoiceWithCustomer->groupBy(function ($invoice) {
+        return $invoice->Customer ? $invoice->Customer->company_name : 'Unknown Company';
+      });
+
+      // Now map the grouped invoices to just include the invoice data
+      $invoiceData = $groupedInvoices->map(function ($invoices, $companyName) {
+        return $invoices->map(function ($invoice) {
+          // Return only the desired fields for each invoice
+          return [
+            $invoice
+          ];
+        });
+        
+      });
+
+      $filteredInvoices = Invoice::with('Customer', 'Sales.product')->whereDate('created_at', $formattedDate)->get();
+   
+      return view('report.m_report_index', compact( 'filteredInvoices','groupedInvoices','currency','decimalLength','paymentMethods'));
+
+    }
+
     public function zReportCompanyInvoices(Request $request)
     {
       $paymentMethods = config('constants.PAYMENT_METHODS');
@@ -460,6 +496,64 @@ class ReportController extends Controller
       return response()->json( $data );
     }
 
+    public function mReportCompanyInvoices(Request $request)
+    {
+      $paymentMethods = config('constants.PAYMENT_METHODS');
+      $currency = config('constants.CURRENCY_SYMBOL');
+      $decimalLength = config('constants.DECIMAL_LENGTH');
+      $data = json_decode($request->input('data'), true);
+      $data['fromDate'] = trim($data['fromDate']);
+      $data['toDate'] = trim($data['toDate']);
+      $data['companyName'] = trim($data['companyName']);
+
+      $fromDate = $data['fromDate'];
+      $toDate = $data['toDate'];
+      $companyName = $data['companyName'];
+
+      if ($fromDate && $toDate) {
+        $fromDate = \Carbon\Carbon::parse($fromDate)->startOfDay();
+        $toDate = \Carbon\Carbon::parse($toDate)->endOfDay();
+      } else {
+        $fromDate = now()->toDateString();
+        $toDate = now()->toDateString();
+      }
+
+      $filteredInvoices = Invoice::with('Customer', 'Sales.product')
+        ->when($fromDate == $toDate, function ($query) use ($fromDate) {
+          return $query->whereDate('created_at', $fromDate);
+        })
+        ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+          return $query->whereBetween('created_at', [$fromDate, $toDate]);
+        })
+        ->when($companyName != "", function ($query) use ($companyName) {
+            $query->whereHas('Customer', function ($q) use ($companyName) {
+                $q->where('company_name', $companyName);
+            });
+        })
+       
+        ->get();
+
+      // foreach ($filteredInvoices as $invoice) {
+      //   if ($invoice->routeID == $routeID) {
+      //     $userID = $invoice->user_id;
+      //     $stockInTransit = StockInTransit::where('user_id', $userID)->where('route_id', $routeID)->first();
+  
+      //     if ($stockInTransit) {
+      //       return response()->json( $stockInTransit);
+      //     } else {
+      //       return response()->json(['message' => 'No stock in transit found for this route and user.'], 404);
+      //     }
+      //   }
+      // }
+
+      $data = [
+        "filteredInvoices" => $filteredInvoices,
+        "currency" =>$currency,
+        "decimalLength"=> $decimalLength
+      ];
+   
+      return response()->json( $data );
+    }
 
     public function zReportPrintCompanyInvoices(Request $request, $data)
     {
@@ -563,6 +657,109 @@ class ReportController extends Controller
         }
    
       return view('report.z_report_print', compact('filteredInvoices', 'paymentMethods', 'expenseTypes','expenses','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount', 'totalCreditAmount','loadedProducts','salesReturns'));
+    }
+
+    public function mReportPrintCompanyInvoices(Request $request, $data)
+    {
+      $userID = Auth::id();
+      $userRole = Auth::user()->role;
+      $paymentMethods = config('constants.PAYMENT_METHODS');
+      //print_r( $paymentMethods);
+      $currency = config('constants.CURRENCY_SYMBOL');
+      $decimalLength = config('constants.DECIMAL_LENGTH');
+      $data = json_decode(urldecode($data), true);
+      $today = now()->toDateString();
+
+      $data['fromDate'] = trim($data['fromDate']);
+      $data['toDate'] = trim($data['toDate']);
+      $data['companyName'] = trim($data['companyName']);
+
+      $fromDate = $data['fromDate'];
+      $toDate = $data['toDate'];
+      $companyName = $data['companyName'];
+
+      if ($fromDate && $toDate) {
+        $fromDate = \Carbon\Carbon::parse($fromDate)->startOfDay();
+        $toDate = \Carbon\Carbon::parse($toDate)->endOfDay();
+      } else {
+        $fromDate = now()->startOfDay()->toDateString();
+        $toDate = now()->endOfDay()->toDateString();
+      }
+
+      $expenseTypes = config('constants.EXPENSE_TYPES');
+      
+
+      $filteredInvoices = Invoice::with('Customer', 'Sales.product')
+        ->when($fromDate == $toDate, function ($query) use ($fromDate) {
+          return $query->whereDate('created_at', $fromDate);
+        })
+        ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+          return $query->whereBetween('created_at', [$fromDate, $toDate]);
+        })
+        ->when($companyName != "", function ($query) use ($companyName) {
+            $query->whereHas('Customer', function ($q) use ($companyName) {
+                $q->where('company_name', $companyName);
+            });
+        })
+       
+        ->get();
+
+        $invoiceIDList = $filteredInvoices->pluck('id');
+
+        $totalCashAmount = $filteredInvoices->where('payment_type', $paymentMethods[0])->sum(function ($invoice) {
+          return $invoice->received_amt - $invoice->returned_amount;
+        });
+      
+        $totalTransferAmount = $filteredInvoices->where('payment_type', $paymentMethods[1])->sum(function ($invoice) {
+            return $invoice->paid_amt - $invoice->returned_amount;
+        });
+
+        $totalCreditAmount = $filteredInvoices->where('payment_type', $paymentMethods[2])->sum(function ($invoice) {
+            return $invoice->paid_amt - $invoice->returned_amount;
+        });
+
+        //echo $totalCreditAmount;
+
+        if ($userRole == 'admin') {
+          $loadedProducts = StockInTransit::select('product_id','start_quantity','quantity')
+            ->when($fromDate == $toDate, function ($query) use ($fromDate) {
+            return $query->whereDate('created_at', $fromDate);
+            })
+            ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+              return $query->whereBetween('created_at', [$fromDate, $toDate]);
+            })
+            ->get();
+
+          $salesReturns = Returns::with('Product')
+            ->when($fromDate == $toDate, function ($query) use ($fromDate) {
+              return $query->whereDate('created_at', $fromDate);
+            })
+            ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+              return $query->whereBetween('created_at', [$fromDate, $toDate]);
+            })
+            ->get();
+            // $this->pr($loadedProducts);exit;
+
+            $expenses = Expense::when($fromDate == $toDate, function ($query) use ($fromDate) {
+              return $query->whereDate('created_at', $fromDate);
+            })
+            ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+              return $query->whereBetween('created_at', [$fromDate, $toDate]);
+            })->get();
+
+        } else {
+          $loadedProducts = StockInTransit::select('product_id','start_quantity','quantity')->where('user_id', $userID)->whereDate('created_at',$today)->get();
+          $salesReturns = Returns::with('Product')->where('salesman_id', $userID)->whereDate('created_at',$today)->get();
+
+          $expenses = Expense::where('user_id', $userID)->when($fromDate == $toDate, function ($query) use ($fromDate) {
+            return $query->whereDate('created_at', $fromDate);
+          })
+          ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+            return $query->whereBetween('created_at', [$fromDate, $toDate]);
+          })->get();
+        }
+   
+      return view('report.m_report_print', compact('filteredInvoices', 'paymentMethods', 'expenseTypes','expenses','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount', 'totalCreditAmount','loadedProducts','salesReturns'));
     }
 
     public function zReportInvoiceUpdate(Request $request)

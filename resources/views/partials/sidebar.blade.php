@@ -74,6 +74,7 @@
                     <li><a class="treeview-item" href="{{route('x_report')}}"><i class="icon fa fa-circle-o"></i>X-Report</a></li>
                     <li><a class="treeview-item" href="{{route('overall_report')}}"><i class="icon fa fa-circle-o"></i>Overall-Report</a></li>
                     <li><a class="treeview-item" href="{{route('z_report')}}"><i class="icon fa fa-circle-o"></i>Z-Report</a></li>
+                    <li><a class="treeview-item" href="{{route('m_report')}}"><i class="icon fa fa-circle-o"></i>Monthly-Report</a></li>
                 </ul>
             @endif
             </li>

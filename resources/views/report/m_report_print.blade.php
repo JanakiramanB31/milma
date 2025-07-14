@@ -8,6 +8,42 @@
       .boldfont {
         font-weight: bolder;
       }
+      .table-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin: 10px 0;
+      }
+      .responsive-table {
+        width: 100%;
+        max-width: 800px;
+        border-collapse: collapse;
+        margin: 0 auto;
+        text-align: left;
+      }
+      .responsive-table th,
+      .responsive-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid #ddd;
+      }
+      @media screen and (max-width: 768px) {
+        .responsive-table {
+          font-size: 14px;
+        }
+        .responsive-table th,
+        .responsive-table td {
+          padding: 6px 8px;
+        }
+      }
+      @media screen and (max-width: 480px) {
+        .responsive-table {
+          font-size: 12px;
+        }
+        .responsive-table th,
+        .responsive-table td {
+          padding: 4px 6px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -39,7 +75,8 @@
                   <hr/>
                 </div>
                 <div class="hr-line-dashed"></div>
-                <table id="invoice-table" class="table" style="margin: 10px 20px 10px 0px;text-align: left;" data-value="{{ json_encode($invoiceIDList) }}">
+                <div class="table-container">
+                  <table id="invoice-table" class="responsive-table" data-value="{{ json_encode($invoiceIDList) }}">
                   <tr>
                     <th class="boldfont">SALE RETURN</th>
                     <th class="boldfont">ITEM</th>
@@ -280,7 +317,8 @@
                   <tr>
                     <td colspan="3"><hr/><hr/></td>
                   </tr>
-                </table>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -312,10 +350,16 @@
       console.log(content)
       var printWindow = window.open('', '', 'height=800,width=600');
       printWindow.document.write('<html><head><title>Print</title>');
-      printWindow.document.write('<style> .currency { margin-right: 5px; float: right; }</style>'); 
-      printWindow.document.write('</head><body><center>');
+      printWindow.document.write('<style>');
+      printWindow.document.write('.currency { margin-right: 5px; float: right; }');
+      printWindow.document.write('.boldfont { font-weight: bolder; }');
+      printWindow.document.write('.table-container { width: 100%; display: flex; justify-content: center; margin: 10px 0; }');
+      printWindow.document.write('.responsive-table { width: 100%; max-width: 800px; border-collapse: collapse; margin: 0 auto; text-align: left; }');
+      printWindow.document.write('.responsive-table th, .responsive-table td { padding: 8px 12px; border-bottom: 1px solid #ddd; }');
+      printWindow.document.write('</style>'); 
+      printWindow.document.write('</head><body>');
       printWindow.document.write(content);
-      printWindow.document.write('</center></body></html>');
+      printWindow.document.write('</body></html>');
       printWindow.document.close();
       printWindow.print();
     }

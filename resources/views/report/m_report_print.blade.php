@@ -26,6 +26,12 @@
         padding: 8px 12px;
         border-bottom: 1px solid #ddd;
       }
+      .table-border-top {
+        border-top: 1px solid black;
+      }
+      .table-border-bottom {
+        border-bottom: 1px solid black;
+      }
       @media screen and (max-width: 768px) {
         .responsive-table {
           font-size: 14px;
@@ -77,246 +83,254 @@
                 <div class="hr-line-dashed"></div>
                 <div class="table-container">
                   <table id="invoice-table" class="responsive-table" data-value="{{ json_encode($invoiceIDList) }}">
-                  <tr>
-                    <th class="boldfont">SALE RETURN</th>
-                    <th class="boldfont">ITEM</th>
-                    <th  class="boldfont" style="text-align: right;">GROSS</th>
-                  </tr>
-                  @php
-                    $totalReturnsAmount = $salesReturns->sum('amount');
-                  @endphp
-                  @foreach($salesReturns as $salesReturn)
-                  <tr>
-                    <td class="boldfont"></td>
-                    <td class="boldfont">{{$salesReturn->product->name ?? "N/A"}}</td>
-                    <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($salesReturn->amount,  $decimalLength )}}</td>
-                  </tr>
-                  @endforeach
-                  <tr>
-                    <td colspan="3"><hr /></td>
-                  </tr>
-                  <tr>
-                    <th class="boldfont">TOTAL</th>
-                    <td></td>
-                    <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($totalReturnsAmount,  $decimalLength )}}</td>
-                  </tr>
-                  <tr>
-                    <td colspan="3"><hr /></td>
-                  </tr>
-                
-                  <tr>
-                    <th class="boldfont">STOCK</th>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr></tr>
-                  <tr>
-                    <th class="boldfont">Product</th>
-                    <th class="boldfont">Start</th>
-                    <th class="boldfont" style="text-align: right;">End</th>
-                  </tr>
-                  <tr>
-                    <td colspan="3"><hr /></td>
-                  </tr>
-                  @foreach ($loadedProducts as $loadedProduct)
-                  <tr>
-                    <td class="boldfont">{{ $loadedProduct->product->name ?? "N/A" }}</td>
-                    <td class="boldfont">{{ $loadedProduct->start_quantity }}</td>
-                    <td class="boldfont" style="text-align: right;">{{ $loadedProduct->quantity }}</td>
-                  </tr>
-                  @endforeach
-                  <tr>
-                    <td colspan="3"><hr/></td>
-                  </tr>
-                  <tr>
-                    <th class="boldfont">RECEIPTS</th>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr></tr>
-                  <tr>
-                    <th class="boldfont">Company</th>
-                    <th class="boldfont">Method</th>
-                    <th class="boldfont" style="text-align: right;">Received Amt</th>
-                  </tr>
-                  <tr>
-                    <td colspan="3"><hr/></td>
-                  </tr>
-                  @foreach ($filteredInvoices as $companyName => $invoice) 
-
-                  @php
-                    if ($invoice->payment_type == $paymentMethods[1]) {
-                      $previousBalance = (float)($invoice->customer->previous_balance ?? 0);
-                      $paidAmount = (float)($invoice->paid_amt ?? 0);
-                      $creditCash = $previousBalance - $paidAmount;
-                    } else {
-                      $creditCash = (float)($invoice->customer->previous_balance ?? 0);
-                    }               
-                  @endphp
-
-                  @if($creditCash > 0.00 && ($invoice->payment_type == $paymentMethods[0]))
-                  <tr>
-                    <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
-                    <td class="boldfont">C Cash <p style="margin: 0; font-size :13px;font-weight:400;"><span>{{$currency}} </span>{{number_format($invoice->customer->previous_balance, $decimalLength)}}</p></td>
-                    <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
-                  </tr>
-                  @else
-                    @if ($invoice->payment_type == $paymentMethods[0])
-                    <tr>
-                      <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
-                      <td class="boldfont">{{$invoice->payment_type}}</td>
-                      <td  class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
+                    <!-- <tr>
+                      <th class="boldfont">SALE RETURN</th>
+                      <th class="boldfont">ITEM</th>
+                      <th  class="boldfont" style="text-align: right;">GROSS</th>
                     </tr>
-                    @endif
-                  @endif
-                  @endforeach
-                  <tr>
-                    <td colspan="3"><hr/></td>
-                  </tr>
-                  <tr>
-                    <td class="boldfont">Cash</td>
-                    <td class="boldfont">Total</td>
-                    <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($totalCashAmount,  $decimalLength )}}</td>
-                  </tr>
-                  
-                  <tr>
-                    <td colspan="3"><hr/><hr/></td>
-                  </tr>
-                  @foreach ($filteredInvoices as $companyName => $invoice) 
-                  
-                    @if ($invoice->payment_type == $paymentMethods[1])
+                    @php
+                      $totalReturnsAmount = $salesReturns->sum('amount');
+                    @endphp
+                    @foreach($salesReturns as $salesReturn)
                     <tr>
-                      <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
-                      <td class="boldfont">Transfer</td>
-                      <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->paid_amt,  $decimalLength )}}</td>
+                      <td class="boldfont"></td>
+                      <td class="boldfont">{{$salesReturn->product->name ?? "N/A"}}</td>
+                      <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($salesReturn->amount,  $decimalLength )}}</td>
                     </tr>
-                    @endif
-                  @endforeach
-                  <tr>
-                    <td colspan="3"><hr/></td>
-                  </tr>
-
-                  <tr>
-                    <td class="boldfont">Transfer</td>
-                    <td class="boldfont">Total</td>
-                    <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($totalTransferAmount,  $decimalLength )}}</td>
-                  </tr>
-                  
-                  <tr>
-                    <td colspan="3"><hr/><hr/></td>
-                  </tr>
-                  @foreach ($filteredInvoices as $companyName => $invoice) 
-                    @if ($invoice->payment_type == $paymentMethods[2])
+                    @endforeach
                     <tr>
-                      <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
-                      <td class="boldfont">Credit</td>
-                      <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->paid_amt,  $decimalLength )}}</td>
+                      <td colspan="3"><hr /></td>
                     </tr>
-                    @endif
-                  @endforeach
-                  <tr>
-                    <td colspan="3"><hr/></td>
-                  </tr>
-
-                  <tr>
-                    <td class="boldfont">Credit</td>
-                    <td class="boldfont">Total</td>
-                    <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($totalCreditAmount,  $decimalLength )}}</td>
-                  </tr>
+                    <tr>
+                      <th class="boldfont">TOTAL</th>
+                      <td></td>
+                      <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($totalReturnsAmount,  $decimalLength )}}</td>
+                    </tr>
+                    <tr>
+                      <td colspan="3"><hr /></td>
+                    </tr>
                   
-                  <tr>
-                    <td colspan="3"><hr/><hr/></td>
-                  </tr>
+                    <tr>
+                      <th class="boldfont">STOCK</th>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                    <tr></tr>
+                    <tr>
+                      <th class="boldfont">Product</th>
+                      <th class="boldfont">Start</th>
+                      <th class="boldfont" style="text-align: right;">End</th>
+                    </tr>
+                    <tr>
+                      <td colspan="3"><hr /></td>
+                    </tr>
+                    @foreach ($loadedProducts as $loadedProduct)
+                    <tr>
+                      <td class="boldfont">{{ $loadedProduct->product->name ?? "N/A" }}</td>
+                      <td class="boldfont">{{ $loadedProduct->start_quantity }}</td>
+                      <td class="boldfont" style="text-align: right;">{{ $loadedProduct->quantity }}</td>
+                    </tr>
+                    @endforeach
+                    <tr>
+                      <td colspan="3"><hr/></td>
+                    </tr> -->
+                    <tr >
+                      <th class="boldfont">RECEIPTS</th>
+                      <td ></td>
+                      <td ></td>
+                      <td ></td>
+                    </tr>
+                    <tr></tr>
+                    <tr style="border-top: 2px solid black;">
+                      <th class="boldfont" style="border-bottom: 2px solid black;">Date</th>
+                      <th class="boldfont" style="border-bottom: 2px solid black;">Company</th>
+                      <th class="boldfont" style="border-bottom: 2px solid black;">Method</th>
+                      <th class="boldfont" style="text-align: right;border-bottom: 2px solid black;">Received Amt</th>
+                    </tr>
+                    <!-- <tr>
+                      <td colspan="4"><hr/></td>
+                    </tr> -->
+                    @foreach ($filteredInvoices as $companyName => $invoice) 
 
-                  <tr>
-                    <th class="boldfont">EXPENSES</th>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr></tr>
-                  <tr>
-                    <th class="boldfont">Type</th>
-                    <th class="boldfont"></th>
-                    <th class="boldfont" style="text-align: right;">Amt</th>
-                  </tr>
-                  <tr>
-                    <td colspan="3"><hr/></td>
-                  </tr>
-                  @foreach($expenses as $expense)
-                  @php
-                    $typeName = '';
-                    if ($expense->expense_type_id == 0) {
-                      $typeName = $expense->other_expense_details;
-                    } else {
-                      foreach ($expenseTypes as $type) {
-                        if ($type['id'] == $expense->expense_type_id) {
-                          $typeName = $type['name'];
-                          break;
+                    @php
+                      if ($invoice->payment_type == $paymentMethods[1]) {
+                        $previousBalance = (float)($invoice->customer->previous_balance ?? 0);
+                        $paidAmount = (float)($invoice->paid_amt ?? 0);
+                        $creditCash = $previousBalance - $paidAmount;
+                      } else {
+                        $creditCash = (float)($invoice->customer->previous_balance ?? 0);
+                      }               
+                    @endphp
+
+                    @if($creditCash > 0.00 && ($invoice->payment_type == $paymentMethods[0]))
+                    <tr>
+                      <td class="boldfont">{{$invoice->created_at->format('d-m-Y')}}</td>
+                      <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
+                      <td class="boldfont">C Cash <p style="margin: 0; font-size :13px;font-weight:400;"><span>{{$currency}} </span>{{number_format($invoice->customer->previous_balance, $decimalLength)}}</p></td>
+                      <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
+                    </tr>
+                    @else
+                      @if ($invoice->payment_type == $paymentMethods[0])
+                      <tr>
+                        <td class="boldfont">{{$invoice->created_at->format('d-m-Y')}}</td>
+                        <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
+                        <td class="boldfont">{{$invoice->payment_type}}</td>
+                        <td  class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
+                      </tr>
+                      @endif
+                    @endif
+                    @endforeach
+                    <!-- <tr>
+                      <td colspan="4"><hr/></td>
+                    </tr> -->
+                    <tr style="border-top: 2px solid black;">
+                      <td class="boldfont" style="border-bottom: 2px solid black;">Cash</td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;"></td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;">Total</td>
+                      <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;"><span>{{$currency}} </span>{{number_format($totalCashAmount,  $decimalLength )}}</td>
+                    </tr>
+                    
+                    <!-- <tr>
+                      <td colspan="4"><hr/><hr/></td>
+                    </tr> -->
+                    @foreach ($filteredInvoices as $companyName => $invoice) 
+                    
+                      @if ($invoice->payment_type == $paymentMethods[1])
+                      <tr>
+                        <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
+                        <td class="boldfont"></td>
+                        <td class="boldfont">Transfer</td>
+                        <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->paid_amt,  $decimalLength )}}</td>
+                      </tr>
+                      @endif
+                    @endforeach
+                    <!-- <tr>
+                      <td colspan="4"><hr/></td>
+                    </tr> -->
+
+                    <tr style="border-top: 2px solid black;">
+                      <td class="boldfont" style="border-bottom: 2px solid black;">Transfer</td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;"></td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;">Total</td>
+                      <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;"><span>{{$currency}} </span>{{number_format($totalTransferAmount,  $decimalLength )}}</td>
+                    </tr>
+                    
+                    <!-- <tr>
+                      <td colspan="4"><hr/><hr/></td>
+                    </tr> -->
+                    @foreach ($filteredInvoices as $companyName => $invoice) 
+                      @if ($invoice->payment_type == $paymentMethods[2])
+                      <tr>
+                        <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
+                        <td class="boldfont"></td>
+                        <td class="boldfont">Credit</td>
+                        <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->paid_amt,  $decimalLength )}}</td>
+                      </tr>
+                      @endif
+                    @endforeach
+                   <!--  <tr>
+                     <td colspan="4"><hr/></td>
+                    </tr> -->
+                    <tr style="border-top: 2px solid black;">
+                      <td class="boldfont" style="border-bottom: 2px solid black;">Credit</td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;"></td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;">Total</td>
+                      <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;"><span>{{$currency}} </span>{{number_format($totalCreditAmount,  $decimalLength )}}</td>
+                    </tr>
+                    
+                    <!-- <tr>
+                      <td colspan="4"><hr/><hr/></td>
+                    </tr> -->
+
+                    <tr>
+                      <th class="boldfont">EXPENSES</th>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                    <tr></tr>
+                    <tr style="border-top: 2px solid black;"> 
+                      <th class="boldfont" style="border-bottom: 2px solid black;">Date</th>
+                      <th class="boldfont" style="border-bottom: 2px solid black;">Type</th>
+                      <th class="boldfont" style="border-bottom: 2px solid black;"></th>
+                      <th class="boldfont" style="text-align: right;border-bottom: 2px solid black;">Amt</th>
+                    </tr>
+                    <!-- <tr>
+                      <td colspan="4"><hr/></td>
+                    </tr> -->
+                    @foreach($expenses as $expense)
+                    @php
+                      $typeName = '';
+                      if ($expense->expense_type_id == 0) {
+                        $typeName = $expense->other_expense_details;
+                      } else {
+                        foreach ($expenseTypes as $type) {
+                          if ($type['id'] == $expense->expense_type_id) {
+                            $typeName = $type['name'];
+                            break;
+                          }
                         }
                       }
-                    }
-                  @endphp
-                
-                  <tr>
-                    <td class="boldfont">{{$typeName}}</td>
-                    <td class="boldfont"></td>
-                    <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($expense->expense_amt,  $decimalLength )}}</td>
-                  </tr>
-                  @endforeach
+                    @endphp
+                  
+                    <tr>
+                      <td class="boldfont">{{ \Carbon\Carbon::parse($expense->expense_date)->format('d-m-Y') }}</td>
+                      <td class="boldfont">{{$typeName}}</td>
+                      <td class="boldfont"></td>
+                      <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($expense->expense_amt,  $decimalLength )}}</td>
+                    </tr>
+                    @endforeach
 
-                  <tr>
-                    <td colspan="3"><hr/></td>
-                  </tr>
+                    <!-- <tr>
+                      <td colspan="4"><hr/></td>
+                    </tr> -->
+                    @php
+                      $totalExpense = collect($expenses)->sum('expense_amt');
+                    @endphp
 
-                  @php
-                    $totalExpense = collect($expenses)->sum('expense_amt');
-                  @endphp
+                    <tr style="border-top: 2px solid black;">
+                      <td class="boldfont" style="border-bottom: 2px solid black;">Expenses</td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;"></td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;">Total</td>
+                      <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;"><span>{{$currency}} </span>{{number_format($totalExpense,  $decimalLength )}}</td>
+                    </tr>
 
-                  <tr>
-                    <td class="boldfont">Expense</td>
-                    <td class="boldfont">Total</td>
-                    <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($totalExpense,  $decimalLength )}}</td>
-                  </tr>
+                    <!-- <tr>
+                      <td colspan="4"><hr/><hr/></td>
+                    </tr> -->
 
-                  <tr>
-                    <td colspan="3"><hr/><hr/></td>
-                  </tr>
+                    <tr>
+                      <th>Total Amt of Cash: </th>
+                      <td></td>
+                      <td class="boldfont" style="text-align: right;">
+                      <td class="boldfont" style="text-align: right;">
+                      <span>{{$currency}} </span> {{  number_format($totalCashAmount , $decimalLength) }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Total Amt of Expenses: </th>
+                      <td class="boldfont"></td>
+                      <td class="boldfont"></td>
+                      <td class="boldfont" style="text-align: right;white-space: nowrap;">
+                      <span >(-) {{$currency}} </span> {{  number_format($totalExpense , $decimalLength) }}
+                      </td>
+                    </tr>
 
-                  <tr>
-                    <th>Total Amt of Cash: </th>
-                    <td></td>
-                    <td class="boldfont" style="text-align: right;">
-                    <span>{{$currency}} </span> {{  number_format($totalCashAmount , $decimalLength) }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Total Amt of Expenses: </th>
-                    <td class="boldfont"></td>
-                    <td class="boldfont" style="text-align: right;white-space: nowrap;">
-                    <span >(-) {{$currency}} </span> {{  number_format($totalExpense , $decimalLength) }}
-                    </td>
-                  </tr>
+                    @php
+                      $netAmt = $totalCashAmount - $totalExpense
+                    @endphp
 
-                  @php
-                    $netAmt = $totalCashAmount - $totalExpense
-                  @endphp
-
-                  <tr>
-                    <th>Cash in Hand: </th>
-                    <td class="boldfont"></td>
-                    <td class="boldfont" style="text-align: right;">
-                    <span>{{$currency}} </span> {{  number_format($netAmt , $decimalLength) }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colspan="3"><hr/></td>
-
-                  <tr>
-                    <td colspan="3" style="text-align: center;">**** END OF SHIFT REPORT ****</td>
-                  </tr>
-                  <tr>
-                    <td colspan="3"><hr/><hr/></td>
-                  </tr>
+                    <tr>
+                      <th style="border-bottom: 2px solid black;">Cash in Hand: </th>
+                      <td class="boldfont" style="border-bottom: 2px solid black;"></td>
+                      <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;">
+                      <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;">
+                      <span>{{$currency}} </span> {{  number_format($netAmt , $decimalLength) }}
+                      </td>
+                    </tr>
+                    <!-- <tr>
+                      <td colspan="4"><hr/></td>
+                    </tr> -->
                   </table>
                 </div>
               </div>

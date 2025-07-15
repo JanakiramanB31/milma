@@ -78,8 +78,8 @@
                       </tr>
                     </thead>
                     @php
-                          $totalAmount = $filteredInvoices->sum('total_amount') ?? '0';
-                      @endphp
+                      $totalAmount = $filteredInvoices->sum('total_amount') ?? '0';
+                    @endphp
                     <tbody>
                     @foreach ($filteredInvoices as $companyName => $invoice) 
                       @php
@@ -112,7 +112,7 @@
                         <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
                         <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->acc_bal_amt,  $decimalLength )}}</td>
                         <td class="text-center"><span>{{$currency}} </span>{{number_format($invoice->balance_amt,  $decimalLength )}}</td>
-                        <td class="d-flex justify-content-center" >
+                        <td >
                           <a class="btn btn-info btn-sm" href="{{ route('invoice.show', '') }}/{{$invoice->id}}"><i class="fa fa-eye" ></i></a>
                         </td>
                       </tr>
@@ -182,6 +182,18 @@
               $('#tot-amt').text(currency + parseFloat(totalAmt).toFixed(decimalLength))
               if (invoiceData.length > 0) {
                 invoiceData.forEach(invoice => {
+                  const PAYMENT_METHODS = @json($paymentMethods);
+                  let paymentStatus;
+
+                  if (invoice.payment_type === PAYMENT_METHODS[0]) {
+                    paymentStatus = "R";
+                  } else if (invoice.payment_type === PAYMENT_METHODS[2]) {
+                    paymentStatus = "C";
+                  } else if (invoice.payment_type === PAYMENT_METHODS[1]) {
+                    paymentStatus = invoice.amt_received_at !== null ? "A" : "N/A";
+                  } else {
+                    paymentStatus = "N/A";
+                  }
                   $('#sampleTable tbody').append(`
                       <tr>
                         <td class="text-center">${1000+(invoice.id)}</td>
@@ -189,18 +201,19 @@
                         <td class="text-center">${invoice?.customer?.company_name}</td>
                         <td class="text-center">${invoice.sales.map(item => item?.product?.name).join(', ')}</td>
                         <td class="text-center">${invoice.payment_type}</td>
+                        <td class="text-center">${paymentStatus}</td>
                         <td class="text-center">${currency +parseFloat(invoice.total_amount).toFixed(decimalLength)}</td>
                         <td class="text-center">${currency +parseFloat(invoice.received_amt).toFixed(decimalLength)}</td>
                         <td class="text-center">${currency +parseFloat(invoice.acc_bal_amt).toFixed(decimalLength)}</td>
                         <td class="text-center">${currency +parseFloat(invoice.balance_amt).toFixed(decimalLength)}</td>
-                        <td class="d-flex justify-content-center" style="gap: 10px;">
+                        <td style="gap: 10px;">
                           <a class="btn btn-info btn-sm" href="{{ route('invoice.show', '') }}/${parseInt(invoice.id)}"><i class="fa fa-eye" ></i></a>
                         </td>
                       </tr>
                   `);
                 });
               } else {
-                $('#sampleTable tbody').append('<tr><td colspan="9" class="text-center">No invoices found for this date.</td></tr>');
+                $('#sampleTable tbody').append('<tr><td colspan="11" class="text-center">No invoices found for this date.</td></tr>');
               }               
             } catch(error) {
               console.log("Failed",error)

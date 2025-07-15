@@ -691,18 +691,23 @@ class ReportController extends Controller
 
       $filteredInvoices = Invoice::with('Customer', 'Sales.product')
         ->when($fromDate == $toDate, function ($query) use ($fromDate) {
-          return $query->whereDate('created_at', $fromDate);
+          return $query->whereDate('invoices.created_at', $fromDate);
         })
         ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
-          return $query->whereBetween('created_at', [$fromDate, $toDate]);
+          return $query->whereBetween('invoices.created_at', [$fromDate, $toDate]);
         })
         ->when($companyName != "", function ($query) use ($companyName) {
             $query->whereHas('Customer', function ($q) use ($companyName) {
                 $q->where('company_name', $companyName);
             });
         })
-       
+        ->join('customers', 'invoices.customer_id', '=', 'customers.id')
+        ->orderBy('customers.company_name')
+        ->orderBy('invoices.created_at')
+        ->select('invoices.*')
         ->get();
+        // $this->pr($filteredInvoices);
+        // exit;
 
         $invoiceIDList = $filteredInvoices->pluck('id');
 

@@ -184,8 +184,8 @@
                       <td colspan="4"><hr/></td>
                     </tr> -->
                     <tr style="border-top: 2px solid black;">
+                      <td class="boldfont" style="border-bottom: 2px solid black;">Date</td>
                       <td class="boldfont" style="border-bottom: 2px solid black;">Cash</td>
-                      <td class="boldfont" style="border-bottom: 2px solid black;"></td>
                       <td class="boldfont" style="border-bottom: 2px solid black;">Total</td>
                       <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;"><span>{{$currency}} </span>{{number_format($totalCashAmount,  $decimalLength )}}</td>
                     </tr>
@@ -210,8 +210,8 @@
                     </tr> -->
 
                     <tr style="border-top: 2px solid black;">
+                      <td class="boldfont" style="border-bottom: 2px solid black;">Date</td>
                       <td class="boldfont" style="border-bottom: 2px solid black;">Transfer</td>
-                      <td class="boldfont" style="border-bottom: 2px solid black;"></td>
                       <td class="boldfont" style="border-bottom: 2px solid black;">Total</td>
                       <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;"><span>{{$currency}} </span>{{number_format($totalTransferAmount,  $decimalLength )}}</td>
                     </tr>

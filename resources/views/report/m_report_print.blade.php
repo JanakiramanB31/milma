@@ -197,8 +197,9 @@
                     
                       @if ($invoice->payment_type == $paymentMethods[1])
                       <tr>
+                        <td class="boldfont">{{$invoice->created_at->format('d-m-Y')}}</td>
                         <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
-                        <td class="boldfont"></td>
+                        
                         <td class="boldfont">Transfer</td>
                         <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->paid_amt,  $decimalLength )}}</td>
                       </tr>
@@ -221,8 +222,8 @@
                     @foreach ($filteredInvoices as $companyName => $invoice) 
                       @if ($invoice->payment_type == $paymentMethods[2])
                       <tr>
+                        <td class="boldfont">{{$invoice->created_at->format('d-m-Y')}}</td>
                         <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
-                        <td class="boldfont"></td>
                         <td class="boldfont">Credit</td>
                         <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->paid_amt,  $decimalLength )}}</td>
                       </tr>

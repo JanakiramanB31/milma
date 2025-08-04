@@ -143,6 +143,7 @@
                     <tr></tr>
                     <tr style="border-top: 2px solid black;">
                       <th class="boldfont" style="border-bottom: 2px solid black;">Date</th>
+                      <th class="boldfont" style="border-bottom: 2px solid black;">Receipt No.</th>
                       <th class="boldfont" style="border-bottom: 2px solid black;">Company</th>
                       <th class="boldfont" style="border-bottom: 2px solid black;">Method</th>
                       <th class="boldfont" style="text-align: right;border-bottom: 2px solid black;">Received Amt</th>
@@ -165,6 +166,7 @@
                     @if($creditCash > 0.00 && ($invoice->payment_type == $paymentMethods[0]))
                     <tr>
                       <td class="boldfont">{{$invoice->created_at->format('d-m-Y')}}</td>
+                      <td class="boldfont">{{$invoice->id ?? "N/A"}}</td>
                       <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
                       <td class="boldfont">C Cash <p style="margin: 0; font-size :13px;font-weight:400;"><span>{{$currency}} </span>{{number_format($invoice->customer->previous_balance, $decimalLength)}}</p></td>
                       <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
@@ -173,6 +175,7 @@
                       @if ($invoice->payment_type == $paymentMethods[0])
                       <tr>
                         <td class="boldfont">{{$invoice->created_at->format('d-m-Y')}}</td>
+                        <td class="boldfont">{{$invoice->id ?? "N/A"}}</td>
                         <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
                         <td class="boldfont">{{$invoice->payment_type}}</td>
                         <td  class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
@@ -185,6 +188,7 @@
                     </tr> -->
                     <tr style="border-top: 2px solid black;">
                       <td class="boldfont" style="border-bottom: 2px solid black;">Date</td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;">Receipt No.</td>
                       <td class="boldfont" style="border-bottom: 2px solid black;">Cash</td>
                       <td class="boldfont" style="border-bottom: 2px solid black;">Total</td>
                       <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;"><span>{{$currency}} </span>{{number_format($totalCashAmount,  $decimalLength )}}</td>
@@ -198,6 +202,7 @@
                       @if ($invoice->payment_type == $paymentMethods[1])
                       <tr>
                         <td class="boldfont">{{$invoice->created_at->format('d-m-Y')}}</td>
+                        <td class="boldfont">{{$invoice->id ?? "N/A"}}</td>
                         <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
                         
                         <td class="boldfont">Transfer</td>
@@ -211,6 +216,7 @@
 
                     <tr style="border-top: 2px solid black;">
                       <td class="boldfont" style="border-bottom: 2px solid black;">Date</td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;">Receipt No.</td>
                       <td class="boldfont" style="border-bottom: 2px solid black;">Transfer</td>
                       <td class="boldfont" style="border-bottom: 2px solid black;">Total</td>
                       <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;"><span>{{$currency}} </span>{{number_format($totalTransferAmount,  $decimalLength )}}</td>
@@ -223,6 +229,7 @@
                       @if ($invoice->payment_type == $paymentMethods[2])
                       <tr>
                         <td class="boldfont">{{$invoice->created_at->format('d-m-Y')}}</td>
+                        <td class="boldfont">{{$invoice->id ?? "N/A"}}</td>
                         <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
                         <td class="boldfont">Credit</td>
                         <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->paid_amt,  $decimalLength )}}</td>
@@ -234,6 +241,7 @@
                     </tr> -->
                     <tr style="border-top: 2px solid black;">
                       <td class="boldfont" style="border-bottom: 2px solid black;">Credit</td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;"></td>
                       <td class="boldfont" style="border-bottom: 2px solid black;"></td>
                       <td class="boldfont" style="border-bottom: 2px solid black;">Total</td>
                       <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;"><span>{{$currency}} </span>{{number_format($totalCreditAmount,  $decimalLength )}}</td>
@@ -253,6 +261,7 @@
                     <tr style="border-top: 2px solid black;"> 
                       <th class="boldfont" style="border-bottom: 2px solid black;">Date</th>
                       <th class="boldfont" style="border-bottom: 2px solid black;">Type</th>
+                      <th class="boldfont" style="border-bottom: 2px solid black;"></th>
                       <th class="boldfont" style="border-bottom: 2px solid black;"></th>
                       <th class="boldfont" style="text-align: right;border-bottom: 2px solid black;">Amt</th>
                     </tr>
@@ -278,6 +287,7 @@
                       <td class="boldfont">{{ \Carbon\Carbon::parse($expense->expense_date)->format('d-m-Y') }}</td>
                       <td class="boldfont">{{$typeName}}</td>
                       <td class="boldfont"></td>
+                      <td class="boldfont"></td>
                       <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($expense->expense_amt,  $decimalLength )}}</td>
                     </tr>
                     @endforeach
@@ -292,6 +302,7 @@
                     <tr style="border-top: 2px solid black;">
                       <td class="boldfont" style="border-bottom: 2px solid black;">Expenses</td>
                       <td class="boldfont" style="border-bottom: 2px solid black;"></td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;"></td>
                       <td class="boldfont" style="border-bottom: 2px solid black;">Total</td>
                       <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;"><span>{{$currency}} </span>{{number_format($totalExpense,  $decimalLength )}}</td>
                     </tr>
@@ -303,6 +314,7 @@
                     <tr>
                       <th>Total Amt of Cash: </th>
                       <td></td>
+                      <td></td>
                       <td class="boldfont" style="text-align: right;">
                       <td class="boldfont" style="text-align: right;">
                       <span>{{$currency}} </span> {{  number_format($totalCashAmount , $decimalLength) }}
@@ -310,6 +322,7 @@
                     </tr>
                     <tr>
                       <th>Total Amt of Expenses: </th>
+                      <td class="boldfont"></td>
                       <td class="boldfont"></td>
                       <td class="boldfont"></td>
                       <td class="boldfont" style="text-align: right;white-space: nowrap;">
@@ -323,6 +336,7 @@
 
                     <tr>
                       <th style="border-bottom: 2px solid black;">Cash in Hand: </th>
+                      <td class="boldfont" style="border-bottom: 2px solid black;"></td>
                       <td class="boldfont" style="border-bottom: 2px solid black;"></td>
                       <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;">
                       <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;">

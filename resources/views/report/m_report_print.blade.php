@@ -178,7 +178,7 @@
                         <td class="boldfont">{{$invoice->id ?? "N/A"}}</td>
                         <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
                         <td class="boldfont">{{$invoice->payment_type}}</td>
-                        <td  class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
+                        <td  class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt - $invoice->returned_amt,  $decimalLength )}}</td>
                       </tr>
                       @endif
                     @endif
@@ -206,7 +206,7 @@
                         <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
                         
                         <td class="boldfont">Transfer</td>
-                        <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->paid_amt,  $decimalLength )}}</td>
+                        <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt - $invoice->returned_amt,  $decimalLength )}}</td>
                       </tr>
                       @endif
                     @endforeach

@@ -57,9 +57,9 @@ class ReportController extends Controller
       $returnType = $saleProductsTypesandAmounts->get('returns', ['total_amt' => 0, 'qty_count' => 0]);
 
       if ($userRole == 'admin') {
-        $paymentTypesandTotalAmounts = Invoice::select('payment_type', 'received_amt','balance_amt','returned_amt')->whereDate('created_at', $selectedDate)->get();
+        $paymentTypesandTotalAmounts = Invoice::select('payment_type', 'total_amount', 'paid_amt', 'received_amt','balance_amt','returned_amt')->whereDate('created_at', $selectedDate)->get();
       } else {
-        $paymentTypesandTotalAmounts = Invoice::select('payment_type', 'received_amt','balance_amt','returned_amt')->where('user_id', $userID)->whereDate('created_at', $selectedDate)->get();
+        $paymentTypesandTotalAmounts = Invoice::select('payment_type', 'total_amount', 'paid_amt', 'received_amt','balance_amt','returned_amt')->where('user_id', $userID)->whereDate('created_at', $selectedDate)->get();
       } 
 
 
@@ -72,22 +72,58 @@ class ReportController extends Controller
         ];
       });
 
-      $creditPayments = $paymentTypesandTotalAmounts->filter(function ($item) {
-        return $item->balance_amt > 0;  
+      // $this->pr($saleProductspaymentTypesandAmounts);
+      // exit;
+
+      $creditPayments = $paymentTypesandTotalAmounts->filter(function ($item) use ($paymentMethods) {
+        // return $item->balance_amt > 0;  
+        return $item->payment_type == $paymentMethods[2];  
       });
+      // echo $creditPayments;
+      // exit;
 
       $expenses = Expense::select('expense_amt')->whereDate('expense_date', $selectedDate)->get()->toArray();
       $totalExpAmt = collect($expenses)->sum('expense_amt');      
       
-      $totalCreditAmount = $creditPayments->sum('balance_amt'); 
+      $creditTotPayments   = $creditPayments->sum('total_amount'); 
+      // echo $totalCreditAmount;
+      // exit;
       $creditTransactionCount = $creditPayments->count();
 
       $cashPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[0], ['total_received_amt' => 0, 'transaction_count' => 0]);
       $bankPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[1], ['total_received_amt' => 0, 'transaction_count' => 0]);
 
+      //$this->pr($bankPayments);
+      //exit;
+      $cashTotPayments = $cashPayments['total_received_amt'];
+      $bankTotPayments = $bankPayments['total_received_amt'];
+      $totAmtOfSales = $cashTotPayments + $bankTotPayments + $creditTotPayments;
+      $totAmt = $cashTotPayments + $bankTotPayments - $creditTotPayments;
+      $totReturnsAmt = $returnType['total_amt'];
+      $totNetAmt = $cashTotPayments + $bankTotPayments - $creditTotPayments - $returnType['total_amt'] - $totalExpAmt;
+
+      $totCashSales = $cashPayments['transaction_count'];
+      $totBankSales = $bankPayments['transaction_count'];
+      $totcreditSales = $creditTransactionCount;
+      $totSales = $totCashSales + $totBankSales + $creditTransactionCount;
+      $totReturns = $returnType['qty_count'];
       // echo '<pre>'; print_r($totalAmt); echo '</pre>';exit;
      
-      return view('report.x_index', compact('cashPayments', 'totalExpAmt', 'bankPayments', 'saleType', 'returnType','routes','totalCreditAmount', 'creditTransactionCount','currency','decimalLength','paymentMethods'));
+      return view('report.x_index', compact(
+        'totCashSales', 
+        'cashTotPayments',
+        'totBankSales',
+        'bankTotPayments', 
+        'totcreditSales',
+        'creditTotPayments', 
+        'totSales',
+        'totAmtOfSales', 
+        'totAmt', 
+        'totalExpAmt', 
+        'totReturns',
+        'totReturnsAmt',
+        'totNetAmt', 
+        'routes', 'currency','decimalLength','paymentMethods'));
     }
 
     public function fetchByDate(Request $request, $date)
@@ -146,6 +182,9 @@ class ReportController extends Controller
         ];
       });
 
+      // $this->pr($saleProductsTypesandAmounts);
+      // exit;
+
       $saleType = $saleProductsTypesandAmounts->get('sales', ['total_amt' => 0, 'qty_count' => 0]);
       $returnType = $saleProductsTypesandAmounts->get('returns', ['total_amt' => 0, 'qty_count' => 0]);
 
@@ -162,7 +201,7 @@ class ReportController extends Controller
         })
         ->get();
 
-      $paymentTypesandTotalAmounts = Invoice::select('payment_type', 'received_amt', 'balance_amt')
+      $paymentTypesandTotalAmounts = Invoice::select('payment_type', 'total_amount', 'paid_amt', 'received_amt', 'balance_amt', 'returned_amt')
         ->when($queryCondition, function ($query) use ($queryCondition) {
           return $query->where($queryCondition[0], $queryCondition[1]);
         })
@@ -176,46 +215,217 @@ class ReportController extends Controller
 
       $saleProductspaymentTypesandAmounts = $paymentTypesandTotalAmounts->groupBy('payment_type')->map(function ($group) {
         return [
-          'total_received_amt' => $group->sum('received_amt'),
+          'total_paid_amt' => $group->sum('paid_amt'),
+          'total_amt' => $group->sum('total_amount'),
+          'total_received_amt' => $group->sum(function ($item) {
+            return $item->received_amt - $item->returned_amt;
+          }),
           'transaction_count'  => $group->count(),
         ];
       });
 
-      $creditPayments = $paymentTypesandTotalAmounts->filter(function ($item) {
-        return $item->balance_amt > 0;  
-      });
+      // $this->pr($saleProductspaymentTypesandAmounts);
+      // exit;
+
+      $expenses = Expense::select('expense_amt')
+          ->whereBetween('expense_date', [$fromDate, $toDate])
+          ->get()
+          ->toArray();
+      $totalExpAmt = collect($expenses)->sum('expense_amt');      
       
-      $totalCreditAmount = $creditPayments->sum('balance_amt'); 
+
+      $creditPayments = $paymentTypesandTotalAmounts->filter(function ($item) use ($paymentMethods) {
+        return $item->payment_type == $paymentMethods[2];  
+      });
+
+      $creditTotPayments = $creditPayments->sum('total_amount'); 
+      $creditTransactionCount = $creditPayments->count();
+
+      $cashPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[0], ['total_received_amt' => 0, 'transaction_count' => 0]);
+      $bankPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[1], ['total_received_amt' => 0, 'transaction_count' => 0]);
+      
+      $cashTotPayments = $cashPayments['total_received_amt'];
+      $bankTotPayments = $bankPayments['total_received_amt'];
+      $totAmtOfSales = $cashTotPayments + $bankTotPayments + $creditTotPayments;
+      $totAmt = $cashTotPayments + $bankTotPayments - $creditTotPayments;
+      $totReturnsAmt = $returnType['total_amt'];
+      $totNetAmt = $cashTotPayments + $bankTotPayments - $creditTotPayments - $returnType['total_amt'] - $totalExpAmt;
+
+      $totCashSales = $cashPayments['transaction_count'];
+      $totBankSales = $bankPayments['transaction_count'];
+      $totcreditSales = $creditTransactionCount;
+      $totSales = $totCashSales + $totBankSales + $creditTransactionCount;
+      $totReturns = $returnType['qty_count'];
+     
+      $filteredData = [
+        'currency'         => $currency, 
+        'decimalLength'    => $decimalLength, 
+        'totCashSales'     => $totCashSales,
+        'cashTotPayments'  => $cashTotPayments,
+        'totBankSales'     => $totBankSales,
+        'bankTotPayments'  => $bankTotPayments,
+        'totcreditSales'   => $totcreditSales,
+        'creditTotPayments'=> $creditTotPayments,
+        'totSales'         => $totSales,
+        'totAmtOfSales'    => $totAmtOfSales,
+        'totAmt'           => $totAmt,
+        'totalExpAmt'      => $totalExpAmt,
+        'totReturns'       => $totReturns,
+        'totReturnsAmt'    => $totReturnsAmt,
+        'totNetAmt'        => $totNetAmt
+      ];
+      // $this->pr($filteredData);
+      // exit;
+      return response()->json( $filteredData );
+    }
+
+    public function x_report_print(Request $request) 
+    {
+      $userID = Auth::id();
+      $userRole = Auth::user()->role;
+      $queryCondition = $userRole == 'admin' ? [] : ['user_id', $userID];
+      $paymentMethods = config('constants.PAYMENT_METHODS');
+      $dateData = $request->input('date'); 
+      $currency = config('constants.CURRENCY_SYMBOL');
+      $decimalLength = config('constants.DECIMAL_LENGTH');
+      
+      if ($dateData && isset($dateData['fromDate']) && isset($dateData['toDate'])) {
+        $fromDate = \Carbon\Carbon::parse($dateData['fromDate'])->startOfDay();
+        $toDate = \Carbon\Carbon::parse($dateData['toDate'])->endOfDay();
+      } else {
+        $fromDate = now()->startOfDay();
+        $toDate = now()->endOfDay();
+      }
+
+      $expenses = Expense::select('expense_amt')->when($fromDate == $toDate, function ($query) use ($fromDate) {
+        return $query->whereDate('expense_date', $fromDate);
+      })
+      ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+        return $query->whereBetween('expense_date', [$fromDate, $toDate]);
+      })->get()->toArray();
+
+      $totExpenses = collect($expenses)->sum('expense_amt');
+
+      // $this->pr($totExpenses);
+      // $this->pr($expenses);
+      // exit;
+      
+
+      $saleTypesandTotalAmounts = Sale::select('type', 'qty', 'total_amount')
+      ->when($queryCondition, function ($query) use ($queryCondition) {
+        return $query->where($queryCondition[0], $queryCondition[1]);
+      })
+      ->when($fromDate == $toDate, function ($query) use ($fromDate) {
+        return $query->whereDate('created_at', $fromDate);
+      })
+      ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+        return $query->whereBetween('created_at', [$fromDate, $toDate]);
+      })
+      ->get();
+
+    
+      
+      //  echo '<pre>'; print_r($saleTypesandTotalAmounts); echo '</pre>';exit;
+
+      $saleProductsTypesandAmounts = $saleTypesandTotalAmounts->groupBy('type')->map(function ($group) {
+        return [
+          'total_amt' => $group->sum('total_amount'),
+          'qty_count'  => $group->count(),
+        ];
+      });
+
+      // $this->pr($saleProductsTypesandAmounts);
+      // exit;
+
+      $saleType = $saleProductsTypesandAmounts->get('sales', ['total_amt' => 0, 'qty_count' => 0]);
+      $returnType = $saleProductsTypesandAmounts->get('returns', ['total_amt' => 0, 'qty_count' => 0]);
+
+
+      $saleTypesandTotalAmounts = Sale::select('type', 'qty', 'total_amount')
+        ->when($queryCondition, function ($query) use ($queryCondition) {
+          return $query->where($queryCondition[0], $queryCondition[1]);
+        })
+        ->when($fromDate == $toDate, function ($query) use ($fromDate) {
+          return $query->whereDate('created_at', $fromDate);
+        })
+        ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+          return $query->whereBetween('created_at', [$fromDate, $toDate]);
+        })
+        ->get();
+
+      $paymentTypesandTotalAmounts = Invoice::select('payment_type', 'total_amount', 'paid_amt', 'received_amt', 'balance_amt', 'returned_amt')
+        ->when($queryCondition, function ($query) use ($queryCondition) {
+          return $query->where($queryCondition[0], $queryCondition[1]);
+        })
+        ->when($fromDate == $toDate, function ($query) use ($fromDate) {
+          return $query->whereDate('created_at', $fromDate);
+        })
+        ->when($fromDate != $toDate, function ($query) use ($fromDate, $toDate) {
+          return $query->whereBetween('created_at', [$fromDate, $toDate]);
+        })
+        ->get();
+
+      $saleProductspaymentTypesandAmounts = $paymentTypesandTotalAmounts->groupBy('payment_type')->map(function ($group) {
+        return [
+          'total_paid_amt' => $group->sum('paid_amt'),
+          'total_amt' => $group->sum('total_amount'),
+          'total_received_amt' => $group->sum(function ($item) {
+            return $item->received_amt - $item->returned_amt;
+          }),
+          'transaction_count'  => $group->count(),
+        ];
+      });
+
+      // $this->pr($saleProductspaymentTypesandAmounts);
+      // exit;
+
+      $expenses = Expense::select('expense_amt')
+          ->whereBetween('expense_date', [$fromDate, $toDate])
+          ->get()
+          ->toArray();
+      $totalExpAmt = collect($expenses)->sum('expense_amt');      
+      
+
+      $creditPayments = $paymentTypesandTotalAmounts->filter(function ($item) use ($paymentMethods) {
+        return $item->payment_type == $paymentMethods[2];  
+      });
+
+      $creditTotPayments = $creditPayments->sum('total_amount'); 
       $creditTransactionCount = $creditPayments->count();
 
       $cashPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[0], ['total_received_amt' => 0, 'transaction_count' => 0]);
       $bankPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[1], ['total_received_amt' => 0, 'transaction_count' => 0]);
 
-      $filteredData = [
-        'currency'=> $currency,
-        "decimalLength" => $decimalLength,
-        "saleType" => $saleType,
-        "returnType" => $returnType,
-        "cashPayments" => $cashPayments,
-        'totalCreditAmount' => $totalCreditAmount, 
-        'creditTransactionCount' => $creditTransactionCount, 
-        "bankPayments" => $bankPayments,
-        'totalExpenses' => $totExpenses
-      ];
+      $cashTotPayments = $cashPayments['total_received_amt'];
+      $bankTotPayments = $bankPayments['total_received_amt'];
+      $totAmtOfSales = $cashTotPayments + $bankTotPayments + $creditTotPayments;
+      $totAmt = $cashTotPayments + $bankTotPayments - $creditTotPayments;
+      $totReturnsAmt = $returnType['total_amt'];
+      $totNetAmt = $cashTotPayments + $bankTotPayments - $creditTotPayments - $returnType['total_amt'] - $totalExpAmt;
 
-      return response()->json( $filteredData );
+      $totCashSales = $cashPayments['transaction_count'];
+      $totBankSales = $bankPayments['transaction_count'];
+      $totcreditSales = $creditTransactionCount;
+      $totSales = $totCashSales + $totBankSales + $creditTransactionCount;
+      $totReturns = $returnType['qty_count'];
+     
+      return view('report.x_report_print', compact(
+        'totCashSales', 
+        'cashTotPayments',
+        'totBankSales',
+        'bankTotPayments', 
+        'totcreditSales',
+        'creditTotPayments', 
+        'totSales',
+        'totAmtOfSales', 
+        'totAmt', 
+        'totalExpAmt', 
+        'totReturns',
+        'totReturnsAmt',
+        'totNetAmt', 
+        'currency','decimalLength','paymentMethods', 'fromDate', 'toDate'
+      ));
     }
-
-    public function x_report_print($data) 
-    {
-      $salesData = json_decode($data, true);
-      // $this->pr($salesData);
-      // exit;
-      $currency = config('constants.CURRENCY_SYMBOL');
-      $decimalLength = config('constants.DECIMAL_LENGTH');
-      return view('report.x_report_print', compact('salesData','currency','decimalLength'));
-    }
-
     public function y_index()
     {
       $today = now()->toDateString();
@@ -555,7 +765,7 @@ class ReportController extends Controller
       return response()->json( $data );
     }
 
-    public function zReportPrintCompanyInvoices(Request $request, $data)
+    public function zReportPrintCompanyInvoices(Request $request)
     {
       $userID = Auth::id();
       $userRole = Auth::user()->role;
@@ -563,16 +773,18 @@ class ReportController extends Controller
       //print_r( $paymentMethods);
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
-      $data = json_decode(urldecode($data), true);
+      $reportData = $request->input('reportData');
       $today = now()->toDateString();
 
-      $data['fromDate'] = trim($data['fromDate']);
-      $data['toDate'] = trim($data['toDate']);
-      $data['companyName'] = trim($data['companyName']);
-
-      $fromDate = $data['fromDate'];
-      $toDate = $data['toDate'];
-      $companyName = $data['companyName'];
+      if ($reportData) {
+        $fromDate = trim($reportData['fromDate']);
+        $toDate = trim($reportData['toDate']);
+        $companyName = trim($reportData['companyName']);
+      } else {
+        $fromDate = '';
+        $toDate = '';
+        $companyName = '';
+      }
 
       if ($fromDate && $toDate) {
         $fromDate = \Carbon\Carbon::parse($fromDate)->startOfDay();
@@ -602,18 +814,23 @@ class ReportController extends Controller
         ->get();
 
         $invoiceIDList = $filteredInvoices->pluck('id');
+        // $this->pr($filteredInvoices->pluck('payment_type', 'received_amt'));
+        // $this->pr($filteredInvoices->pluck('payment_type', 'returned_amt'));
 
         $totalCashAmount = $filteredInvoices->where('payment_type', $paymentMethods[0])->sum(function ($invoice) {
-          return $invoice->received_amt - $invoice->returned_amount;
+          return $invoice->received_amt - $invoice->returned_amt;
         });
       
         $totalTransferAmount = $filteredInvoices->where('payment_type', $paymentMethods[1])->sum(function ($invoice) {
-            return $invoice->paid_amt - $invoice->returned_amount;
+            return $invoice->received_amt - $invoice->returned_amt;
         });
 
         $totalCreditAmount = $filteredInvoices->where('payment_type', $paymentMethods[2])->sum(function ($invoice) {
-            return $invoice->paid_amt - $invoice->returned_amount;
+            return $invoice->paid_amt - $invoice->returned_amt;
         });
+        // echo $totalCashAmount;
+        // echo $totalTransferAmount;
+        // echo $totalCreditAmount;
 
         //echo $totalCreditAmount;
 
@@ -659,7 +876,7 @@ class ReportController extends Controller
       return view('report.z_report_print', compact('filteredInvoices', 'paymentMethods', 'expenseTypes','expenses','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount', 'totalCreditAmount','loadedProducts','salesReturns'));
     }
 
-    public function mReportPrintCompanyInvoices(Request $request, $data)
+    public function mReportPrintCompanyInvoices(Request $request)
     {
       $userID = Auth::id();
       $userRole = Auth::user()->role;
@@ -667,16 +884,18 @@ class ReportController extends Controller
       //print_r( $paymentMethods);
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
-      $data = json_decode(urldecode($data), true);
+      $reportData = $request->input('reportData');
       $today = now()->toDateString();
 
-      $data['fromDate'] = trim($data['fromDate']);
-      $data['toDate'] = trim($data['toDate']);
-      $data['companyName'] = trim($data['companyName']);
-
-      $fromDate = $data['fromDate'];
-      $toDate = $data['toDate'];
-      $companyName = $data['companyName'];
+      if ($reportData) {
+        $fromDate = trim($reportData['fromDate']);
+        $toDate = trim($reportData['toDate']);
+        $companyName = trim($reportData['companyName']);
+      } else {
+        $fromDate = '';
+        $toDate = '';
+        $companyName = '';
+      }
 
       if ($fromDate && $toDate) {
         $fromDate = \Carbon\Carbon::parse($fromDate)->startOfDay();
@@ -712,15 +931,15 @@ class ReportController extends Controller
         $invoiceIDList = $filteredInvoices->pluck('id');
 
         $totalCashAmount = $filteredInvoices->where('payment_type', $paymentMethods[0])->sum(function ($invoice) {
-          return $invoice->received_amt - $invoice->returned_amount;
+          return $invoice->received_amt - $invoice->returned_amt;
         });
       
         $totalTransferAmount = $filteredInvoices->where('payment_type', $paymentMethods[1])->sum(function ($invoice) {
-            return $invoice->paid_amt - $invoice->returned_amount;
+            return $invoice->received_amt - $invoice->returned_amt;
         });
 
         $totalCreditAmount = $filteredInvoices->where('payment_type', $paymentMethods[2])->sum(function ($invoice) {
-            return $invoice->paid_amt - $invoice->returned_amount;
+            return $invoice->received_amt - $invoice->returned_amt;
         });
 
         //echo $totalCreditAmount;

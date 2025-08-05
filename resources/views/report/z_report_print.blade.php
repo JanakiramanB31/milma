@@ -113,7 +113,7 @@
               @php
                 if ($invoice->payment_type == $paymentMethods[1]) {
                   $previousBalance = (float)($invoice->customer->previous_balance ?? 0);
-                  $paidAmount = (float)($invoice->paid_amt ?? 0);
+                  $paidAmount = (float)($invoice->paid_amt - $invoice->returned_amt ?? 0);
                   $creditCash = $previousBalance - $paidAmount;
                 } else {
                   $creditCash = (float)($invoice->customer->previous_balance ?? 0);
@@ -134,7 +134,7 @@
                 <tr>
                   <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
                   <td class="boldfont">{{$invoice->payment_type}}</td>
-                  <td  class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
+                  <td  class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt - $invoice->returned_amt,  $decimalLength )}}</td>
                 </tr>
                 @endif
                 @endif
@@ -158,7 +158,7 @@
                 <tr>
                   <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
                   <td class="boldfont">Transfer</td>
-                  <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->paid_amt,  $decimalLength )}}</td>
+                  <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
                 </tr>
                 @endif
               @endforeach
@@ -268,14 +268,14 @@
               </tr>
 
             @php
-              $netAmt = $totalCashAmount - $totalExpense
+              $cashInHand = $totalCashAmount - $totalExpense
             @endphp
 
               <tr>
                 <th>Cash in Hand: </th>
                 <td class="boldfont"></td>
                 <td class="boldfont" style="text-align: right;">
-                <span>{{$currency}} </span> {{  number_format($netAmt , $decimalLength) }}
+                <span>{{$currency}} </span> {{  number_format($cashInHand , $decimalLength) }}
                 </td>
               </tr>
               <tr>

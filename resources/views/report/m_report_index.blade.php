@@ -244,34 +244,28 @@
     });
 
     function printData(data) {
-      const data1Json = encodeURIComponent(JSON.stringify(data));
-      var prinURL = '{{ route("mReportPrintCompanyInvoices",":data") }}'.replace(':data', data1Json);
-      window.location.href = prinURL;
-      // if(data) {
-      //   $.ajax({
-      //     url: '{{ route("x_report_print",":data") }}'.replace(':data', data1),
-      //     type: 'POST',
-      //     data: {
-      //       data: data,
-      //       _token: '{{ csrf_token() }}' 
-      //     },
-      //     success: function(response) {
-      //       try {
-      //         console.log("Success", response);  
-                  
-      //       } catch(error) {
-      //         console.log("Failed",error);
-              
-      //       }
-      //     },
-      //     error: function(xhr) {
-      //       var errorMessage =  'An error occurred. Please try again.';
-      //       $('#alert-message').html(errorMessage).show();
-      //     }
-      //   });
-      // } else {
-      //   console.log("Failed")
-      // }
+      if(data) {
+        $.ajax({
+          url: '{{ route("mReportPrintCompanyInvoices") }}',
+          type: 'POST',
+          data: {
+            reportData: data,
+            _token: $('meta[name="csrf-token"]').attr('content')
+          },
+          success: function(response) {
+            var printWindow = window.open('', '_blank');
+            printWindow.document.write(response);
+            printWindow.document.close();
+            //printWindow.print();
+          },
+          error: function(xhr, status, error) {
+            console.error('Error fetching report data:', error);
+            alert('Error generating report. Please try again.');
+          }
+        });
+      } else {
+        console.log("No data to print");
+      }
     }
   });
 </script>

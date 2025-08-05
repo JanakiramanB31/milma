@@ -1,7 +1,8 @@
 @php
     $paperWidth = "300px";
-    $salesData['selectedStartDate'] = \Carbon\Carbon::parse($salesData['selectedStartDate']);
-    $salesData['selectedEndDate'] = \Carbon\Carbon::parse($salesData['selectedEndDate']);
+    // Use the dates that were processed in the controller
+    $startDate = isset($fromDate) ? $fromDate : now();
+    $endDate = isset($toDate) ? $toDate : now();
 @endphp
 
 <div class="wrapper wrapper-content animated fadeInRight">
@@ -27,14 +28,14 @@
             <h4><span style="text-align: center;"  class="boldfont">X Report</span></h4>
             <!-- <h5 style="font-size: 14px;"  class="boldfont">Taken: {{ \Carbon\Carbon::now()->format('d-m-Y h:i a') }} </h5> -->
             <hr />
-            @if ($salesData['selectedStartDate']->format('d-m-Y') == $salesData['selectedEndDate']->format('d-m-Y')) 
+            @if ($startDate->format('d-m-Y') == $endDate->format('d-m-Y')) 
             <div class="d-flex align-items-space-between justify-content-space-between"  class="boldfont">
-              <b style="font-size: 14px;"  class="boldfont">Date: {{ \Carbon\Carbon::parse($salesData['selectedStartDate'])->format('d-m-Y') }}</b>
+              <b style="font-size: 14px;"  class="boldfont">Date: {{ $startDate->format('d-m-Y') }}</b>
             </div>
             @else
             <div class="d-flex align-items-space-between justify-content-space-between">
-              <b style="font-size: 14px;"  class="boldfont">From: {{ \Carbon\Carbon::parse($salesData['selectedStartDate'])->format('d-m-Y') }}</b>
-              <b style="font-size: 14px;"  class="boldfont">To: {{ \Carbon\Carbon::parse($salesData['selectedEndDate'])->format('d-m-Y') }}</b>
+              <b style="font-size: 14px;"  class="boldfont">From: {{ $startDate->format('d-m-Y') }}</b>
+              <b style="font-size: 14px;"  class="boldfont">To: {{ $endDate->format('d-m-Y') }}</b>
             </div>
             @endif
             <div style="text-align: left;">
@@ -44,15 +45,15 @@
             <table class="table" style="width: {{$paperWidth}}; text-align: left;">
               <tr>
                 <th>No. of Cash Sales: </th>
-                <td class="currency">{{ $salesData['cashSalesCount'] }}</td>
+                <td class="currency">{{ $totCashSales }}</td>
               </tr>
               <tr>
                 <th>No. of Bank Transfer Sales:</th>
-                <td class="currency">{{ $salesData['bankSalesCount'] }}</td>
+                <td class="currency">{{ $totBankSales }}</td>
               </tr>
               <tr>
                 <th>No. of Credit Sales:</th>
-                <td class="currency">{{ $salesData['cardSalesCount'] ? $salesData['cardSalesCount']  : "0" }}</td>
+                <td class="currency">{{ $totcreditSales ? $totcreditSales : "0" }}</td>
               </tr>
               <tr>
                 <td colspan="2"><hr/></td>
@@ -60,7 +61,7 @@
 
               <tr>
                 <th>Total Sales: </th>
-                <td class="currency">{{ $salesData['salesCount'] }}</td>
+                <td class="currency">{{ $totSales }}</td>
               </tr>
               <tr>
                 <td colspan="2"><hr/></td>
@@ -68,15 +69,15 @@
 
               <tr>
                 <th>Cash Sales:</th>
-                <td class="currency">{{ $currency }} {{ number_format($salesData['cashSalesAmount'], $decimalLength) }}</td>
+                <td class="currency">{{ $currency }} {{ number_format($cashTotPayments, $decimalLength) }}</td>
               </tr>
               <tr>
                 <th>Bank Transfer Sales: </th>
-                <td class="currency">{{ $currency }} {{ number_format($salesData['bankSalesAmount'], $decimalLength) }}</td>
+                <td class="currency">{{ $currency }} {{ number_format($bankTotPayments, $decimalLength) }}</td>
               </tr>
               <tr>
                 <th>Credit Sales:</th>
-                <td class="currency">{{ $currency }} {{ number_format($salesData['cardSalesAmount'], $decimalLength) }}</td>
+                <td class="currency">{{ $currency }} {{ number_format($creditTotPayments, $decimalLength) }}</td>
               </tr>
 
               <tr>
@@ -85,11 +86,11 @@
              
               <tr>
                 <th>Total Sale Amt:</th>
-                <td class="currency">{{ $currency }} {{  number_format($salesData['totalAmount'] + $salesData['cardSalesAmount'], $decimalLength) }}</td>
+                <td class="currency">{{ $currency }} {{  number_format($totAmtOfSales, $decimalLength) }}</td>
               </tr>
               <tr>
                 <th>Amt of Credit Sales:</th>
-                <td class="currency">(-) {{ $currency }} {{  number_format($salesData['cardSalesAmount'], $decimalLength) }}</td>
+                <td class="currency">(-) {{ $currency }} {{  number_format($creditTotPayments, $decimalLength) }}</td>
               </tr>
               <tr>
                 <td colspan="2"><hr/></td>
@@ -97,7 +98,7 @@
               <tr>
                 <th>Total Amt: </th>
                 <td class="currency">
-                {{ $currency }} {{  number_format($salesData['totalAmount'], $decimalLength) }}
+                {{ $currency }} {{  number_format($totAmt, $decimalLength) }}
                 </td>
               </tr>
               <tr>
@@ -105,11 +106,11 @@
               </tr>
               <tr>
                 <th>Total Return Orders: </th>
-                <td class="currency">{{ $salesData['returnCount'] }}</td>
+                <td class="currency">{{ $totReturns }}</td>
               </tr>
               <tr>
                 <th>Total Amt of Returns: </th>
-                <td class="currency">(-) {{ $currency }} {{  number_format($salesData['returnAmount'], $decimalLength) }}</td>
+                <td class="currency">(-) {{ $currency }} {{  number_format($totReturnsAmt, $decimalLength) }}</td>
               </tr>
               <tr>
                 <td colspan="2"><hr/></td>
@@ -117,7 +118,7 @@
 
               <tr>
                 <th>Total Amt of Expenses: </th>
-                <td class="currency">(-) {{ $currency }} {{  number_format($salesData['totExpenseAmount'], $decimalLength) }}</td>
+                <td class="currency">(-) {{ $currency }} {{  number_format($totalExpAmt, $decimalLength) }}</td>
               </tr>
               <tr>
                 <td colspan="2"><hr/></td>
@@ -125,7 +126,7 @@
               <tr>
                 <th>Total Net Amt: </th>
                 <td class="currency">
-                {{ $currency }} {{  number_format($salesData['totalNetAmount'], $decimalLength) }}
+                {{ $currency }} {{  number_format($totNetAmt, $decimalLength) }}
                 </td>
               </tr>
               <tr>
@@ -133,7 +134,7 @@
               </tr>
               <tr>
                 <th>Cash in Hand:</th>
-                <td class="currency">{{ $currency }} {{  number_format($salesData['cashSalesAmount'], $decimalLength) }}</td>
+                <td class="currency">{{ $currency }} {{  number_format($cashTotPayments, $decimalLength) }}</td>
               </tr>
               <tr>
                 <td colspan="2"><hr/></td>

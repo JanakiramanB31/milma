@@ -57,45 +57,45 @@
                 <tbody>
                   <tr>
                     <td><b>No. of Cash Sales</b></td>
-                    <td id="cashSalesCount">{{$cashPayments['transaction_count']}}</td>
+                    <td id="cashSalesCount">{{$totCashSales}}</td>
                     <td><b>Amount of Cash Sales</b></td>
-                    <td ><p class="float-right mb-0" id="cashSalesAmount"><span>{{ $currency }}</span> {{ number_format($cashPayments['total_received_amt'],  $decimalLength ) }}</p></td>
+                    <td ><p class="float-right mb-0" id="cashSalesAmount"><span>{{ $currency }}</span> {{ number_format($cashTotPayments,  $decimalLength ) }}</p></td>
                   </tr>
                   <tr>
                     <td><b>No. of Bank Transfer Sales</b></td>
-                    <td id="bankSalesCount">{{$bankPayments['transaction_count']}}</td>
+                    <td id="bankSalesCount">{{$totBankSales}}</td>
                     <td><b>Amount of Bank Transfer Sales</b></td>
-                    <td ><p id="bankSalesAmount" class="float-right mb-0"><span>{{ $currency }}</span> {{ number_format($bankPayments['total_received_amt'],  $decimalLength ) }}</p></td>
+                    <td ><p id="bankSalesAmount" class="float-right mb-0"><span>{{ $currency }}</span> {{ number_format($bankTotPayments,  $decimalLength ) }}</p></td>
                   </tr>
                   <tr>
                     <td><b>No. of Credit Sales</b></td>
-                    <td id="cardSalesCount">{{$creditTransactionCount}}</td>
+                    <td id="cardSalesCount">{{$totcreditSales}}</td>
                     <td><b>Amount of Credit Sales</b></td>
-                    <td ><p id="cardSalesAmount" class="float-right mb-0"><span>{{ $currency }}</span> {{ number_format($totalCreditAmount,  $decimalLength ) }}</p></td>
+                    <td ><p id="cardSalesAmount" class="float-right mb-0"><span>{{ $currency }}</span> {{ number_format($creditTotPayments,  $decimalLength ) }}</p></td>
                   </tr>
                   <tr>
                     <td><b>Total No. of Sales</b></td>
-                    <td id="salesCount">{{$cashPayments['transaction_count'] + $bankPayments['transaction_count'] + $creditTransactionCount}}</td>
+                    <td id="salesCount">{{$totSales}}</td>
                     <td><b>Total Amount of Sales</b></td>
-                    <td ><p id="salesAmount" class="float-right mb-0"><span>{{ $currency }}</span> {{ number_format($saleType['total_amt'],  $decimalLength ) }}</p></td>
+                    <td ><p id="salesAmount" class="float-right mb-0"><span>{{ $currency }}</span> {{ number_format($totAmtOfSales,  $decimalLength ) }}</p></td>
                   </tr>
                   <tr>
                     <td></td>
                     <td></td>
                     <td><b>Amount of Credit Sales</b></td>
-                    <td class="d-flex justify-content-end"><span class="mr-1" >(-)</span><p class=" mb-0" id="cardSalesAmount2"><span>{{ $currency }}</span> {{ number_format($totalCreditAmount,  $decimalLength ) }}</p></td>
+                    <td class="d-flex justify-content-end"><span class="mr-1" >(-)</span><p class=" mb-0" id="cardSalesAmount2"><span>{{ $currency }}</span> {{ number_format($creditTotPayments,  $decimalLength ) }}</p></td>
                   </tr>
                   <tr>
                     <td></td>
                     <td ></td>
                     <td><b>Total Amount</b></td>
-                    <td ><p class="float-right mb-0" id="totalAmount"><span>{{ $currency }}</span> {{ number_format(($cashPayments['total_received_amt'] + $bankPayments['total_received_amt']),  $decimalLength ) }}</p></td>
+                    <td ><p class="float-right mb-0" id="totalAmount"><span>{{ $currency }}</span> {{ number_format($totAmt,  $decimalLength ) }}</p></td>
                   </tr>
                   <tr>
                     <td><b>No. of Return Orders</b></td>
-                    <td id="returnCount">{{$returnType['qty_count']}}</td>
+                    <td id="returnCount">{{$totReturns}}</td>
                     <td><b>Total Amount of Return Orders</b></td>
-                    <td class="d-flex justify-content-end"><span class="mr-1" >(-)</span><p class=" mb-0" id="returnAmount"><span>{{ $currency }}</span> {{ number_format($returnType['total_amt'],  $decimalLength ) }}</p></td>
+                    <td class="d-flex justify-content-end"><span class="mr-1" >(-)</span><p class=" mb-0" id="returnAmount"><span>{{ $currency }}</span> {{ number_format($totReturnsAmt,  $decimalLength ) }}</p></td>
                   </tr>
 
                   <tr>
@@ -109,7 +109,7 @@
                     <td></td>
                     <td ></td>
                     <td><b>Total Net Amount</b></td>
-                    <td ><p class="float-right mb-0" id="totalNetAmount"><span>{{ $currency }}</span> {{ number_format(($cashPayments['total_received_amt'] + $bankPayments['total_received_amt'] - $totalExpAmt),  $decimalLength ) }}</p></td>
+                    <td ><p class="float-right mb-0" id="totalNetAmount"><span>{{ $currency }}</span> {{ number_format($totNetAmt,  $decimalLength ) }}</p></td>
                   </tr>
                 </tbody>
               </table>
@@ -188,26 +188,22 @@
             try {
               const currency = response.currency + " ";
               var decimalLength = response.decimalLength;
-              var totalAmt = (response.saleType.total_amt || 0);
-              var cardAmt = (response.cardSalesAmount || 0);
-              var returnAmt = (response.returnType.total_amt || 0);
-              var totalExpenses = (response.totalExpenses || 0);
-              console.log("Success", response);  
-              $('#salesCount').text(response.cashPayments.transaction_count + response.bankPayments.transaction_count+ response.creditTransactionCount);
-              $('#salesAmount').text(currency + response.saleType.total_amt.toFixed(decimalLength));
-              $('#returnCount').text(response.returnType.qty_count);
-              $('#returnAmount').text(currency + response.returnType.total_amt.toFixed(decimalLength));
-              $('#cashSalesCount').text(response.cashPayments.transaction_count);
-              $('#cashSalesAmount').text(currency + response.cashPayments.total_received_amt.toFixed(decimalLength));
-              $('#bankSalesCount').text(response.bankPayments.transaction_count);
-              $('#bankSalesAmount').text(currency + response.bankPayments.total_received_amt.toFixed(decimalLength));
-              $('#cardSalesCount').text(response.creditTransactionCount);
-              $('#cardSalesAmount').text(currency + response.totalCreditAmount.toFixed(decimalLength));
-              $('#cardSalesAmount2').text(currency + response.totalCreditAmount.toFixed(decimalLength));
-              $('#totalAmount').text(currency + (totalAmt + cardAmt - response.totalCreditAmount).toFixed(decimalLength));
-              $('#totExpenseAmount').text(currency + (totalExpenses).toFixed(decimalLength));
+              console.log(response)
+              $('#salesCount').text(response.totSales);
+              $('#salesAmount').text(currency + response.totAmtOfSales.toFixed(decimalLength));
+              $('#returnCount').text(response.totReturns);
+              $('#returnAmount').text(currency + response.totReturnsAmt.toFixed(decimalLength));
+              $('#cashSalesCount').text(response.totCashSales);
+              $('#cashSalesAmount').text(currency + response.cashTotPayments.toFixed(decimalLength));
+              $('#bankSalesCount').text(response.totBankSales);
+              $('#bankSalesAmount').text(currency + response.bankTotPayments.toFixed(decimalLength));
+              $('#cardSalesCount').text(response.totcreditSales);
+              $('#cardSalesAmount').text(currency + response.creditTotPayments.toFixed(decimalLength));
+              $('#cardSalesAmount2').text(currency + response.creditTotPayments.toFixed(decimalLength));
+              $('#totalAmount').text(currency + (response.totAmt).toFixed(decimalLength));
+              $('#totExpenseAmount').text(currency + (response.totalExpAmt).toFixed(decimalLength));
 
-              $('#totalNetAmount').text(currency + (totalAmt + cardAmt - response.totalCreditAmount - returnAmt - totalExpenses).toFixed(decimalLength));
+              $('#totalNetAmount').text(currency + (response.totNetAmt).toFixed(decimalLength));
                   
             } catch(error) {
               console.log("Failed",error);
@@ -262,34 +258,31 @@
     });
 
     function printData(data) {
-      const data1Json = encodeURIComponent(JSON.stringify(data));
-      var prinURL = '{{ route("x_report_print",":data") }}'.replace(':data', data1Json);
-      window.location.href = prinURL;
-      // if(data) {
-      //   $.ajax({
-      //     url: '{{ route("x_report_print",":data") }}'.replace(':data', data1),
-      //     type: 'POST',
-      //     data: {
-      //       data: data,
-      //       _token: '{{ csrf_token() }}' 
-      //     },
-      //     success: function(response) {
-      //       try {
-      //         console.log("Success", response);  
-                  
-      //       } catch(error) {
-      //         console.log("Failed",error);
-              
-      //       }
-      //     },
-      //     error: function(xhr) {
-      //       var errorMessage =  'An error occurred. Please try again.';
-      //       $('#alert-message').html(errorMessage).show();
-      //     }
-      //   });
-      // } else {
-      //   console.log("Failed")
-      // }
+      if(data) {
+        $.ajax({
+          url: '{{ route("x_report_print") }}',
+          type: 'POST',
+          data: {
+            date: {
+              fromDate: data.selectedStartDate,
+              toDate: data.selectedEndDate
+            },
+            _token: $('meta[name="csrf-token"]').attr('content')
+          },
+          success: function(response) {
+            var printWindow = window.open('', '_blank');
+            printWindow.document.write(response);
+            printWindow.document.close();
+            //printWindow.print();
+          },
+          error: function(xhr, status, error) {
+            console.error('Error fetching report data:', error);
+            alert('Error generating report. Please try again.');
+          }
+        });
+      } else {
+        console.log("No data to print");
+      }
     }
   });
 </script>

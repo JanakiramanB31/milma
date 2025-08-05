@@ -27,7 +27,7 @@ Route::group(['middleware' => 'App\Http\Middleware\SuperAdminMiddleware', 'prefi
   Route::get('/home', 'HomeController@index')->name('adminhome');
 
   Route::get('/report/x_report/{date?}', 'ReportController@x_index')->name('x_report');
-  Route::get('/report/x_report/print/{data}', 'ReportController@x_report_print')->name('x_report_print');
+  Route::post('/report/x_report/print', 'ReportController@x_report_print')->name('x_report_print');
   Route::post('report/x_report/fetchByDate/{date}', 'ReportController@fetchByDate')->name('x_report.fetchByDate');
   Route::get('/report/y_report', 'ReportController@y_index')->name('z_report');
   Route::get('/report/overall_report', 'ReportController@overall_report')->name('overall_report');
@@ -39,12 +39,12 @@ Route::group(['middleware' => 'App\Http\Middleware\SuperAdminMiddleware', 'prefi
 
   Route::get('/report/z_report', 'ReportController@z_index')->name('z_report');
   Route::post('/report/z_report/fetch_company_invoice', 'ReportController@zReportCompanyInvoices')->name('zReportCompanyInvoices');
-  Route::get('/report/z_report/print/{data?}', 'ReportController@zReportPrintCompanyInvoices')->name('zReportPrintCompanyInvoices');
+  Route::post('/report/z_report/print', 'ReportController@zReportPrintCompanyInvoices')->name('zReportPrintCompanyInvoices');
   Route::post('/report/z_report/print/update', 'ReportController@zReportInvoiceUpdate')->name('zReportInvoiceUpdate');
 
   Route::get('/report/m_report', 'ReportController@m_index')->name('m_report');
   Route::post('/report/m_report/fetch_company_invoice', 'ReportController@mReportCompanyInvoices')->name('mReportCompanyInvoices');
-  Route::get('/report/m_report/print/{data?}', 'ReportController@mReportPrintCompanyInvoices')->name('mReportPrintCompanyInvoices');
+  Route::post('/report/m_report/print', 'ReportController@mReportPrintCompanyInvoices')->name('mReportPrintCompanyInvoices');
 
   Route::resource('category', 'CategoryController');
   Route::resource('subcategory', 'SubcategoryController');
@@ -94,9 +94,9 @@ Route::resource('stockintransit','StockInTransitController');
 Route::post('stockintransit/check', 'StockInTransitController@checkExistence')->name('stockintransit.check');
 
 Route::get('/report/x_report/{date?}', 'ReportController@x_index')->name('x_report');
-Route::get('/report/x_report/print/{data}', 'ReportController@x_report_print')->name('x_report_print');
+Route::post('/report/x_report/print', 'ReportController@x_report_print')->name('x_report_print');
 Route::post('report/x_report/fetchByDate/{date}', 'ReportController@fetchByDate')->name('x_report.fetchByDate');
 
 Route::get('/report/z_report', 'ReportController@z_index')->name('z_report');
 Route::post('/report/z_report/fetch_company_invoice', 'ReportController@zReportCompanyInvoices')->name('zReportCompanyInvoices');
-Route::get('/report/z_report/print/{data?}', 'ReportController@zReportPrintCompanyInvoices')->name('zReportPrintCompanyInvoices');
+Route::post('/report/z_report/print', 'ReportController@zReportPrintCompanyInvoices')->name('zReportPrintCompanyInvoices');

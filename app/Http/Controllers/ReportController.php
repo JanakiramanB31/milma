@@ -930,17 +930,48 @@ class ReportController extends Controller
 
         $invoiceIDList = $filteredInvoices->pluck('id');
 
-        $totalCashAmount = $filteredInvoices->where('payment_type', $paymentMethods[0])->sum(function ($invoice) {
-          return $invoice->received_amt - $invoice->returned_amt;
-        });
-      
-        $totalTransferAmount = $filteredInvoices->where('payment_type', $paymentMethods[1])->sum(function ($invoice) {
-            return $invoice->received_amt - $invoice->returned_amt;
-        });
+        // $totalCashAmount = $filteredInvoices->where('payment_type', $paymentMethods[0])->sum(function ($invoice) {
+        //   return $invoice->received_amt - $invoice->returned_amt;
+        // });
 
-        $totalCreditAmount = $filteredInvoices->where('payment_type', $paymentMethods[2])->sum(function ($invoice) {
-            return $invoice->received_amt - $invoice->returned_amt;
-        });
+        $totalCashAmount = $filteredInvoices
+          ->where('payment_type', $paymentMethods[0])
+          ->flatMap(function ($invoice) {
+              return $invoice->sales;
+          })
+          ->where('type', 'sales')
+          ->sum('total_amount');
+      
+        // $totalTransferAmount = $filteredInvoices->where('payment_type', $paymentMethods[1])->sum(function ($invoice) {
+        //     return $invoice->received_amt - $invoice->returned_amt;
+        // });
+
+        $totalTransferAmount = $filteredInvoices
+          ->where('payment_type', $paymentMethods[1])
+          ->flatMap(function ($invoice) {
+              return $invoice->sales;
+          })
+          ->where('type', 'sales')
+          ->sum('total_amount');
+
+        // $totalCreditAmount = $filteredInvoices->where('payment_type', $paymentMethods[2])->sum(function ($invoice) {
+        //     return $invoice->received_amt - $invoice->returned_amt;
+        // });
+
+        $totalCreditAmount = $filteredInvoices
+          ->where('payment_type', $paymentMethods[2])
+          ->flatMap(function ($invoice) {
+              return $invoice->sales;
+          })
+          ->where('type', 'sales')
+          ->sum('total_amount');
+
+        $totalSaleQty = $filteredInvoices
+          ->flatMap(function ($invoice) {
+              return $invoice->sales;
+          })
+          ->where('type', 'sales')
+          ->sum('qty');
 
         //echo $totalCreditAmount;
 
@@ -983,7 +1014,7 @@ class ReportController extends Controller
           })->get();
         }
    
-      return view('report.m_report_print', compact('filteredInvoices', 'paymentMethods', 'expenseTypes','expenses','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount', 'totalCreditAmount','loadedProducts','salesReturns'));
+      return view('report.m_report_print', compact('filteredInvoices', 'totalSaleQty', 'paymentMethods', 'expenseTypes','expenses','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount', 'totalCreditAmount','loadedProducts','salesReturns'));
     }
 
     public function zReportInvoiceUpdate(Request $request)

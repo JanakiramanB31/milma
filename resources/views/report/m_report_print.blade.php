@@ -16,7 +16,7 @@
       }
       .responsive-table {
         width: 100%;
-        max-width: 800px;
+        max-width: 900px;
         border-collapse: collapse;
         margin: 0 auto;
         text-align: left;
@@ -135,20 +135,20 @@
                       <td colspan="3"><hr/></td>
                     </tr> -->
                     <tr >
-                      <th class="boldfont">RECEIPTS</th>
-                      <td ></td>
-                      <td ></td>
-                      <td ></td>
+                      <th class="boldfont" colspan="7">
+                        Payments Summary for the Period between: {{ \Carbon\Carbon::parse($fromDate)->format('d-m-Y') }} and {{ \Carbon\Carbon::parse($toDate)->format('d-m-Y') }}
+                      </th>
                     </tr>
                     <tr></tr>
                     <tr style="border-top: 2px solid black;">
+                      <th class="boldfont" style="border-bottom: 2px solid black;white-space:wrap;">Customer</th>
+                      <th class="boldfont" style="border-bottom: 2px solid black;">Invoice</th>
                       <th class="boldfont" style="border-bottom: 2px solid black;">Date</th>
-                      <th class="boldfont" style="border-bottom: 2px solid black;">Receipt No.</th>
-                      <th class="boldfont" style="border-bottom: 2px solid black;">Company</th>
                       <th class="boldfont" style="border-bottom: 2px solid black;">Method</th>
-                      <th class="boldfont" style="border-bottom: 2px solid black;">Qty</th>
-                      <th class="boldfont" style="border-bottom: 2px solid black;">Price</th>
-                      <th class="boldfont" style="text-align: right;border-bottom: 2px solid black;">Gross Amt</th>
+                      <th class="boldfont" style="border-bottom: 2px solid black;">Sale</th>
+                      <th class="boldfont" style="border-bottom: 2px solid black;">Return</th>
+                      <th class="boldfont" style="border-bottom: 2px solid black;">Each</th>
+                      <th class="boldfont" style="text-align: right;border-bottom: 2px solid black;">Gross</th>
                     </tr>
                     <!-- <tr>
                       <td colspan="4"><hr/></td>
@@ -165,36 +165,36 @@
 
                       @if ($invoice->payment_type == $paymentMethods[0])
                         @foreach ($invoice->sales as $sale)
-                        @if($sale->type == 'sales')
                           <tr>
-                            <td class="boldfont">{{ $invoice->created_at->format('d-m-Y') }}</td>
-                            <td class="boldfont">{{ $invoice->id ?? "N/A" }}</td>
-                            <td class="boldfont">{{ $invoice->customer->company_name ?? "N/A" }}</td>
+                            <td style="border-bottom: none;white-space:wrap;">{{ $invoice->customer->company_name ?? "N/A" }}</td>
+                            <td style="border-bottom: none;">{{ $invoice->id ?? "N/A" }}</td>
+                            <td style="border-bottom: none">{{ $invoice->created_at->format('d-m-Y') }}</td>
 
-                            <td class="boldfont">
+                            <td style="border-bottom: none;">
                                 @if ($creditCash > 0.00)
                                     C Cash
                                     <!-- <p style="margin: 0; font-size:13px; font-weight:400;">
-                                        <span>{{ $currency }}</span> {{ number_format($previousBalance, $decimalLength) }}
+                                         {{ number_format($previousBalance, $decimalLength) }}
                                     </p> -->
                                 @else
                                     {{ $invoice->payment_type }}
                                 @endif
                             </td>
                             @if($sale->type == 'sales')
-                              <td class="boldfont">{{ $sale->qty }}</td>
-                              <td class="boldfont"> <span>{{ $currency }}</span> {{ number_format($sale->price, $decimalLength) }}</td>
-                              <td class="boldfont" style="text-align: right;">
-                                <span>{{ $currency }}</span> {{ number_format($sale->total_amount, $decimalLength) }}
+                              <td style="border-bottom: none;">{{ $sale->qty }}</td>
+                              <td style="border-bottom: none;"></td>
+                              <td style="border-bottom: none;">  {{ number_format($sale->price, $decimalLength) }}</td>
+                              <td style="text-align: right;border-bottom: none;">
+                                 {{ number_format($sale->total_amount, $decimalLength) }}
                               </td>
                             @else
-                              <td></td>
-                              <td class="boldfont"> <span>{{ $currency }} </span>0.00</td>
-                              <td class="boldfont" style="text-align: right;"> <span>{{ $currency }}</span>0.00</td>
+                              <td style="border-bottom: none;"></td>
+                              <td style="border-bottom: none;">{{ $sale->qty }}</td>
+                              <td style="border-bottom: none;">0.00</td>
+                              <td style="text-align: right;border-bottom: none;"> 0.00</td>
                             @endif
                             
                           </tr>
-                          @endif
                         @endforeach
                       @endif
                     @endforeach
@@ -209,7 +209,8 @@
                       <td class="boldfont" style="border-bottom: 2px solid black;">Total</td>
                       <td class="boldfont" style="border-bottom: 2px solid black;"></td>
                       <td class="boldfont" style="border-bottom: 2px solid black;"></td>
-                      <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;"><span>{{$currency}} </span>{{number_format($totalCashAmount,  $decimalLength )}}</td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;"></td>
+                      <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;">{{number_format($totalCashAmount,  $decimalLength )}}</td>
                     </tr>
                     
                     <!-- <tr>
@@ -219,25 +220,25 @@
                     
                       @if ($invoice->payment_type == $paymentMethods[1])
                       @foreach ($invoice->sales as $sale)
-                      @if($sale->type == 'sales')
                       <tr>
-                        <td class="boldfont">{{$invoice->created_at->format('d-m-Y')}}</td>
-                        <td class="boldfont">{{$invoice->id ?? "N/A"}}</td>
-                        <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
-                        <td class="boldfont">Transfer</td>
+                        <td style="border-bottom: none;white-space:wrap;">{{$invoice->customer->company_name ?? "N/A"}}</td>
+                        <td style="border-bottom: none;">{{$invoice->id ?? "N/A"}}</td>
+                        <td style="border-bottom: none;">{{$invoice->created_at->format('d-m-Y')}}</td>
+                        <td style="border-bottom: none;">Transfer</td>
                         @if($sale->type == 'sales')
-                          <td class="boldfont">{{ $sale->qty }}</td>
-                          <td class="boldfont"> <span>{{ $currency }}</span> {{ number_format($sale->price, $decimalLength) }}</td>
-                          <td class="boldfont" style="text-align: right;">
-                            <span>{{ $currency }}</span> {{ number_format($sale->total_amount, $decimalLength) }}
+                          <td style="border-bottom: none;">{{ $sale->qty }}</td>
+                          <td style="border-bottom: none;"></td>
+                          <td style="border-bottom: none;">  {{ number_format($sale->price, $decimalLength) }}</td>
+                          <td style="text-align: right;border-bottom: none;">
+                             {{ number_format($sale->total_amount, $decimalLength) }}
                           </td>
                         @else
-                          <td></td>
-                          <td class="boldfont"> <span>{{ $currency }}</span> 0.00</td>
-                          <td class="boldfont" style="text-align: right;"> <span>{{ $currency }} </span>0.00</td>
+                          <td style="border-bottom: none;"></td>
+                          <td style="border-bottom: none;">{{ $sale->qty }}</td>
+                          <td style="border-bottom: none;">  0.00</td>
+                          <td style="text-align: right;border-bottom: none;">0.00</td>
                         @endif
                       </tr>
-                      @endif
                       @endforeach
                       @endif
                     @endforeach
@@ -252,7 +253,8 @@
                       <td class="boldfont" style="border-bottom: 2px solid black;">Total</td>
                       <td class="boldfont" style="border-bottom: 2px solid black;"></td>
                       <td class="boldfont" style="border-bottom: 2px solid black;"></td>
-                      <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;"><span>{{$currency}} </span>{{number_format($totalTransferAmount,  $decimalLength )}}</td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;"></td>
+                      <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;">{{number_format($totalTransferAmount,  $decimalLength )}}</td>
                     </tr>
                     
                     <!-- <tr>
@@ -261,25 +263,27 @@
                     @foreach ($filteredInvoices as $companyName => $invoice) 
                       @if ($invoice->payment_type == $paymentMethods[2])
                       @foreach ($invoice->sales as $sale)
-                      @if($sale->type == 'sales')
                       <tr>
-                        <td class="boldfont">{{$invoice->created_at->format('d-m-Y')}}</td>
-                        <td class="boldfont">{{$invoice->id ?? "N/A"}}</td>
-                        <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
-                        <td class="boldfont">Credit</td>
+                        <td style="border-bottom: none;white-space:wrap;width: 100px;">{{$invoice->customer->company_name ?? "N/A"}}</td>
+                        <td style="border-bottom: none;">{{$invoice->id ?? "N/A"}}</td>
+                        <td style="border-bottom: none;">{{$invoice->created_at->format('d-m-Y')}}</td>
+                        <td style="border-bottom: none;">Credit</td>
                         @if($sale->type == 'sales')
-                          <td class="boldfont">{{ $sale->qty }}</td>
-                          <td class="boldfont"> <span>{{ $currency }}</span> {{ number_format($sale->price, $decimalLength) }}</td>
-                          <td class="boldfont" style="text-align: right;">
-                            <span>{{ $currency }}</span> {{ number_format($sale->total_amount, $decimalLength) }}
+                          <td style="border-bottom: none;">{{ $sale->qty }}</td>
+                          <td class="boldfont" style="border-bottom: none;"></td>
+                          <td style="border-bottom: none;">  {{ number_format($sale->price, $decimalLength) }}</td>
+                          <td style="border-bottom: none;text-align: right;">
+                             {{ number_format($sale->total_amount, $decimalLength) }}
                           </td>
                         @else
-                          <td></td>
-                          <td class="boldfont"> <span>{{ $currency }}</span> 0.00</td>
-                          <td class="boldfont" style="text-align: right;"> <span>{{ $currency }}</span> 0.00</td>
+                         <td class="boldfont" style="border-bottom: none;"></td>
+
+                          <td style="border-bottom: none;"></td>
+                          <td style="border-bottom: none;">{{ $sale->qty }}</td>
+                          <td style="border-bottom: none;">  0.00</td>
+                          <td style="border-bottom: none;text-align: right;">  0.00</td>
                         @endif
                       </tr>
-                      @endif
                       @endforeach
                       @endif
                     @endforeach
@@ -293,7 +297,8 @@
                       <td class="boldfont" style="border-bottom: 2px solid black;">Total</td>
                       <td class="boldfont" style="border-bottom: 2px solid black;"></td>
                       <td class="boldfont" style="border-bottom: 2px solid black;"></td>
-                      <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;"><span>{{$currency}} </span>{{number_format($totalCreditAmount,  $decimalLength )}}</td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;"></td>
+                      <td class="boldfont" style="text-align: right;border-bottom: 2px solid black;">{{number_format($totalCreditAmount,  $decimalLength )}}</td>
                     </tr>
                     
                     <!-- <tr>
@@ -373,8 +378,10 @@
                       <td style="border-bottom: 2px solid black;"></td>
                       <td style="border-bottom: 2px solid black;"></td>
                       <td class="boldfont" style="border-bottom: 2px solid black;">{{$totalSaleQty}}</td>
+                      <td class="boldfont" style="border-bottom: 2px solid black;">{{$totalReturnsQty}}</td>
+                      <td style="border-bottom: 2px solid black;"></td>
                       <td colspan="2" class="boldfont" style="text-align: right;border-bottom: 2px solid black;">
-                      <span>{{$currency}} </span> {{  number_format($totalCashAmount + $totalTransferAmount + $totalCreditAmount , $decimalLength) }}
+                        {{  number_format($totalCashAmount + $totalTransferAmount + $totalCreditAmount , $decimalLength) }}
                       </td>
                     </tr>
 

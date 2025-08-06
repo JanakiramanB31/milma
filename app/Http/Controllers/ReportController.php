@@ -972,6 +972,12 @@ class ReportController extends Controller
           })
           ->where('type', 'sales')
           ->sum('qty');
+        $totalReturnsQty = $filteredInvoices
+          ->flatMap(function ($invoice) {
+              return $invoice->sales;
+          })
+          ->where('type', 'returns')
+          ->sum('qty');
 
         //echo $totalCreditAmount;
 
@@ -1014,7 +1020,7 @@ class ReportController extends Controller
           })->get();
         }
    
-      return view('report.m_report_print', compact('filteredInvoices', 'totalSaleQty', 'paymentMethods', 'expenseTypes','expenses','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount', 'totalCreditAmount','loadedProducts','salesReturns'));
+      return view('report.m_report_print', compact('filteredInvoices', 'totalSaleQty', 'totalReturnsQty', 'paymentMethods', 'expenseTypes','expenses','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount', 'totalCreditAmount','loadedProducts','salesReturns'));
     }
 
     public function zReportInvoiceUpdate(Request $request)

@@ -161,6 +161,8 @@ class InvoiceController extends Controller
       $paymentMethods = config('constants.PAYMENT_METHODS');
       $today = now()->toDateString();
       $data = $request->all();
+      //$this->pr($data);
+      //exit;
       $returnTotal = 0;
       foreach ($data['type'] as $index => $type) {
         if ($type === 'returns') {
@@ -385,8 +387,8 @@ class InvoiceController extends Controller
           'price' => 'required',
           'amount' => 'required',
       ]);
-      $this->pr($request->all());
-      // exit;
+      //$this->pr($request->all());
+      //exit;
       $userId = Auth::id();
       $paymentMethods = config('constants.PAYMENT_METHODS');
       $cusID = $request->customer_id;
@@ -401,7 +403,7 @@ class InvoiceController extends Controller
       $invoice->payment_type = $request->payment_type;
       $invoice->show_credit_amt_on_print = $request->show_credit_amt == "on" ? true : false;
       $receivedAmt = $request->payment_type != $paymentMethods[0] ? $request->prev_received_amt : ($request->received_amt);
-      $invoice->received_amt = $receivedAmt;
+      $invoice->received_amt = ($request->prev_received_amt ?? 0) + $receivedAmt;
       $invoice->paid_amt = $request->received_amt;
       $invoice->acc_bal_amt = $request->acc_bal_amt;
 

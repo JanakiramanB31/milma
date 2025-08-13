@@ -223,13 +223,17 @@
               <th class="boldfont" style="text-align: right;">Amt</th>
             </tr>
             <tr>
-                <td colspan="3"><hr/></td>
-              </tr>
+              <td colspan="3"><hr/></td>
+            </tr>
             @foreach($expenses as $expense)
             @php
               $typeName = '';
               if ($expense->expense_type_id == 0) {
-                $typeName = $expense->other_expense_details;
+                if (strlen(trim($expense->other_expense_details)) > 0) {
+                  $typeName = "Others - " . $expense->other_expense_details;
+                } else {
+                  $typeName = "Others";
+                }
               } else {
                 foreach ($expenseTypes as $type) {
                   if ($type['id'] == $expense->expense_type_id) {

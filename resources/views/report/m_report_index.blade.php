@@ -38,7 +38,10 @@
                  
                 </div>
                 <div class=" d-flex justify-content-between align-items-center">
-                  <button class="btn btn-success" id="print">Print</button>
+                  <div>
+                    <button class="btn btn-success" id="print">Print</button>
+                    <!-- <button class="btn btn-success" id="exportCSV">Export CSV</button> -->
+                  </div>
                   <div style="text-align: right;">
                     <span style="white-space: nowrap;"><b>*A</b> - Approved,</span>  <span style="white-space: nowrap;"><b>N/A</b> - Not Approved,</span>  <span style="white-space: nowrap;"><b>R</b> - Received,</span>  <span style="white-space: nowrap;"><b>C</b> - Credit</span>
                   </div>
@@ -265,6 +268,64 @@
         });
       } else {
         console.log("No data to print");
+      }
+    }
+
+    $('#exportCSV').on('click', function () {
+      var companyName = $('#company_name').find('option:selected').val();
+      let fromDate = $('#startDate').val();
+      let toDate = $('#endDate').val();
+      console.log(fromDate, companyName, toDate);
+      const data = {
+        "fromDate": fromDate,
+        "toDate": toDate,
+        "companyName": companyName,
+      }
+      console.log(data);
+      exportCSV(data);
+    });
+
+    function exportCSV(data) {
+      if(data) {
+        const data1Json = JSON.stringify(data);
+        $.ajax({
+          url: '{{ route("mReportExportCSV") }}',
+          type: 'POST',
+          data: {
+            data: data1Json,
+            _token: $('meta[name="csrf-token"]').attr('content')
+          },
+          xhrFields: {
+            responseType: 'blob'
+          },
+          success: function(response, status, xhr) {
+            var disposition = xhr.getResponseHeader('Content-Disposition');
+            var filename = 'monthly_report.csv';
+            if (disposition && disposition.indexOf('attachment') !== -1) {
+              var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+              var matches = filenameRegex.exec(disposition);
+              if (matches != null && matches[1]) {
+                filename = matches[1].replace(/['"]/g, '');
+              }
+            }
+            
+            var blob = new Blob([response], { type: 'text/csv' });
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+          },
+          error: function(xhr, status, error) {
+            console.error('Error exporting CSV:', error);
+            alert('Error exporting CSV. Please try again.');
+          }
+        });
+      } else {
+        console.log("No data to export");
       }
     }
   });

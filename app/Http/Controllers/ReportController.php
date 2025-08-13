@@ -1023,6 +1023,215 @@ class ReportController extends Controller
       return view('report.m_report_print', compact('filteredInvoices', 'totalSaleQty', 'totalReturnsQty', 'paymentMethods', 'expenseTypes','expenses','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount', 'totalCreditAmount','loadedProducts','salesReturns'));
     }
 
+    public function mReportExportCSV(Request $request)
+    {
+      $paymentMethods = config('constants.PAYMENT_METHODS');
+      $currency = config('constants.CURRENCY_SYMBOL');
+      $decimalLength = config('constants.DECIMAL_LENGTH');
+      $data = json_decode($request->input('data'), true);
+      $data['fromDate'] = trim($data['fromDate']);
+      $data['toDate'] = trim($data['toDate']);
+      $data['companyName'] = trim($data['companyName']);
+
+      $fromDate = $data['fromDate'];
+      $toDate = $data['toDate'];
+      $companyName = $data['companyName'];
+
+      if ($fromDate && $toDate) {
+        $fromDate = \Carbon\Carbon::parse($fromDate)->startOfDay();
+        $toDate = \Carbon\Carbon::parse($toDate)->endOfDay();
+      } else {
+        $fromDate = now()->startOfDay();
+        $toDate = now()->endOfDay();
+      }
+
+      $filteredInvoices = Invoice::with('Customer', 'Sales.product')
+        ->when($fromDate->isSameDay($toDate), function ($query) use ($fromDate) {
+          return $query->whereDate('created_at', $fromDate);
+        })
+        ->when(!$fromDate->isSameDay($toDate), function ($query) use ($fromDate, $toDate) {
+          return $query->whereBetween('created_at', [$fromDate, $toDate]);
+        })
+        ->when($companyName != "", function ($query) use ($companyName) {
+            $query->whereHas('Customer', function ($q) use ($companyName) {
+                $q->where('company_name', $companyName);
+            });
+        })
+        ->get();
+
+      $totalCashAmount = $filteredInvoices
+        ->where('payment_type', $paymentMethods[0])
+        ->flatMap(function ($invoice) {
+            return $invoice->sales;
+        })
+        ->where('type', 'sales')
+        ->sum('total_amount');
+
+      $totalTransferAmount = $filteredInvoices
+        ->where('payment_type', $paymentMethods[1])
+        ->flatMap(function ($invoice) {
+            return $invoice->sales;
+        })
+        ->where('type', 'sales')
+        ->sum('total_amount');
+
+      $totalCreditAmount = $filteredInvoices
+        ->where('payment_type', $paymentMethods[2])
+        ->flatMap(function ($invoice) {
+            return $invoice->sales;
+        })
+        ->where('type', 'sales')
+        ->sum('total_amount');
+
+      $totalSaleQty = $filteredInvoices
+        ->flatMap(function ($invoice) {
+            return $invoice->sales;
+        })
+        ->where('type', 'sales')
+        ->sum('qty');
+
+      $totalReturnsQty = $filteredInvoices
+        ->flatMap(function ($invoice) {
+            return $invoice->sales;
+        })
+        ->where('type', 'returns')
+        ->sum('qty');
+
+      $filename = 'monthly_report_' . $fromDate->format('Y-m-d') . '_to_' . $toDate->format('Y-m-d') . '.csv';
+
+      $headers = array(
+        "Content-type"        => "text/csv",
+        "Content-Disposition" => "attachment; filename=$filename",
+        "Pragma"              => "no-cache",
+        "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+        "Expires"             => "0"
+      );
+
+      $callback = function() use($filteredInvoices, $paymentMethods, $currency, $decimalLength, $fromDate, $toDate, $totalCashAmount, $totalTransferAmount, $totalCreditAmount, $totalSaleQty, $totalReturnsQty) {
+        $file = fopen('php://output', 'w');
+        
+        // fputcsv($file, ['MILMA FOODS UK LIMITED']);
+        // fputcsv($file, ['Payments Summary for the Period between: ' . $fromDate->format('d-m-Y') . ' and ' . $toDate->format('d-m-Y')]);
+        // fputcsv($file, []);
+        
+        fputcsv($file, ['Customer', 'Invoice', 'Date', 'Method', 'Sale', 'Return', 'Each', 'Gross']);
+
+        foreach ($filteredInvoices as $invoice) {
+          $previousBalance = (float)($invoice->customer->previous_balance ?? 0);
+          $paidAmount = (float)($invoice->paid_amt ?? 0);
+          $creditCash = ($invoice->payment_type == $paymentMethods[1])
+                        ? $previousBalance - $paidAmount
+                        : $previousBalance;
+
+          if ($invoice->payment_type == $paymentMethods[0]) {
+            foreach ($invoice->sales as $sale) {
+              $method = ($creditCash > 0.00) ? 'C Cash' : $invoice->payment_type;
+              
+              if($sale->type == 'sales') {
+                fputcsv($file, [
+                  $invoice->customer->company_name ?? 'N/A',
+                  $invoice->id ?? 'N/A',
+                  $invoice->created_at->format('d-m-Y'),
+                  $method,
+                  $sale->qty,
+                  '',
+                  number_format($sale->price, $decimalLength),
+                  number_format($sale->total_amount, $decimalLength)
+                ]);
+              } else {
+                fputcsv($file, [
+                  $invoice->customer->company_name ?? 'N/A',
+                  $invoice->id ?? 'N/A',
+                  $invoice->created_at->format('d-m-Y'),
+                  $method,
+                  '',
+                  $sale->qty,
+                  '0.00',
+                  '0.00'
+                ]);
+              }
+            }
+          }
+        }
+
+        fputcsv($file, ['Cash', '', '', 'Total', '', '', '', number_format($totalCashAmount, $decimalLength)]);
+        fputcsv($file, []);
+
+        foreach ($filteredInvoices as $invoice) {
+          if ($invoice->payment_type == $paymentMethods[1]) {
+            foreach ($invoice->sales as $sale) {
+              if($sale->type == 'sales') {
+                fputcsv($file, [
+                  $invoice->customer->company_name ?? 'N/A',
+                  $invoice->id ?? 'N/A',
+                  $invoice->created_at->format('d-m-Y'),
+                  'Transfer',
+                  $sale->qty,
+                  '',
+                  number_format($sale->price, $decimalLength),
+                  number_format($sale->total_amount, $decimalLength)
+                ]);
+              } else {
+                fputcsv($file, [
+                  $invoice->customer->company_name ?? 'N/A',
+                  $invoice->id ?? 'N/A',
+                  $invoice->created_at->format('d-m-Y'),
+                  'Transfer',
+                  '',
+                  $sale->qty,
+                  '0.00',
+                  '0.00'
+                ]);
+              }
+            }
+          }
+        }
+
+        fputcsv($file, ['Transfer', '', '', 'Total', '', '', '', number_format($totalTransferAmount, $decimalLength)]);
+        fputcsv($file, []);
+
+        foreach ($filteredInvoices as $invoice) {
+          if ($invoice->payment_type == $paymentMethods[2]) {
+            foreach ($invoice->sales as $sale) {
+              if($sale->type == 'sales') {
+                fputcsv($file, [
+                  $invoice->customer->company_name ?? 'N/A',
+                  $invoice->id ?? 'N/A',
+                  $invoice->created_at->format('d-m-Y'),
+                  'Credit',
+                  $sale->qty,
+                  '',
+                  number_format($sale->price, $decimalLength),
+                  number_format($sale->total_amount, $decimalLength)
+                ]);
+              } else {
+                fputcsv($file, [
+                  $invoice->customer->company_name ?? 'N/A',
+                  $invoice->id ?? 'N/A',
+                  $invoice->created_at->format('d-m-Y'),
+                  'Credit',
+                  '',
+                  $sale->qty,
+                  '0.00',
+                  '0.00'
+                ]);
+              }
+            }
+          }
+        }
+
+        fputcsv($file, ['Credit', '', '', 'Total', '', '', '', number_format($totalCreditAmount, $decimalLength)]);
+        fputcsv($file, []);
+
+        fputcsv($file, ['Total Amt of Sales:', '', '', '', $totalSaleQty, $totalReturnsQty, '', 
+                       number_format($totalCashAmount + $totalTransferAmount + $totalCreditAmount, $decimalLength)]);
+
+        fclose($file);
+      };
+
+      return response()->stream($callback, 200, $headers);
+    }
+
     public function zReportInvoiceUpdate(Request $request)
     {
       $invoiceIDList = $request->input('data');

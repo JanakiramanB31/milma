@@ -117,7 +117,7 @@
                   $creditCash = $previousBalance - $paidAmount;
                 } else {
                   $creditCash = (float)($invoice->customer->previous_balance ?? 0);
-                }               
+                }
               @endphp
 
                
@@ -125,8 +125,14 @@
                 @if($creditCash > 0.00 && ($invoice->payment_type == $paymentMethods[0]))
                   <tr>
                     <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
-                    <td class="boldfont">C Cash <p style="margin: 0; font-size :13px;font-weight:400;"><span>{{$currency}} </span>{{number_format($invoice->customer->previous_balance, $decimalLength)}}</p></td>
-                    <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
+                    <td class="boldfont">C Cash 
+                     <!--  <p style="margin: 0; font-size :13px;font-weight:400;">
+                        <span>{{$currency}} </span>{{number_format($invoice->customer->previous_balance, $decimalLength)}}
+                      </p> -->
+                    </td>
+                    <td class="boldfont" style="text-align: right;">
+                      <span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}
+                    </td>
                   </tr>
 
                 @else
@@ -154,7 +160,9 @@
               </tr>
               @foreach ($filteredInvoices as $companyName => $invoice) 
                
-                @if ($invoice->payment_type == $paymentMethods[1])
+                @if ($invoice->payment_type == $paymentMethods[1] 
+                && is_numeric($invoice->received_amt) 
+                && (float) $invoice->received_amt > 0.00 )
                 <tr>
                   <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
                   <td class="boldfont">Transfer</td>
@@ -162,6 +170,8 @@
                 </tr>
                 @endif
               @endforeach
+
+              @if((float) $totalTransferAmount > 0)
               <tr>
                 <td colspan="3"><hr/></td>
               </tr>
@@ -172,9 +182,11 @@
                 <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($totalTransferAmount,  $decimalLength )}}</td>
               </tr>
               
+              
               <tr>
                 <td colspan="3"><hr/><hr/></td>
               </tr>
+              @endif
                @foreach ($filteredInvoices as $companyName => $invoice) 
                 @if ($invoice->payment_type == $paymentMethods[2])
                 <tr>

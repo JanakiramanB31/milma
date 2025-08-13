@@ -45,6 +45,7 @@ Route::group(['middleware' => 'App\Http\Middleware\SuperAdminMiddleware', 'prefi
   Route::get('/report/m_report', 'ReportController@m_index')->name('m_report');
   Route::post('/report/m_report/fetch_company_invoice', 'ReportController@mReportCompanyInvoices')->name('mReportCompanyInvoices');
   Route::post('/report/m_report/print', 'ReportController@mReportPrintCompanyInvoices')->name('mReportPrintCompanyInvoices');
+  Route::post('/report/m_report/export_csv', 'ReportController@mReportExportCSV')->name('mReportExportCSV');
 
   Route::resource('category', 'CategoryController');
   Route::resource('subcategory', 'SubcategoryController');

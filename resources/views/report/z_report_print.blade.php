@@ -196,6 +196,7 @@
                 </tr>
                 @endif
               @endforeach
+              @if((float) $totalCreditAmount > 0)
               <tr>
                 <td colspan="3"><hr/></td>
               </tr>
@@ -209,7 +210,7 @@
               <tr>
                 <td colspan="3"><hr/><hr/></td>
               </tr>
-
+              @endif
               <tr>
               <th class="boldfont">EXPENSES</th>
               <td></td>

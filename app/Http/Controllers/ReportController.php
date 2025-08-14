@@ -65,6 +65,8 @@ class ReportController extends Controller
 
       $saleProductspaymentTypesandAmounts = $paymentTypesandTotalAmounts->groupBy('payment_type')->map(function ($group) {
         return [
+          'total_paid_amt' => $group->sum('paid_amt'),
+          'total_amt' => $group->sum('total_amount'),
           'total_received_amt' => $group->sum(function ($item) {
             return $item->received_amt - $item->returned_amt;
         }),
@@ -91,12 +93,14 @@ class ReportController extends Controller
       $creditTransactionCount = $creditPayments->count();
 
       $cashPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[0], ['total_received_amt' => 0, 'transaction_count' => 0]);
-      $bankPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[1], ['total_received_amt' => 0, 'transaction_count' => 0]);
-
+      //$bankPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[1], ['total_received_amt' => 0, 'transaction_count' => 0]);
+      $bankPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[1], ['total_paid_amt' => 0, 'transaction_count' => 0]);
+      $bankTotPayments = $bankPayments['total_paid_amt'];
+     
       //$this->pr($bankPayments);
       //exit;
       $cashTotPayments = $cashPayments['total_received_amt'];
-      $bankTotPayments = $bankPayments['total_received_amt'];
+      //$bankTotPayments = $bankPayments['total_received_amt'];
       $totAmtOfSales = $cashTotPayments + $bankTotPayments + $creditTotPayments;
       $totAmt = $cashTotPayments + $bankTotPayments - $creditTotPayments;
       $totReturnsAmt = $returnType['total_amt'];

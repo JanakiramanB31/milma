@@ -158,16 +158,26 @@
               <tr>
                 <td colspan="3"><hr/><hr/></td>
               </tr>
-              @foreach ($filteredInvoices as $companyName => $invoice) 
-               
-                @if ($invoice->payment_type == $paymentMethods[1] 
-                && is_numeric($invoice->received_amt) 
-                && (float) $invoice->received_amt > 0.00 )
-                <tr>
-                  <td class="boldfont">{{$invoice->customer->company_name ?? "N/A"}}</td>
-                  <td class="boldfont">Transfer</td>
-                  <td class="boldfont" style="text-align: right;"><span>{{$currency}} </span>{{number_format($invoice->received_amt,  $decimalLength )}}</td>
-                </tr>
+              @foreach ($filteredInvoices as $companyName => $invoice)
+
+                @php
+                  $amount = null;
+
+                  if ($invoice->payment_type == $paymentMethods[1] && is_numeric($invoice->paid_amt) && $isToday) {
+                      $amount = (float) $invoice->paid_amt;
+                  } elseif ($invoice->payment_type == $paymentMethods[1] && is_numeric($invoice->received_amt) && !$isToday) {
+                      $amount = (float) $invoice->received_amt;
+                  }
+                @endphp
+
+                @if ($amount > 0)
+                  <tr>
+                    <td class="boldfont">{{ $invoice->customer->company_name ?? 'N/A' }}</td>
+                    <td class="boldfont">Transfer</td>
+                    <td class="boldfont" style="text-align: right;">
+                      <span>{{ $currency }} </span>{{ number_format($amount, $decimalLength) }}
+                    </td>
+                  </tr>
                 @endif
               @endforeach
 

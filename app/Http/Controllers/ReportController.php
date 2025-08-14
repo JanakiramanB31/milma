@@ -289,9 +289,15 @@ class ReportController extends Controller
       $currency = config('constants.CURRENCY_SYMBOL');
       $decimalLength = config('constants.DECIMAL_LENGTH');
       
+      $isToday = false;
+
       if ($dateData && isset($dateData['fromDate']) && isset($dateData['toDate'])) {
         $fromDate = \Carbon\Carbon::parse($dateData['fromDate'])->startOfDay();
         $toDate = \Carbon\Carbon::parse($dateData['toDate'])->endOfDay();
+        
+        if ($fromDate->isToday() && $toDate->isToday()) {
+          $isToday = true;
+        }
       } else {
         $fromDate = now()->startOfDay();
         $toDate = now()->endOfDay();
@@ -394,10 +400,19 @@ class ReportController extends Controller
       $creditTransactionCount = $creditPayments->count();
 
       $cashPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[0], ['total_received_amt' => 0, 'transaction_count' => 0]);
-      $bankPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[1], ['total_received_amt' => 0, 'transaction_count' => 0]);
-
       $cashTotPayments = $cashPayments['total_received_amt'];
-      $bankTotPayments = $bankPayments['total_received_amt'];
+
+      if($isToday) {
+        $bankPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[1], ['total_paid_amt' => 0, 'transaction_count' => 0]);
+        $bankTotPayments = $bankPayments['total_paid_amt'];
+      } else {
+        $bankPayments = $saleProductspaymentTypesandAmounts->get($paymentMethods[1], ['total_received_amt' => 0, 'transaction_count' => 0]);
+        $bankTotPayments = $bankPayments['total_received_amt'];
+      }
+      // $this->pr($bankPayments);
+      // $this->pr($bankTotPayments);
+      // exit;
+
       $totAmtOfSales = $cashTotPayments + $bankTotPayments + $creditTotPayments;
       $totAmt = $cashTotPayments + $bankTotPayments - $creditTotPayments;
       $totReturnsAmt = $returnType['total_amt'];
@@ -786,9 +801,14 @@ class ReportController extends Controller
         $companyName = '';
       }
 
+      $isToday = false;
       if ($fromDate && $toDate) {
         $fromDate = \Carbon\Carbon::parse($fromDate)->startOfDay();
         $toDate = \Carbon\Carbon::parse($toDate)->endOfDay();
+
+        if ($fromDate->isToday() && $toDate->isToday()) {
+          $isToday = true;
+        }
       } else {
         $fromDate = now()->startOfDay()->toDateString();
         $toDate = now()->endOfDay()->toDateString();
@@ -820,10 +840,20 @@ class ReportController extends Controller
         $totalCashAmount = $filteredInvoices->where('payment_type', $paymentMethods[0])->sum(function ($invoice) {
           return $invoice->received_amt - $invoice->returned_amt;
         });
-      
-        $totalTransferAmount = $filteredInvoices->where('payment_type', $paymentMethods[1])->sum(function ($invoice) {
+       
+
+        if($isToday) {
+          $totalTransferAmount = $filteredInvoices->where('payment_type', $paymentMethods[1])->sum(function ($invoice) {
+            return $invoice->paid_amt - $invoice->returned_amt;
+          });
+        } else {
+          $totalTransferAmount = $filteredInvoices->where('payment_type', $paymentMethods[1])->sum(function ($invoice) {
             return $invoice->received_amt - $invoice->returned_amt;
-        });
+          });
+        }
+      
+        //  echo $totalTransferAmount;
+        // exit;
 
         $totalCreditAmount = $filteredInvoices->where('payment_type', $paymentMethods[2])->sum(function ($invoice) {
             return $invoice->paid_amt - $invoice->returned_amt;
@@ -873,7 +903,7 @@ class ReportController extends Controller
           })->get();
         }
    
-      return view('report.z_report_print', compact('filteredInvoices', 'paymentMethods', 'expenseTypes','expenses','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount', 'totalCreditAmount','loadedProducts','salesReturns'));
+      return view('report.z_report_print', compact('filteredInvoices', 'isToday', 'paymentMethods', 'expenseTypes','expenses','invoiceIDList','fromDate','toDate','currency','decimalLength','totalCashAmount','totalTransferAmount', 'totalCreditAmount','loadedProducts','salesReturns'));
     }
 
     public function mReportPrintCompanyInvoices(Request $request)

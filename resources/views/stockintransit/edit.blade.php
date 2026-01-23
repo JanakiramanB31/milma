@@ -28,6 +28,8 @@
         <div class="tile">
         <div class="alert alert-danger" style="display: none;" id ="quantity-error"></div>
           <h3 class="tile-title">Edit Stock in Transit </h3>
+          <!-- Alert Error Section -->
+          <div id="alert-message" class="alert alert-danger" role="alert" hidden></div>
           <div class="tile-body">
             <form method="POST" action="{{$submitURL}}">
               @csrf
@@ -238,13 +240,25 @@
     });
 
     $('#nextButton').on('click', function() {
+      $('#alert-message').attr("hidden", false);
+      $('#alert-message').hide();
       var routeSelect = $('#route_id');
       var vehicleSelect = $('#vehicle_id');
-
+      var userIDSelect = $('#user_id');
       if(currentUserRole == 'admin') {
-        $('#route-vehicle-section').hide();
-        $('#product-section').show();
-        $('#add_button').show();
+        if (routeSelect.val() && vehicleSelect.val() && userIDSelect.val()) {
+          $('#route-vehicle-section').hide();
+          $('#product-section').show();
+          $('#add_button').show();
+        } else {
+          
+          $('#alert-message').text("Please select all fields.");
+          $('#alert-message').show();
+          setTimeout(function() {
+            $('#alert-message').hide(); 
+          }, 3000);
+        }
+        
       } else {
         if (routeSelect.val() && vehicleSelect.val()) {
           //console.log(routeSelect.val(), vehicleSelect.val());
